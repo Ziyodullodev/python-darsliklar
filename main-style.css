@@ -1,0 +1,19 @@
+.exit-link {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #ff6a00, #ee0979);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 1001;
+    transition: background 0.3s ease, transform 0.2s;
+}
+
+.exit-link:hover {
+    background: linear-gradient(135deg, #ee0979, #ff6a00);
+    transform: translateY(-2px);
+}
