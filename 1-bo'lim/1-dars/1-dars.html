@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Sintaksisi - 1-dars</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .slide-container {
+            display: none;
+            min-height: 100vh;
+            padding: 40px;
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .slide-container.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            font-size: 2em;
+            color: #e74c3c;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            font-size: 1.5em;
+            color: #3498db;
+            margin: 20px 0 10px 0;
+        }
+
+        p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            margin: 20px 0;
+            border-left: 4px solid #4299e1;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-block::before {
+            content: 'Python';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 0.8em;
+            color: #a0aec0;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .task-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ff6b6b;
+        }
+
+        .task-box h4 {
+            color: #d63031;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            color: #2c3e50;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .intro-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .intro-slide h1 {
+            color: white;
+            font-size: 3.5em;
+            margin-bottom: 20px;
+        }
+
+        .intro-slide .slide {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+        }
+
+        .tip-box {
+            background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #f39c12;
+        }
+
+        .output {
+            background: #27ae60;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin-top: 10px;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin: 8px 0;
+            font-size: 1.1em;
+        }
+
+        .time-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #e74c3c;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Slide Counter -->
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">16</span>
+    </div>
+
+    <!-- Slide 1: Kirish -->
+    <div class="slide-container active intro-slide">
+        <div class="slide">
+            <h1>🐍 Python Sintaksisi</h1>
+            <h2 style="color: white;">1-dars: Asoslar</h2>
+            <p style="font-size: 1.5em; color: #ecf0f1;">Izohlar • O'zgaruvchilar • Sonlar • Matnlar • Boolean • Casting</p>
+            <div style="margin-top: 40px;">
+                <p style="font-size: 1.2em;">⏰ Dars davomiyligi: 120 daqiqa</p>
+                <p style="font-size: 1.2em;">👥 13-18 yosh o'quvchilar uchun</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: Python nima? -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">25 daqiqa</div>
+            <h2>🐍 Python nima?</h2>
+            <div class="concept-box">
+                <h3>Python - bu dasturlash tili!</h3>
+                <p>🎮 O'yinlar yasash, 🤖 sun'iy intellekt, 📱 ilova yasash, 🌐 veb-saytlar yaratish uchun ishlatiladi.</p>
+            </div>
+            
+            <h3>Python nima uchun mashhur? 🌟</h3>
+            <ul>
+                <li>📖 O'qish va yozish oson</li>
+                <li>🚀 Tez o'rganiladi</li>
+                <li>💪 Kuchli imkoniyatlarga ega</li>
+                <li>🌍 Butun dunyoda ishlatiladi</li>
+            </ul>
+
+            <div class="code-block">
+print("Salom, Python dunyosi! 👋")
+            </div>
+            <div class="output">Salom, Python dunyosi! 👋</div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Izohlar nima? -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">25 daqiqa</div>
+            <h2>💬 Izohlar (Comments) nima?</h2>
+            
+            <div class="concept-box">
+                <p><strong>Izoh</strong> - bu kodni tushuntirish uchun yoziladigan matn. Kompyuter uni o'qimaydi! 🤖❌</p>
+            </div>
+
+            <h3>Nima uchun kerak? 🤔</h3>
+            <ul>
+                <li>📝 Kodni tushunish uchun</li>
+                <li>👥 Boshqalar uchun izoh qoldirish</li>
+                <li>🧠 Keyinroq o'zingiz uchun eslatma</li>
+            </ul>
+
+            <div class="tip-box">
+                <strong>💡 Maslahat:</strong> Har doim kodni izohlab yozing - bu yaxshi dasturchi odati!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Izoh turlari -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">25 daqiqa</div>
+            <h2># Izoh turlari</h2>
+            
+            <h3>1️⃣ Bir qatorli izoh (#)</h3>
+            <div class="code-block">
+# Bu yerda yoshimni saqlayapman
+yosh = 16
+
+print("Mening yoshim:", yosh)  # Bu yerda yoshni chiqarib beraman
+            </div>
+
+            <h3>2️⃣ Ko'p qatorli izoh (''' yoki """)</h3>
+            <div class="code-block">
+'''
+Bu dastur talabaning ma'lumotlarini
+saqlaydi va ekranga chiqaradi.
+Muallif: Ahmad
+Sana: 2025 yil
+'''
+
+"""
+Bu ham ko'p qatorli izoh.
+Ikkalasi ham bir xil ishlaydi!
+"""
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Izohlar mashqi -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">5 daqiqa</div>
+            <h2>🏋️ Izohlar mashqi</h2>
+            
+            <div class="task-box">
+                <h4>🎯 Topshiriq (5 daqiqa):</h4>
+                <p>Quyidagi kodga izohlar qo'shing:</p>
+                
+                <div class="code-block">
+ism = "Ali"
+yosh = 17
+sinf = 11
+
+print("Talaba:", ism)
+print("Yoshi:", yosh)
+print("Sinfi:", sinf)
+                </div>
+                
+                <p><strong>Maqsad:</strong> Har bir qator nima qilayotganini izohlab yozing!</p>
+            </div>
+
+            <div class="tip-box">
+                <strong>🔥 Qo'shimcha:</strong> O'z ismingiz bilan mashq qiling!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: O'zgaruvchilar -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">25 daqiqa</div>
+            <h2>📦 O'zgaruvchilar (Variables)</h2>
+            
+            <div class="concept-box">
+                <h3>O'zgaruvchi - bu ma'lumot saqlash uchun joy! 📦</h3>
+                <p>Xuddi telefondagi kontaktlar kabi - har birida nom va raqam bor.</p>
+            </div>
+
+            <h3>Qanday yaratiladi? ⚡</h3>
+            <div class="code-block">
+# O'zgaruvchi_nomi = qiymat
+ism = "Jasur"
+yosh = 15
+bo'yi = 165.5
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 Eslab qoling:</strong> = belgisi "tenglik" emas, "qiymat berish" demak!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: O'zgaruvchi nomlari -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">25 daqiqa</div>
+            <h2>📝 O'zgaruvchi nomlarining qoidalari</h2>
+            
+            <h3>✅ To'g'ri nomlar:</h3>
+            <div class="code-block">
+ism = "Ahmad"
+yosh1 = 16
+sinf_raqami = 10
+_maxfiy_son = 123
+            </div>
+
+            <h3>❌ Noto'g'ri nomlar:</h3>
+            <div class="code-block">
+# 1ism = "Ahmad"        # Raqam bilan boshlanmaydi!
+# sinf-raqami = 10      # Tire ishlatilmaydi!
+# mening yosh = 16      # Bo'sh joy bo'lmaydi!
+            </div>
+
+            <div class="tip-box">
+                <strong>🎯 Maslahat:</strong> Nom o'zbekcha yoki inglizcha bo'lishi mumkin, lekin tushunarli bo'lsin!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: print() funksiyasi -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">25 daqiqa</div>
+            <h2>🖨️ print() bilan chiqarish</h2>
+            
+            <div class="concept-box">
+                <p><strong>print()</strong> - ekranga yozish uchun ishlatiladi 📺</p>
+            </div>
+
+            <div class="code-block">
+# O'zgaruvchilarni yaratamiz
+ism = "Dilnoza"
+yosh = 14
+maktab = "25-maktab"
+
+# Ularni chiqaramiz
+print("Mening ismim:", ism)
+print("Yoshim:", yosh)
+print("Maktabim:", maktab)
+            </div>
+
+            <div class="output">
+Mening ismim: Dilnoza
+Yoshim: 14
+Maktabim: 25-maktab
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: O'zgaruvchilar mashqi -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">5 daqiqa</div>
+            <h2>🏋️ O'zgaruvchilar mashqi</h2>
+            
+            <div class="task-box">
+                <h4>🎯 Topshiriq (5 daqiqa):</h4>
+                <p>O'zingiz haqingizda ma'lumot saqlang va chiqaring:</p>
+                
+                <div class="code-block">
+# Bu yerga o'z ma'lumotlaringizni yozing
+ism = "?"
+yosh = ?
+sevimli_rang = "?"
+sevimli_fan = "?"
+
+# Ularni chiqaring
+print("Ismim:", ism)
+# Qolganlarini ham yozing...
+                </div>
+                
+                <p><strong>Bonus:</strong> Sevimli o'yin, sport, ovqat haqida ham qo'shing! 🎮🏃‍♂️🍕</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Sonlar -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">10 daqiqa</div>
+            <h2>🔢 Sonlar (Numbers)</h2>
+            
+            <div class="concept-box">
+                <h3>Python'da 2 xil son bor:</h3>
+                <p><span class="highlight">int</span> - butun sonlar (1, 5, -10)</p>
+                <p><span class="highlight">float</span> - kasr sonlar (3.14, -2.5)</p>
+            </div>
+
+            <div class="code-block">
+# Butun sonlar (int)
+yoshim = 16
+sinf = 10
+bahom = 5
+
+# Kasr sonlar (float)
+boyim = 165.5
+vaznim = 50.2
+temperatura = 36.6
+            </div>
+
+            <div class="tip-box">
+                <strong>🔍 Qiziq:</strong> Python avtomatik ravishda son turini aniqlaydi!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Matematik amallar -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">10 daqiqa</div>
+            <h2>➕➖✖️➗ Matematik amallar</h2>
+            
+            <div class="code-block">
+a = 10
+b = 3
+
+print("Qo'shish:", a + b)      # 13
+print("Ayirish:", a - b)       # 7
+print("Ko'paytirish:", a * b)  # 30
+print("Bo'lish:", a / b)       # 3.333...
+print("Butun bo'lish:", a // b) # 3
+print("Qoldiq:", a % b)        # 1
+            </div>
+
+            <div class="concept-box">
+                <h3>Amallar:</h3>
+                <ul>
+                    <li><strong>/</strong> - oddiy bo'lish (har doim float qaytaradi)</li>
+                    <li><strong>//</strong> - butun bo'lish</li>
+                    <li><strong>%</strong> - qoldiqni topish</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Sonlar mashqi -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">3 daqiqa</div>
+            <h2>🏋️ Sonlar mashqi</h2>
+            
+            <div class="task-box">
+                <h4>🎯 Tez mashq (3 daqiqa):</h4>
+                <p>Kalkulyator yasang:</p>
+                
+                <div class="code-block">
+# Ikki son yarating
+son1 = 25
+son2 = 7
+
+# Barcha amallarni bajaring va chiqaring
+print("Qo'shish:", ?)
+print("Ayirish:", ?)
+print("Ko'paytirish:", ?)
+print("Bo'lish:", ?)
+print("Qoldiq:", ?)
+                </div>
+                
+                <p><strong>Bonus:</strong> O'z yoshingiz va do'stingiz yoshini qo'shing! 👫</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 13: Matnlar (Strings) -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">30 daqiqa</div>
+            <h2>📝 Matnlar (Strings)</h2>
+            
+            <div class="concept-box">
+                <h3>String - bu matn saqlash uchun!</h3>
+                <p>Har qanday harf, raqam, belgi bo'lishi mumkin 🔤</p>
+            </div>
+
+            <div class="code-block">
+# Turli xil stringlar
+ism = "Aziza"
+manzil = 'Toshkent, Chilonzor'
+gap = "Men Python o'rganyapman! 🐍"
+raqam_string = "123"  # Bu matn, son emas!
+
+print(ism)
+print(manzil)
+print(gap)
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 Eslab qoling:</strong> ' yoki " ishlatishingiz mumkin, ikkalasi ham bir xil!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 14: String methodlari -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">30 daqiqa</div>
+            <h2>🛠️ String methodlari</h2>
+            
+            <div class="code-block">
+ism = "jasur"
+gap = "PYTHON AJOYIB!"
+
+# Matnni o'zgartirish
+print(ism.upper())        # JASUR
+print(gap.lower())        # python ajoyib!
+print(ism.capitalize())   # Jasur
+
+# Matn uzunligi
+print(len(ism))          # 5
+print(len(gap))          # 13
+            </div>
+
+            <div class="concept-box">
+                <h3>Foydali methodlar:</h3>
+                <ul>
+                    <li><strong>.upper()</strong> - barchasi katta harf</li>
+                    <li><strong>.lower()</strong> - barchasi kichik harf</li>
+                    <li><strong>.capitalize()</strong> - birinchi harf katta</li>
+                    <li><strong>len()</strong> - uzunligini beradi</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 15: String indekslash -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">30 daqiqa</div>
+            <h2>🔍 String indekslash</h2>
+            
+            <div class="concept-box">
+                <p>Stringdagi har bir harfning o'z raqami (indeksi) bor! 📍</p>
+            </div>
+
+            <div class="code-block">
+ism = "Ahmad"
+#     01234  (indekslar)
+
+print(ism[0])    # A
+print(ism[1])    # h
+print(ism[2])    # m
+print(ism[-1])   # d (oxirgi harf)
+print(ism[-2])   # a (oxiridan ikkinchi)
+
+# Bo'lak olish
+print(ism[0:3])  # Ahm
+print(ism[1:4])  # hma
+            </div>
+
+            <div class="tip-box">
+                <strong>🎯 Eslab qoling:</strong> Indeks 0 dan boshlanadi, 1 dan emas!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 16: Matnlar mashqi -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">7 daqiqa</div>
+            <h2>🏋️ Matnlar mashqi</h2>
+            
+            <div class="task-box">
+                <h4>🎯 Amaliy mashq (7 daqiqa):</h4>
+                <p>String bilan o'ynang:</p>
+                
+                <div class="code-block">
+# O'z ismingizni yozing
+mening_ismim = "?"
+
+# Quyidagilarni chiqaring:
+print("Mening ismim:", ?)
+print("Katta harflar bilan:", ?)
+print("Birinchi harfi:", ?)
+print("Oxirgi harfi:", ?)
+print("Uzunligi:", ?)
+                </div>
+                
+                <p><strong>Ijodiy qism:</strong> Sevimli she'r qatori yoki maqol bilan ham sinab ko'ring! 📚</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 17: Boolean -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">15 daqiqa</div>
+            <h2>✅❌ Boolean (Mantiqiy qiymatlar)</h2>
+            
+            <div class="concept-box">
+                <h3>Boolean - faqat 2 ta qiymat:</h3>
+                <p><span class="highlight">True</span> - rost, to'g'ri ✅</p>
+                <p><span class="highlight">False</span> - yolg'on, noto'g'ri ❌</p>
+            </div>
+
+            <div class="code-block">
+# Boolean qiymatlar
+yaxshi_baho = True
+kech_qoldi = False
+uy_vazifa_tayyor = True
+
+print("Yaxshi bahom bor:", yaxshi_baho)
+print("Kech qoldim:", kech_qoldi)
+print("Uy vazifa tayyor:", uy_vazifa_tayyor)
+            </div>
+
+            <div class="tip-box">
+                <strong>🔤 Diqqat:</strong> True va False katta harf bilan yoziladi!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 18: Solishtirish -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">15 daqiqa</div>
+            <h2>⚖️ Solishtirish amalları</h2>
+            
+            <div class="code-block">
+yoshim = 16
+do'st_yoshi = 15
+
+print(yoshim > do'st_yoshi)     # True
+print(yoshim < do'st_yoshi)     # False
+print(yoshim == do'st_yoshi)    # False
+print(yoshim != do'st_yoshi)    # True
+
+# Matn bilan ham ishlaydi
+ism1 = "Ali"
+ism2 = "Vali"
+print(ism1 == ism2)             # False
+            </div>
+
+            <div class="concept-box">
+                <h3>Solishtirish belgilari:</h3>
+                <ul>
+                    <li><strong>></strong> - katta</li>
+                    <li><strong><</strong> - kichik</li>
+                    <li><strong>==</strong> - teng</li>
+                    <li><strong>!=</strong> - teng emas</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 19: if/else misoli -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">15 daqiqa</div>
+            <h2>🤔 if/else bilan qaror qabul qilish</h2>
+            
+            <div class="code-block">
+yosh = 16
+
+if yosh >= 16:
+    print("Siz haydovchilik guvohnoma olishingiz mumkin! 🚗")
+else:
+    print("Haydovchilik uchun hali yoshsiz 😊")
+
+# Baho tekshirish
+baho = 5
+
+if baho == 5:
+    print("Ajoyib! A'lo baho! 🌟")
+else:
+    print("Yaxshi, lekin yaxshiroq bo'lishi mumkin! 💪")
+            </div>
+
+            <div class="tip-box">
+                <strong>🎯 Real hayot:</strong> Boolean qiymatlar ko'p holatlarda qaror qabul qilish uchun ishlatiladi!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 20: Boolean mashqi -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">5 daqiqa</div>
+            <h2>🏋️ Boolean mashqi</h2>
+            
+            <div class="task-box">
+                <h4>🎯 Mini mashq (5 daqiqa):</h4>
+                <p>O'z ma'lumotlaringiz bilan Boolean yarating:</p>
+                
+                <div class="code-block">
+mening_yoshim = ?
+sinfdosh_yoshi = ?
+
+# Solishtiring
+men_kattaman = mening_yoshim > sinfdosh_yoshi
+print("Men kattaman:", men_kattaman)
+
+# Sevimli fani bilan
+sevimli_fan = "Matematika"
+print("Matematika sevimli fanim:", sevimli_fan == "Matematika")
+                </div>
+                
+                <p><strong>Ijodiy:</strong> Sport, o'yin, ovqat haqida ham Boolean yarating! ⚽🎮🍕</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 21: Casting nima? -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">15 daqiqa</div>
+            <h2>🔄 Casting (Tur almashtirish)</h2>
+            
+            <div class="concept-box">
+                <h3>Casting - bu ma'lumot turini o'zgartirish!</h3>
+                <p>Masalan: matnni songa, sonni matnga aylantirish 🔄</p>
+            </div>
+
+            <div class="code-block">
+# Matnni songa
+yosh_matn = "16"
+yosh_son = int(yosh_matn)
+print("Matn:", yosh_matn, "Turi:", type(yosh_matn))
+print("Son:", yosh_son, "Turi:", type(yosh_son))
+
+# Sonni matnga
+baho = 5
+baho_matn = str(baho)
+print("Son:", baho, "Turi:", type(baho))
+print("Matn:", baho_matn, "Turi:", type(baho_matn))
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 Nima uchun kerak:</strong> Foydalanuvchi kiritgan ma'lumotlar bilan ishlash uchun!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 22: Casting turlari -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">15 daqiqa</div>
+            <h2>🛠️ Casting funksiyalari</h2>
+            
+            <div class="code-block">
+# int() - butun songa
+print(int("123"))      # 123
+print(int(45.7))       # 45
+print(int(True))       # 1
+
+# float() - kasr songa
+print(float("3.14"))   # 3.14
+print(float(42))       # 42.0
+print(float(False))    # 0.0
+
+# str() - matnga
+print(str(123))        # "123"
+print(str(3.14))       # "3.14"
+print(str(True))       # "True"
+            </div>
+
+            <div class="concept-box">
+                <h3>Asosiy funksiyalar:</h3>
+                <ul>
+                    <li><strong>int()</strong> - butun songa</li>
+                    <li><strong>float()</strong> - kasr songa</li>
+                    <li><strong>str()</strong> - matnga</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 23: Casting xatoliklari -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">15 daqiqa</div>
+            <h2>⚠️ Casting xatoliklari</h2>
+            
+            <div class="concept-box">
+                <p><strong>Diqqat!</strong> Ba'zi castinglar xatolikka olib kelishi mumkin! 🚨</p>
+            </div>
+
+            <div class="code-block">
+# Bu ishlamaydi! ❌
+# print(int("salom"))     # Xatolik!
+# print(int("12.3"))      # Xatolik!
+
+# Bu ishlaydi! ✅
+print(int("123"))         # 123
+print(float("12.3"))      # 12.3
+print(str(456))          # "456"
+
+# Float orqali int qilish
+print(int(float("12.3"))) # 12
+            </div>
+
+            <div class="tip-box">
+                <strong>🎯 Maslahat:</strong> Har doim ma'lumot to'g'ri formatda ekanligini tekshiring!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 24: Casting mashqi -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">5 daqiqa</div>
+            <h2>🏋️ Casting mashqi</h2>
+            
+            <div class="task-box">
+                <h4>🎯 Mashq (5 daqiqa):</h4>
+                <p>Castingni mashq qiling:</p>
+                
+                <div class="code-block">
+# Ma'lumotlar
+yosh_matn = "17"
+boy_matn = "165.5"
+baho_son = 4
+
+# Castinglar bajaring
+yosh = int(?)
+boy = float(?)
+baho = str(?)
+
+# Natijalarni chiqaring
+print("Yosh:", yosh, "Turi:", type(yosh))
+print("Bo'y:", boy, "Turi:", type(boy))
+print("Baho:", baho, "Turi:", type(baho))
+                </div>
+                
+                <p><strong>Bonus:</strong> O'z ma'lumotlaringiz bilan sinab ko'ring! 🎯</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 25: Uyga vazifa -->
+    <div class="slide-container">
+        <div class="slide">
+            <div class="time-badge">Uyga vazifa</div>
+            <h2>🏠 Uyga vazifa</h2>
+            
+            <div class="task-box">
+                <h4>🎯 O'zingizni tanishtiruvchi dastur yarating!</h4>
+                <p>Quyidagi talablarni bajaring:</p>
+                
+                <ul>
+                    <li>📝 O'zgaruvchilar yarating (ism, yosh, sinf, maktab)</li>
+                    <li>🔢 Yoshingizni string dan int ga casting qiling</li>
+                    <li>📏 Bo'yingizni float sifatida saqlang</li>
+                    <li>✅ Sevimli fanlar haqida Boolean yarating</li>
+                    <li>🎨 String methodlarini ishlating (.upper(), .lower())</li>
+                    <li>💬 Barcha kodga izohlar qo'shing</li>
+                </ul>
+                
+                <div class="code-block">
+# Misol struktura:
+'''
+Bu dastur men haqimda ma'lumot beradi
+Muallif: [Sizning ismingiz]
+'''
+
+# O'zgaruvchilar
+ism = ?
+yosh_matn = "?"
+yosh = int(yosh_matn)
+# ... davom eting
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 26: Xulosa -->
+    <div class="slide-container">
+        <div class="slide">
+            <h2>🎉 Birinchi dars yakunlandi!</h2>
+            
+            <div class="concept-box">
+                <h3>Bugun o'rganganimiz:</h3>
+                <ul>
+                    <li>💬 <strong>Izohlar:</strong> # va ''' ''' ishlatish</li>
+                    <li>📦 <strong>O'zgaruvchilar:</strong> ma'lumot saqlash</li>
+                    <li>🔢 <strong>Sonlar:</strong> int va float turlari</li>
+                    <li>📝 <strong>Matnlar:</strong> string methodlari va indekslash</li>
+                    <li>✅ <strong>Boolean:</strong> True/False va solishtirish</li>
+                    <li>🔄 <strong>Casting:</strong> tur almashtirish</li>
+                </ul>
+            </div>
+
+            <div class="tip-box">
+                <strong>🚀 Keyingi dars:</strong> Ro'yxatlar, lug'atlar va sikllar!
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <h3>🐍 Python bilan dasturlash juda qiziq! 🎯</h3>
+                <p style="font-size: 1.5em;">Tabriklaymiz! 🎊</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Oldingi</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Keyingi ➡️</button>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide-container');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+        
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            
+            document.getElementById('currentSlide').textContent = index + 1;
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+        
+        function changeSlide(direction) {
+            const newIndex = currentSlideIndex + direction;
+            if (newIndex >= 0 && newIndex < totalSlides) {
+                currentSlideIndex = newIndex;
+                showSlide(currentSlideIndex);
+            }
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+        
+        // Initialize
+        showSlide(0);
+        
+        // Auto-scroll for code blocks
+        document.querySelectorAll('.code-block').forEach(block => {
+            block.style.whiteSpace = 'pre-wrap';
+        });
+    </script>
+</body>
+</html>
