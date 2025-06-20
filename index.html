@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Python Darsliklar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #fff);
+      margin: 0;
+      padding: 40px;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      color: #00695c;
+      margin-bottom: 40px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+    .section {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .section:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    }
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #004d40;
+    }
+    .lessons {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      padding-left: 15px;
+    }
+    .lessons.open {
+      max-height: 500px;
+    }
+    .lessons a {
+      display: block;
+      padding: 8px 0;
+      color: #00796b;
+      text-decoration: none;
+      font-size: 16px;
+    }
+    .lessons a:hover {
+      text-decoration: underline;
+    }
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>📘 Python Darsliklar</h1>
+
+    <div class="section">
+      <div class="section-title">1-bo‘lim: Python Sintaksis Asoslari</div>
+      <div class="lessons">
+        <a href="/1-bolim/1-dars/">1-dars: Izohlar, o‘zgaruvchilar, string, number</a>
+      </div>
+    </div>
+
+    <!-- <div class="section">
+      <div class="section-title">2-bo‘lim: Amallar va Shartlar</div>
+      <div class="lessons">
+        <a href="/2-bolim/1-dars/">1-dars: Arifmetik amallar</a>
+        <a href="/2-bolim/2-dars/">2-dars: If, else, elif</a>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">3-bo‘lim: Ro‘yxatlar va Takrorlash</div>
+      <div class="lessons">
+        <a href="/3-bolim/1-dars/">1-dars: List (Ro‘yxat)</a>
+        <a href="/3-bolim/2-dars/">2-dars: For sikli</a>
+      </div>
+    </div> -->
+
+    <footer>
+      Author: Ziyodullo Aliyev
+      Web site: <a href="https://ziyodev.uz" target="_blank">Ziyodev.uz</a>
+    </footer>
+  </div>
+
+  <script>
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(section => {
+      const lessons = section.querySelector('.lessons');
+      section.addEventListener('click', () => {
+        lessons.classList.toggle('open');
+      });
+    });
+  </script>
+
+</body>
+</html>
