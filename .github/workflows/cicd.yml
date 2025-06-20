@@ -1,0 +1,21 @@
+name: Github action ci/cd
+
+on:
+  push:
+    branches:
+      - master
+      
+jobs:
+  my_job:
+    runs-on: ubuntu-latest
+    steps:
+    - name: connect my server
+      uses: appleboy/ssh-action@master 
+      with:
+        host: ${{ secrets.SERVER_HOST }} 
+        username: ${{ secrets.SERVER_USERNAME }} 
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        script: | 
+          echo "connect server" 
+          cd /home/ubuntu/python-darsliklar
+          git pull
