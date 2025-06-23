@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python 2-dars: Amallar - Arifmetik, Mantiqiy, Solishtirish</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide {
+            display: none;
+            width: 90%;
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: slideIn 0.5s ease-in-out;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide h1 {
+            color: #4a5568;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .slide h2 {
+            color: #2d3748;
+            font-size: 2em;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .slide h3 {
+            color: #4a5568;
+            font-size: 1.5em;
+            margin: 20px 0 15px 0;
+        }
+
+        .slide p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #4a5568;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .slide ul {
+            text-align: left;
+            font-size: 1.1em;
+            color: #4a5568;
+            margin: 15px 0;
+        }
+
+        .slide li {
+            margin: 10px 0;
+            padding-left: 10px;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            margin: 20px 0;
+            text-align: left;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .operators-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .operator-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .operator-symbol {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .operator-name {
+            font-size: 1.1em;
+            color: #2d3748;
+            font-weight: bold;
+        }
+
+        .operator-example {
+            font-size: 0.9em;
+            color: #4a5568;
+            margin-top: 5px;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            color: #4a5568;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #e17055;
+        }
+
+        .emoji {
+            font-size: 1.5em;
+            margin: 0 5px;
+        }
+
+        .time-box {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .exercise-box {
+            background: rgba(116, 75, 162, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">16</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>🐍 Python 2-dars</h1>
+            <h2>Amallar: Arifmetik, Mantiqiy, Solishtirish</h2>
+            <div class="highlight-box">
+                <p><span class="emoji">👋</span> Assalomu alaykum, yosh dasturchilar!</p>
+                <p><span class="emoji">⏰</span> Dars davomiyligi: 2 soat (120 daqiqa)</p>
+                <p><span class="emoji">🎯</span> Maqsad: Python'da barcha asosiy amallarni o'rganish</p>
+            </div>
+            <div class="time-box">
+                <strong>Bugungi darsda o'rganamiz:</strong>
+                <ul>
+                    <li>✅ Arifmetik amallar (+, -, *, /, %, **)</li>
+                    <li>🔄 Mantiqiy amallar (and, or, not)</li>
+                    <li>⚖️ Solishtirish amallari (==, !=, <, >)</li>
+                    <li>📝 String metodlari (len, replace, upper, lower)</li>
+                    <li>💻 Amaliy mashqlar va kodlash</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 2: Dars rejasi -->
+        <div class="slide">
+            <h2>📋 Dars rejasi</h2>
+            <div class="operators-grid">
+                <div class="operator-item">
+                    <div class="operator-symbol">⏰</div>
+                    <div class="operator-name">Vaqt</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">📚</div>
+                    <div class="operator-name">Mavzu</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">🎯</div>
+                    <div class="operator-name">Maqsad</div>
+                </div>
+                
+                <div class="operator-item">25 daq</div>
+                <div class="operator-item">Arifmetik amallar</div>
+                <div class="operator-item">+ - * / % **</div>
+                
+                <div class="operator-item">25 daq</div>
+                <div class="operator-item">Mantiqiy amallar</div>
+                <div class="operator-item">and or not</div>
+                
+                <div class="operator-item">10 daq</div>
+                <div class="operator-item">Solishtirish</div>
+                <div class="operator-item">== != < ></div>
+                
+                <div class="operator-item">20 daq</div>
+                <div class="operator-item">String metodlari</div>
+                <div class="operator-item">len() replace()</div>
+                
+                <div class="operator-item">30 daq</div>
+                <div class="operator-item">Amaliy mashqlar</div>
+                <div class="operator-item">💻 Kodlash</div>
+                
+                <div class="operator-item">15 daq</div>
+                <div class="operator-item">Savollar</div>
+                <div class="operator-item">❓ Q&A</div>
+                
+                <div class="operator-item">15 daq</div>
+                <div class="operator-item">Uy vazifasi</div>
+                <div class="operator-item">📝 Vazifa</div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Arifmetik amallar - Kirish -->
+        <div class="slide">
+            <h2>🔢 Arifmetik amallar</h2>
+            <p><span class="emoji">🤔</span> <strong>Arifmetik amallar nima?</strong></p>
+            <p>Matematikada o'rgangan oddiy amallar: qo'shish, ayirish, ko'paytirish, bo'lish va boshqalar.</p>
+            
+            <div class="highlight-box">
+                <p><span class="emoji">💡</span> Python'da bu amallar maxsus belgilar bilan amalga oshiriladi!</p>
+            </div>
+
+            <div class="operators-grid">
+                <div class="operator-item">
+                    <div class="operator-symbol">+</div>
+                    <div class="operator-name">Qo'shish</div>
+                    <div class="operator-example">5 + 3 = 8</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">-</div>
+                    <div class="operator-name">Ayirish</div>
+                    <div class="operator-example">5 - 3 = 2</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">*</div>
+                    <div class="operator-name">Ko'paytirish</div>
+                    <div class="operator-example">5 * 3 = 15</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Arifmetik amallar - Davomi -->
+        <div class="slide">
+            <h2>🔢 Arifmetik amallar (davomi)</h2>
+            
+            <div class="operators-grid">
+                <div class="operator-item">
+                    <div class="operator-symbol">/</div>
+                    <div class="operator-name">Bo'lish</div>
+                    <div class="operator-example">10 / 4 = 2.5</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">//</div>
+                    <div class="operator-name">Butun bo'lish</div>
+                    <div class="operator-example">10 // 4 = 2</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">%</div>
+                    <div class="operator-name">Qoldiq</div>
+                    <div class="operator-example">10 % 4 = 2</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">**</div>
+                    <div class="operator-name">Daraja</div>
+                    <div class="operator-example">5 ** 2 = 25</div>
+                </div>
+            </div>
+
+            <div class="code-block">
+a = 10
+b = 4
+
+print(a + b)   # 14
+print(a - b)   # 6  
+print(a * b)   # 40
+print(a / b)   # 2.5
+print(a // b)  # 2 (butun qism)
+print(a % b)   # 2 (qoldiq)
+print(a ** 2)  # 100 (10 ning kvadrati)
+            </div>
+        </div>
+
+        <!-- Slide 5: Arifmetik amallar - Amaliy misol -->
+        <div class="slide">
+            <h2>🛒 Amaliy misol: Do'konda chegirma</h2>
+            
+            <div class="highlight-box">
+                <p><span class="emoji">💰</span> <strong>Vaziyat:</strong> Do'konda 100 so'mlik mahsulotdan 20% chegirma qilindi. Yakuniy narx qancha?</p>
+            </div>
+
+            <div class="code-block">
+# Do'konda chegirma hisoblash
+narx = 100
+chegirma = 20
+
+yakuniy_narx = narx - (narx * chegirma / 100)
+print("Yakuniy narx:", yakuniy_narx)  # Yakuniy narx: 80.0
+            </div>
+
+            <div class="exercise-box">
+                <p><span class="emoji">🏃‍♂️</span> <strong>Tez mashq (5 daqiqa):</strong></p>
+                <p>50 va 7 sonlari bilan yuqoridagi barcha arifmetik amallarni bajarib, natijalarni ekranga chiqaring!</p>
+                <p><span class="emoji">❓</span> <strong>Savol:</strong> 15 ni 4 ga bo'lsak, qoldiq qancha bo'ladi?</p>
+            </div>
+        </div>
+
+        <!-- Slide 6: Mantiqiy amallar - Kirish -->
+        <div class="slide">
+            <h2>🧠 Mantiqiy amallar</h2>
+            
+            <p><span class="emoji">🤔</span> <strong>Mantiqiy amallar nima?</strong></p>
+            <p>Shartlarni birlashtirish yoki tekshirish uchun ishlatiladigan amallar.</p>
+
+            <div class="operators-grid">
+                <div class="operator-item">
+                    <div class="operator-symbol">and</div>
+                    <div class="operator-name">"va"</div>
+                    <div class="operator-example">Ikkala shart ham rost</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">or</div>
+                    <div class="operator-name">"yoki"</div>
+                    <div class="operator-example">Kamida bitta rost</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">not</div>
+                    <div class="operator-name">"emas"</div>
+                    <div class="operator-example">Shartni teskari qiladi</div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <p><span class="emoji">💡</span> <strong>Eslab qoling:</strong> Mantiqiy amallar natijasida faqat True yoki False qaytaradi!</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Mantiqiy amallar - Misollar -->
+        <div class="slide">
+            <h2>🧠 Mantiqiy amallar - Misollar</h2>
+
+            <div class="code-block">
+a = 5
+b = 10
+c = 3
+
+# and amali
+print(a < b and b > c)  # True (chunki 5 < 10 va 10 > 3)
+print(a > b and b > c)  # False (chunki 5 > 10 emas)
+
+# or amali  
+print(a < b or b < c)   # True (chunki 5 < 10, bu yetarli)
+print(a > b or b < c)   # False (ikkalasi ham noto'g'ri) 
+
+# not amali
+print(not a < b)        # False (chunki a < b rost, not uni teskari qiladi)
+            </div>
+
+            <div class="exercise-box">
+                <p><span class="emoji">💻</span> <strong>Mashq (5 daqiqa):</strong></p>
+                <p>O'z yoshingiz va talabaligingiz haqida o'zgaruvchilar yarating va chegirma berish haqida kod yozing!</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Mantiqiy amallar - If bilan ishlatish -->
+        <div class="slide">
+            <h2>🎓 Mantiqiy amallar va if</h2>
+            
+            <div class="highlight-box">
+                <p><span class="emoji">🎯</span> <strong>Vaziyat:</strong> Agar odamning yoshi 18 dan katta va u talaba bo'lsa, chegirma berilsin!</p>
+            </div>
+
+            <div class="code-block">
+yosh = 20
+talaba = True
+
+if yosh >= 18 and talaba:
+    print("Sizga 10% chegirma beriladi!")
+else:
+    print("Chegirma yo'q.")
+            </div>
+
+            <p><span class="emoji">🔍</span> Bu kodda yosh 18 dan katta <strong>VA</strong> talaba ekanligi tekshiriladi. Agar ikkala shart ham rost bo'lsa, chegirma beriladi.</p>
+
+            <div class="time-box">
+                <p><span class="emoji">⚡</span> <strong>Tezkor test:</strong> Agar yosh = 16 va talaba = True bo'lsa, natija qanday bo'ladi?</p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Solishtirish amallari -->
+        <div class="slide">
+            <h2>⚖️ Solishtirish amallari</h2>
+            
+            <p><span class="emoji">🤔</span> <strong>Solishtirish amallari nima?</strong></p>
+            <p>Ikki qiymatni solishtirish uchun ishlatiladi va natija sifatida True yoki False qaytaradi.</p>
+
+            <div class="operators-grid">
+                <div class="operator-item">
+                    <div class="operator-symbol">==</div>
+                    <div class="operator-name">Tenglik</div>
+                    <div class="operator-example">5 == 5 → True</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">!=</div>
+                    <div class="operator-name">Teng emas</div>
+                    <div class="operator-example">5 != 3 → True</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol"><</div>
+                    <div class="operator-name">Kichik</div>
+                    <div class="operator-example">3 < 5 → True</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">></div>
+                    <div class="operator-name">Katta</div>
+                    <div class="operator-example">5 > 3 → True</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol"><=</div>
+                    <div class="operator-name">Kichik/teng</div>
+                    <div class="operator-example">5 <= 5 → True</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">>=</div>
+                    <div class="operator-name">Katta/teng</div>
+                    <div class="operator-example">5 >= 3 → True</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Solishtirish amallari - Misollar -->
+        <div class="slide">
+            <h2>⚖️ Solishtirish amallari - Misollar</h2>
+
+            <div class="code-block">
+a = 7
+b = 4
+
+print(a == b)  # False (7 teng emas 4 ga)
+print(a != b)  # True (7 teng emas 4 ga)  
+print(a > b)   # True (7 katta 4 dan)
+print(a < b)   # False
+print(a >= b)  # True (7 katta yoki teng 4 ga)
+print(a <= b)  # False
+            </div>
+
+            <div class="highlight-box">
+                <p><span class="emoji">💡</span> <strong>Muhim:</strong> Solishtirish amallari ko'pincha mantiqiy amallar bilan birga ishlatiladi!</p>
+            </div>
+
+            <div class="exercise-box">
+                <p><span class="emoji">⚡</span> <strong>Tez mashq (3 daqiqa):</strong></p>
+                <p>12 va 8 sonlarini solishtirib, yuqoridagi barcha solishtirish amallarini ishlatib ko'ring!</p>
+            </div>
+        </div>
+
+        <!-- Slide 11: Amaliy mashqlar -->
+        <div class="slide">
+            <h2>💻 Amaliy mashqlar (30 daqiqa)</h2>
+            
+            <div class="exercise-box">
+                <h3><span class="emoji">1️⃣</span> Mashq 1: Arifmetik amallar (10 daqiqa)</h3>
+                <div class="code-block">
+son1 = 25
+son2 = 5
+
+print("Qo'shish:", son1 + son2)
+print("Ayirish:", son1 - son2)  
+print("Ko'paytirish:", son1 * son2)
+print("Bo'lish:", son1 / son2)
+print("Qoldiq:", son1 % son2)
+print("Daraja:", son1 ** 2)
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h3><span class="emoji">2️⃣</span> Mashq 2: Mantiqiy va solishtirish (10 daqiqa)</h3>
+                <div class="code-block">
+yosh = 19
+talaba = True
+
+if yosh >= 18 and talaba:
+    print("Chegirma bor")
+else:
+    print("Chegirma yo'q")
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: String metodlari - Kirish -->
+        <div class="slide">
+            <h2>📝 String metodlari</h2>
+            
+            <p><span class="emoji">🤔</span> <strong>String metodlari nima?</strong></p>
+            <p>Matn (string) bilan ishlash uchun maxsus funksiyalar. Python'da matnni o'zgartirish, uzunligini aniqlash va boshqa amallarni bajarish uchun ishlatiladi.</p>
+
+            <div class="highlight-box">
+                <p><span class="emoji">💡</span> <strong>Eslab qoling:</strong> String - bu qo'shtirnoq ichidagi matn: "Salom dunyo!"</p>
+            </div>
+
+            <div class="operators-grid">
+                <div class="operator-item">
+                    <div class="operator-symbol">len()</div>
+                    <div class="operator-name">Uzunlik</div>
+                    <div class="operator-example">Belgilar sonini qaytaradi</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">upper()</div>
+                    <div class="operator-name">Katta harf</div>
+                    <div class="operator-example">Barcha harflarni katta qiladi</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">lower()</div>
+                    <div class="operator-name">Kichik harf</div>
+                    <div class="operator-example">Barcha harflarni kichik qiladi</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: String metodlari - len() -->
+        <div class="slide">
+            <h2>📏 len() - Uzunlikni aniqlash</h2>
+            
+            <p><span class="emoji">📏</span> <strong>len() funksiyasi</strong> stringdagi belgilar sonini qaytaradi.</p>
+
+            <div class="code-block">
+# len() funksiyasi misollar
+matn1 = "Salom"
+matn2 = "Python dasturlash tili"
+matn3 = "123456789"
+
+print(len(matn1))  # 5
+print(len(matn2))  # 21  
+print(len(matn3))  # 9
+
+# Bo'sh string
+bo_sh = ""
+print(len(bo_sh))  # 0
+            </div>
+
+            <div class="highlight-box">
+                <p><span class="emoji">⚠️</span> <strong>Diqqat:</strong> Bo'shliqlar ham hisobga olinadi!</p>
+                <div class="code-block">
+matn = "Salom dunyo"
+print(len(matn))  # 11 (bo'shliq ham bor!)
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <p><span class="emoji">💻</span> <strong>Mashq:</strong> O'z ismingizning uzunligini aniqlang!</p>
+            </div>
+        </div>
+
+        <!-- Slide 14: String metodlari - upper() va lower() -->
+        <div class="slide">
+            <h2>🔤 upper() va lower() - Harf o'zgartirish</h2>
+            
+            <div class="operators-grid">
+                <div class="operator-item">
+                    <div class="operator-symbol">upper()</div>
+                    <div class="operator-name">KATTA HARF</div>
+                    <div class="operator-example">Barcha harflar katta</div>
+                </div>
+                <div class="operator-item">
+                    <div class="operator-symbol">lower()</div>
+                    <div class="operator-name">kichik harf</div>
+                    <div class="operator-example">Barcha harflar kichik</div>
+                </div>
+            </div>
+
+            <div class="code-block">
+# upper() va lower() misollar
+matn = "Python Dasturlash"
+
+print(matn.upper())  # PYTHON DASTURLASH
+print(matn.lower())  # python dasturlash
+
+# Asl matn o'zgarmaydi
+print(matn)          # Python Dasturlash
+
+# O'zgaruvchiga saqlash
+katta_matn = matn.upper()
+print(katta_matn)    # PYTHON DASTURLASH
+            </div>
+
+            <div class="highlight-box">
+                <p><span class="emoji">💡</span> <strong>Muhim:</strong> Bu metodlar asl stringni o'zgartirmaydi, yangi string qaytaradi!</p>
+            </div>
+        </div>
+
+        <!-- Slide 15: String metodlari - replace() -->
+        <div class="slide">
+            <h2>🔄 replace() - Matnni almashtirish</h2>
+            
+            <p><span class="emoji">🔄</span> <strong>replace() metodi</strong> stringdagi ma'lum so'z yoki belgini boshqasiga almashtiradi.</p>
+
+            <div class="code-block">
+# replace() metodi sintaksisi
+# string.replace(eski_matn, yangi_matn)
+
+matn = "Python juda qiyin"
+yangi_matn = matn.replace("qiyin", "oson")
+print(yangi_matn)  # Python juda oson
+
+# Bir necha marta almashtirish
+matn2 = "Men Python yoqtiraman, Python zo'r!"
+yangi_matn2 = matn2.replace("Python", "dasturlash")
+print(yangi_matn2)  # Men dasturlash yoqtiraman, dasturlash zo'r!
+
+# Bo'shliqlarni almashtirish
+matn3 = "Salom dunyo"
+yangi_matn3 = matn3.replace(" ", "_")
+print(yangi_matn3)  # Salom_dunyo
+            </div>
+
+            <div class="exercise-box">
+                <p><span class="emoji">🏃‍♂️</span> <strong>Tez mashq:</strong> "Men maktabda o'qiyman" jumlasida "maktab" so'zini "universitet" bilan almashtiring!</p>
+            </div>
+        </div>
+
+        <!-- Slide 16: String metodlari - Kombinatsiya -->
+        <div class="slide">
+            <h2>🎯 String metodlarini birlashtirish</h2>
+            
+            <p><span class="emoji">🔗</span> <strong>Bir nechta metodlarni ketma-ket ishlatish mumkin!</strong></p>
+
+            <div class="code-block">
+# Metodlarni birlashtirish
+matn = "  Python Dasturlash Tili  "
+
+# Bir qancha metodlarni birga ishlatish
+natija = matn.strip().upper().replace("DASTURLASH", "PROGRAMMING")
+print(natija)  # PYTHON PROGRAMMING TILI
+
+# Step by step qilib ko'raylik
+print("1. Asl matn:", matn)
+print("2. strip():", matn.strip())
+print("3. upper():", matn.strip().upper())  
+print("4. replace():", matn.strip().upper().replace("DASTURLASH", "PROGRAMMING"))
+            </div>
+
+            <div class="highlight-box">
+                <p><span class="emoji">💡</span> <strong>Pro tip:</strong> Metodlarni . (nuqta) bilan birlashtirish "method chaining" deyiladi!</p>
+            </div>
+
+            <div class="exercise-box">
+                <p><span class="emoji">💻</span> <strong>Amaliy mashq:</strong></p>
+                <ul>
+                    <li>1. "salom dunyo" matnini katta harfga o'tkazing</li>
+                    <li>2. "dunyo" so'zini "Python" bilan almashtiring</li>
+                    <li>3. Natijaning uzunligini aniqlang</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 17: Amaliy mashqlar - yangilangan -->
+        <div class="slide">
+            <h2>💻 Amaliy mashqlar (30 daqiqa)</h2>
+            
+            <div class="exercise-box">
+                <h3><span class="emoji">1️⃣</span> Mashq 1: Arifmetik amallar (8 daqiqa)</h3>
+                <div class="code-block">
+son1 = 25
+son2 = 5
+
+print("Qo'shish:", son1 + son2)
+print("Ayirish:", son1 - son2)  
+print("Ko'paytirish:", son1 * son2)
+print("Bo'lish:", son1 / son2)
+print("Qoldiq:", son1 % son2)
+print("Daraja:", son1 ** 2)
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h3><span class="emoji">2️⃣</span> Mashq 2: Mantiqiy amallar (8 daqiqa)</h3>
+                <div class="code-block">
+yosh = 19
+talaba = True
+
+if yosh >= 18 and talaba:
+    print("Chegirma bor")
+else:
+    print("Chegirma yo'q")
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h3><span class="emoji">3️⃣</span> Mashq 3: String metodlari (8 daqiqa)</h3>
+                <div class="code-block">
+matn = "Python dasturlash"
+
+print("Uzunlik:", len(matn))
+print("Katta harf:", matn.upper())
+print("Kichik harf:", matn.lower())
+print("Almashtirish:", matn.replace("dasturlash", "programming"))
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h3><span class="emoji">4️⃣</span> Mashq 4: Kombinatsiya (6 daqiqa)</h3>
+                <p>Barcha o'rgangan metodlarni birlashtiring!</p>
+            </div>
+        </div>
+
+        <!-- Slide 18: Uy vazifasi va xulosa - yangilangan -->
+        <div class="slide">
+            <h2>🏠 Uy vazifasi va xulosa</h2>
+            
+            <div class="highlight-box">
+                <p><span class="emoji">🎉</span> <strong>Ajoyib, yosh dasturchilar!</strong> Bugun biz Python'da amallar va string metodlarini o'rgandik!</p>
+            </div>
+
+            <div class="exercise-box">
+                <h3><span class="emoji">📝</span> Uy vazifasi:</h3>
+                <ul>
+                    <li><strong>1-vazifa:</strong> 2 ta son kiritib, barcha arifmetik amallarni bajaring</li>
+                    <li><strong>2-vazifa:</strong> Yosh va talabalik holatini tekshirib, chegirma dasturi yozing</li>
+                    <li><strong>3-vazifa:</strong> O'z ismingiz bilan string metodlarini sinab ko'ring (len, upper, lower, replace)</li>
+                    <li><strong>4-vazifa:</strong> "Men Python o'rganaman" jumlasini katta harfga o'tkazing va "Python" ni boshqa til nomi bilan almashtiring</li>
+                </ul>
+            </div>
+
+            <div class="time-box">
+                <p><span class="emoji">📚</span> <strong>Keyingi dars:</strong> Python'da ro'yxatlar (Lists) va ular bilan ishlash</p>
+                <p><span class="emoji">❓</span> <strong>Savollar:</strong> Tushunmovchilik bo'lsa, yozib qoldiring!</p>
+            </div>
+
+            <div class="highlight-box">
+                <p><span class="emoji">🎯</span> <strong>Bugun o'rgandik:</strong></p>
+                <ul>
+                    <li>✅ Arifmetik amallar: +, -, *, /, //, %, **</li>
+                    <li>🧠 Mantiqiy amallar: and, or, not</li>
+                    <li>⚖️ Solishtirish: ==, !=, <, >, <=, >=</li>
+                    <li>📝 String metodlari: len(), upper(), lower(), replace()</li>
+                </ul>
+                <p><span class="emoji">💪</span> <strong>Siz zo'rsiz!</strong> Dasturlashni o'rganishda davom eting!</p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" onclick="changeSlide(-1)" id="prevBtn">⬅️ Oldingi</button>
+            <button class="nav-btn" onclick="changeSlide(1)" id="nextBtn">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = index + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            if (currentSlideIndex < 0) currentSlideIndex = 0;
+            if (currentSlideIndex >= totalSlides) currentSlideIndex = totalSlides - 1;
+            showSlide(currentSlideIndex);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
