@@ -1,16 +1,171 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" dir="ltr">
 <head>
-  <meta charset="UTF-8">
-  <title>Python Darsliklar</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="home-style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python Darsliklar | Interaktiv O'quv Platformasi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4a6cf7;
+      --secondary-color: #6c63ff;
+      --accent-color: #ff6b6b;
+      --dark-color: #2d3748;
+      --light-color: #f8fafc;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      min-height: 100vh;
+      padding: 20px;
+      color: var(--dark-color);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      position: relative;
+      padding-bottom: 20px;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      border-radius: 2px;
+    }
+
+    h1 {
+      color: var(--dark-color);
+      font-weight: 700;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+
+    .subtitle {
+      color: #64748b;
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+
+    .section {
+      margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .section-title {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 15px 20px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-title::after {
+      content: "+";
+      font-weight: bold;
+      transition: transform 0.3s;
+    }
+
+    .section.open .section-title::after {
+      content: "−";
+      transform: rotate(180deg);
+    }
+
+    .lessons {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .section.open .lessons {
+      max-height: 1000px;
+      padding: 10px 20px;
+    }
+
+    .lessons a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      padding: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      transition: background 0.3s;
+    }
+
+    .lessons a:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.9rem;
+      color: #eee;
+    }
+
+    footer a {
+      color: #fff;
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
 
   <div class="container">
     <h1>📘 Python Darsliklar</h1>
 
+    <!-- 1-BO‘LIM -->
     <div class="section">
       <div class="section-title">1-bo‘lim: Python Sintaksis Asoslari</div>
       <div class="lessons">
@@ -18,47 +173,50 @@
         <a href="/1-bolim/1-dars/">1-dars: Izohlar, o‘zgaruvchilar, string, number</a>
         <a href="/1-bolim/2-dars/">2-dars: String metodlari, amallar - Arifmetik, Mantiqiy, Solishtirish</a>
         <a href="/1-bolim/3-dars/">3-dars: Slicing, concatenation, upper(), lower(), replace()</a>
-        <!-- Python String Advanced: split(), join(), f-stringlar, startswith(), endswith() -->
-        <a href="/1-bolim/4-dars/">4-dars: split(), join(), f-stringlar, startswith(), endswith() </a>
+        <a href="/1-bolim/4-dars/">4-dars: split(), join(), f-stringlar, startswith(), endswith()</a>
         <a href="/1-bolim/5-dars/">5-dars: List (Ro‘yxat) - Asosiy tushunchalar</a>
         <a href="/1-bolim/6-dars/">6-dars: List (Ro‘yxat) - Advanced Nested lists, comprehension, sort(), reverse()</a>
         <a href="/1-bolim/7-dars/">7-dars: Tuple - Asosiy tushunchalar</a>
         <a href="/1-bolim/8-dars/">8-dars: Set: Unique elements, union, intersection, difference operatsiyalari</a>
+        <a href="/1-bolim/quiz/">📑 1-bo‘lim uchun testlarni ishlash</a>
       </div>
     </div>
 
-    <!-- <div class="section">
+    <!-- 2-BO‘LIM -->
+    <div class="section">
       <div class="section-title">2-bo‘lim: Amallar va Shartlar</div>
       <div class="lessons">
         <a href="/2-bolim/1-dars/">1-dars: Arifmetik amallar</a>
         <a href="/2-bolim/2-dars/">2-dars: If, else, elif</a>
+        <a href="/2-bolim/quiz/">📑 2-bo‘lim uchun testlarni ishlash</a>
       </div>
     </div>
 
+    <!-- 3-BO‘LIM -->
     <div class="section">
       <div class="section-title">3-bo‘lim: Ro‘yxatlar va Takrorlash</div>
       <div class="lessons">
         <a href="/3-bolim/1-dars/">1-dars: List (Ro‘yxat)</a>
         <a href="/3-bolim/2-dars/">2-dars: For sikli</a>
+        <a href="/3-bolim/quiz/">📑 3-bo‘lim uchun testlarni ishlash</a>
       </div>
-    </div> -->
+    </div>
 
     <footer>
-      Author: Ziyodullo Aliyev
-      <br>
-      Web site: <a href="https://ziyodev.uz" target="_blank">Ziyodev.uz</a>
+      Author: Ziyodullo Aliyev <br>
+      Web site: <a href="https://ziyodev.uz" target="_blank">ziyodev.uz</a>
     </footer>
   </div>
 
   <script>
     const sections = document.querySelectorAll('.section');
     sections.forEach(section => {
-      const lessons = section.querySelector('.lessons');
-      section.addEventListener('click', () => {
-        lessons.classList.toggle('open');
+      const title = section.querySelector('.section-title');
+      title.addEventListener('click', () => {
+        section.classList.toggle('open');
       });
     });
   </script>
-
+  
 </body>
 </html>
