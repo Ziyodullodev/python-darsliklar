@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Set'lar - Dars Prezentatsiyasi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            width: 90%;
+            max-width: 1200px;
+            height: 80%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .slide h1 {
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+
+        .slide h2 {
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            color: #ffd700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .slide h3 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #87ceeb;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.3em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            overflow-x: auto;
+            border-left: 4px solid #ffd700;
+        }
+
+        .highlight {
+            background: rgba(255, 215, 0, 0.3);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1.1em;
+        }
+
+        .example-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #87ceeb;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+
+        li:before {
+            content: "✓ ";
+            color: #ffd700;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .time-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: #ffd700;
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="presentation-container">
+        <!-- Slide 1: Kirish -->
+        <div class="slide active">
+            <h1>🐍 Python Set'lar</h1>
+            <div class="center-text">
+                <h2>Unique elements, union, intersection, difference</h2>
+                <div class="time-badge">⏱️ 2 soat (120 daqiqa)</div>
+                <div class="example-box">
+                    <h3>📋 Dars rejasi:</h3>
+                    <ul>
+                        <li>Set tushunchasi va yaratish (20 daqiqa)</li>
+                        <li>Unique elements va metodlar (20 daqiqa)</li>
+                        <li>Union, intersection, difference (25 daqiqa)</li>
+                        <li>Amaliy mashqlar (25 daqiqa)</li>
+                        <li>Xulosa va uy vazifasi (20 daqiqa)</li>
+                        <li>Savollar (10 daqiqa)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Set nima? -->
+        <div class="slide">
+            <h2>🧮 Set nima?</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Set'ning xususiyatlari:</h3>
+                    <ul>
+                        <li>Takrorlanmaydigan elementlar</li>
+                        <li>Tartibsiz to'plam</li>
+                        <li>O'zgaruvchan (mutable)</li>
+                        <li>Indeks yo'q</li>
+                        <li>Matematik operatsiyalar</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="code-block">
+# Oddiy misol
+sonlar = {1, 2, 2, 3, 4, 4}
+print(sonlar)  # {1, 2, 3, 4}
+
+# Uzunlik
+print(len(sonlar))  # 4
+                    </div>
+                </div>
+            </div>
+            <div class="example-box">
+                <p class="large-text">💡 Set vs List: Set'lar takrorlanmaydigan va tartibsiz, List'lar tartibli va takrorlanadigan!</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Set yaratish -->
+        <div class="slide">
+            <h2>🛠️ Set yaratish usullari</h2>
+            <div class="code-block">
+# 1. To'g'ridan-to'g'ri yaratish
+mevalar = {"olma", "banan", "anor"}
+print(mevalar)  # {'olma', 'banan', 'anor'}
+
+# 2. List'dan set yaratish
+raqamlar = [1, 2, 2, 3, 5, 5, 6]
+unique_raqamlar = set(raqamlar)
+print(unique_raqamlar)  # {1, 2, 3, 5, 6}
+
+# 3. String'dan set yaratish
+matn = "salom"
+harflar = set(matn)
+print(harflar)  # {'s', 'a', 'l', 'o', 'm'}
+
+# 4. Bo'sh set yaratish
+bo'sh_set = set()  # To'g'ri
+# {} - Bu dictionary!
+            </div>
+        </div>
+
+        <!-- Slide 4: Set metodlari -->
+        <div class="slide">
+            <h2>⚙️ Set metodlari</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Element qo'shish:</h3>
+                    <div class="code-block">
+mevalar = {"olma", "banan"}
+
+# Bitta element qo'shish
+mevalar.add("uzum")
+
+# Bir necha element qo'shish
+mevalar.update(["nok", "anor"])
+print(mevalar)
+                    </div>
+                </div>
+                <div>
+                    <h3>Element o'chirish:</h3>
+                    <div class="code-block">
+# remove() - xato beradi
+mevalar.remove("banan")
+
+# discard() - xato bermaydi
+mevalar.discard("olma")
+
+# pop() - tasodifiy o'chiradi
+element = mevalar.pop()
+
+# clear() - hamma o'chiradi
+mevalar.clear()
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Mashq 1 -->
+        <div class="slide">
+            <h2>🏃‍♂️ Mashq 1</h2>
+            <div class="time-badge">⏱️ 5 daqiqa</div>
+            <div class="example-box">
+                <h3>Topshiriq:</h3>
+                <p>[1, 3, 3, 5, 7, 7, 9] listini set'ga aylantiring va:</p>
+                <ul>
+                    <li>Natijani ekranga chiqaring</li>
+                    <li>Set'ga 10 ni qo'shing</li>
+                    <li>Set'dan 5 ni o'chiring</li>
+                </ul>
+            </div>
+            <div class="code-block">
+# Sizning yechimingiz:
+raqamlar = [1, 3, 3, 5, 7, 7, 9]
+set_raqamlar = set(raqamlar)
+print(set_raqamlar)  # {1, 3, 5, 7, 9}
+
+set_raqamlar.add(10)
+print(set_raqamlar)  # {1, 3, 5, 7, 9, 10}
+
+set_raqamlar.discard(5)
+print(set_raqamlar)  # {1, 3, 7, 9, 10}
+            </div>
+        </div>
+
+        <!-- Slide 6: Union -->
+        <div class="slide">
+            <h2>🔄 Union (Birlashtirish)</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Sintaksis:</h3>
+                    <div class="code-block">
+set1 = {1, 2, 3, 4}
+set2 = {3, 4, 5, 6}
+
+# | operatori
+result = set1 | set2
+
+# union() metodi
+result = set1.union(set2)
+
+print(result)  # {1, 2, 3, 4, 5, 6}
+                    </div>
+                </div>
+                <div>
+                    <div class="example-box">
+                        <h3>🧠 Eslab qoling:</h3>
+                        <p>Union ikki set'dagi <span class="highlight">barcha elementlar</span>ni birlashtiradi, takroriy elementlar faqat bir marta olinadi.</p>
+                    </div>
+                    <div class="center-text large-text">
+                        A ∪ B = {1, 2, 3, 4, 5, 6}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Intersection -->
+        <div class="slide">
+            <h2>🔗 Intersection (Kesishish)</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Sintaksis:</h3>
+                    <div class="code-block">
+set1 = {1, 2, 3, 4}
+set2 = {3, 4, 5, 6}
+
+# & operatori
+result = set1 & set2
+
+# intersection() metodi
+result = set1.intersection(set2)
+
+print(result)  # {3, 4}
+                    </div>
+                </div>
+                <div>
+                    <div class="example-box">
+                        <h3>🧠 Eslab qoling:</h3>
+                        <p>Intersection ikki set'da <span class="highlight">umumiy bo'lgan elementlar</span>ni qaytaradi.</p>
+                    </div>
+                    <div class="center-text large-text">
+                        A ∩ B = {3, 4}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Difference -->
+        <div class="slide">
+            <h2>➖ Difference (Farq)</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Sintaksis:</h3>
+                    <div class="code-block">
+set1 = {1, 2, 3, 4}
+set2 = {3, 4, 5, 6}
+
+# - operatori
+result = set1 - set2
+
+# difference() metodi
+result = set1.difference(set2)
+
+print(result)  # {1, 2}
+print(set2 - set1)  # {5, 6}
+                    </div>
+                </div>
+                <div>
+                    <div class="example-box">
+                        <h3>🧠 Eslab qoling:</h3>
+                        <p>Difference birinchi set'da bor, lekin <span class="highlight">ikkinchi set'da yo'q</span> elementlarni qaytaradi.</p>
+                    </div>
+                    <div class="center-text large-text">
+                        A - B = {1, 2}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Mashq 2 -->
+        <div class="slide">
+            <h2>🏃‍♂️ Mashq 2</h2>
+            <div class="time-badge">⏱️ 5 daqiqa</div>
+            <div class="example-box">
+                <h3>Topshiriq:</h3>
+                <p>Quyidagi set'lar bilan ishlang:</p>
+                <div class="code-block">
+set1 = {"olma", "banan", "anor"}
+set2 = {"banan", "uzum", "nok"}
+                </div>
+                <ul>
+                    <li>Ikkalasini birlashtiring</li>
+                    <li>Umumiy elementlarni toping</li>
+                    <li>set1'da bor, lekin set2'da yo'q elementlarni toping</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 10: Amaliy misollar -->
+        <div class="slide">
+            <h2>🌟 Amaliy misollar</h2>
+            <div class="code-block">
+# 1. Ikki guruh o'quvchilarning umumiy fanlarini topish
+guruh1 = {"matematika", "fizika", "kimyo", "biologiya"}
+guruh2 = {"matematika", "tarix", "adabiyot", "kimyo"}
+
+umumiy_fanlar = guruh1 & guruh2
+print(f"Umumiy fanlar: {umumiy_fanlar}")
+
+# 2. Do'konlardagi mahsulotlarni taqqoslash
+do'kon1 = {"non", "sut", "tuxum", "go'sht"}
+do'kon2 = {"non", "meva", "tuxum", "baliq"}
+
+# Barcha mahsulotlar
+barcha = do'kon1 | do'kon2
+print(f"Barcha mahsulotlar: {barcha}")
+
+# Faqat birinchi do'konda
+faqat_birinchi = do'kon1 - do'kon2
+print(f"Faqat 1-do'konda: {faqat_birinchi}")
+            </div>
+        </div>
+
+        <!-- Slide 11: Katta mashq -->
+        <div class="slide">
+            <h2>💪 Katta mashq</h2>
+            <div class="time-badge">⏱️ 15 daqiqa</div>
+            <div class="example-box">
+                <h3>Vazifa: Maktab fanlarini boshqarish tizimi</h3>
+                <p>Quyidagi ma'lumotlar berilgan:</p>
+                <div class="code-block">
+# 3 ta sinf va ularning fanlari
+sinf_10a = {"matematika", "fizika", "kimyo", "biologiya", "tarix"}
+sinf_10b = {"matematika", "fizika", "adabiyot", "geografiya", "tarix"}
+sinf_10v = {"kimyo", "biologiya", "adabiyot", "ingliz_tili", "tarix"}
+                </div>
+                <ul>
+                    <li>Barcha sinflarda o'qitiladigan fanlarni toping</li>
+                    <li>Umumiy fanlarni toping</li>
+                    <li>Faqat 10A sinfida o'qitiladigan fanlarni toping</li>
+                    <li>10A va 10B da bor, lekin 10V da yo'q fanlarni toping</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 12: Foydali maslahatlar -->
+        <div class="slide">
+            <h2>💡 Foydali maslahatlar</h2>
+            <div class="two-column">
+                <div>
+                    <h3>✅ Yodda tuting:</h3>
+                    <ul>
+                        <li>Set'lar tartibsiz</li>
+                        <li>Takrorlanmaydigan elementlar</li>
+                        <li>O'zgaruvchan (mutable)</li>
+                        <li>Indeks yo'q</li>
+                        <li>Tez qidiruv (O(1))</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>🚀 Qachon ishlatish:</h3>
+                    <ul>
+                        <li>Takrorlarni olib tashlash</li>
+                        <li>Matematik operatsiyalar</li>
+                        <li>Tez qidiruv</li>
+                        <li>To'plamlar munosabati</li>
+                        <li>Unique elementlar</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="example-box center-text">
+                <p class="large-text">🎯 Set'lar - dasturlashda juda muhim va foydali struktura!</p>
+            </div>
+        </div>
+
+        <!-- Slide 13: Uy vazifasi -->
+        <div class="slide">
+            <h2>🏠 Uy vazifasi</h2>
+            <div class="time-badge">⏱️ Uyda bajarish</div>
+            <div class="example-box">
+                <h3>Vazifa 1:</h3>
+                <div class="code-block">
+# [3, 3, 5, 7, 7, 9, 11] listini set'ga aylantiring
+# Set'ga 13 ni qo'shing
+# Set'dan 5 ni o'chiring
+                </div>
+                <h3>Vazifa 2:</h3>
+                <div class="code-block">
+set1 = {"qalam", "ruchka", "kitob"}
+set2 = {"kitob", "daftar", "o'chirg'ich"}
+# Union, intersection, difference operatsiyalarini bajaring
+                </div>
+                <h3>Vazifa 3:</h3>
+                <div class="code-block">
+# ["a", "b", "b", "c", "d", "d"] listini set'ga aylantiring
+# {"b", "d", "f"} bilan farqini toping
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Keyingi dars -->
+        <div class="slide">
+            <h2>🔜 Keyingi dars</h2>
+            <div class="center-text">
+                <h3>📚 Dictionary: Kalit-qiymat juftligi</h3>
+                <div class="example-box">
+                    <ul>
+                        <li>Dictionary tushunchasi</li>
+                        <li>Kalit-qiymat juftligi</li>
+                        <li>Looplar orqali iteratsiya</li>
+                        <li>get() metodi</li>
+                        <li>Dictionary metodlari</li>
+                    </ul>
+                </div>
+                <p class="large-text">🎉 Ajoyib ish! Set'larni o'rgandingiz!</p>
+            </div>
+        </div>
+
+        <!-- Slide 15: Savollar -->
+        <div class="slide">
+            <h2>❓ Savollar</h2>
+            <div class="center-text">
+                <h3>Savollaringiz bormi?</h3>
+                <div class="example-box">
+                    <p class="large-text">💭 Bugun nimalarni o'rgandik?</p>
+                    <ul>
+                        <li>Set'lar nima va qanday yaratiladi?</li>
+                        <li>Union, intersection, difference qanday ishlaydi?</li>
+                        <li>Set'larni qachon ishlatish foydali?</li>
+                        <li>Set va List orasidagi farq nima?</li>
+                    </ul>
+                </div>
+                <p class="large-text">🚀 Muvaffaqiyatlar tilayman!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">15</span>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">◀ Oldingi</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Keyingi ▶</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[n].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = n + 1;
+            document.getElementById('prevBtn').disabled = n === 0;
+            document.getElementById('nextBtn').disabled = n === totalSlides - 1;
+            
+            // Progress bar
+            const progress = ((n + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= totalSlides) currentSlide = totalSlides - 1;
+            showSlide(currentSlide);
+        }
+
+        // Klaviatura bilan boshqarish
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') changeSlide(-1);
+            if (event.key === 'ArrowRight') changeSlide(1);
+            if (event.key === ' ') {
+                event.preventDefault();
+                changeSlide(1);
+            }
+        });
+
+        // Dastlabki holatni o'rnatish
+        showSlide(0);
+    </script>
+</body>
+</html>
