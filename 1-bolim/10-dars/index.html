@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python If...Else Shartli Operatorlar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .slide {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            min-height: 500px;
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .slide h1 {
+            color: #4a5568;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .slide h2 {
+            color: #2d3748;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .slide h3 {
+            color: #4a5568;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            overflow-x: auto;
+            border-left: 4px solid #48bb78;
+        }
+        
+        .output {
+            background: #1a202c;
+            color: #48bb78;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #48bb78;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .slide-counter {
+            text-align: center;
+            color: white;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        
+        .time-info {
+            background: #e6fffa;
+            border: 1px solid #38b2ac;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .example-box {
+            background: #f0fff4;
+            border: 2px solid #48bb78;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .task-box {
+            background: #fef5e7;
+            border: 2px solid #ed8936;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+        }
+        
+        .emoji {
+            font-size: 1.5em;
+            margin: 0 10px;
+        }
+        
+        .highlight {
+            background: #fef5e7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">12</span>
+        </div>
+        
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>🐍 Python If...Else: Shartli Operatorlar</h1>
+            <div style="text-align: center; margin: 40px 0;">
+                <h2>Mavzular:</h2>
+                <div style="font-size: 1.3em; margin: 20px 0;">
+                    <p>📌 If, Else, Elif operatorlari</p>
+                    <p>📌 Nested if (ichma-ich shartlar)</p>
+                    <p>📌 Ternary operator</p>
+                    <p>📌 Amaliy mashqlar</p>
+                </div>
+            </div>
+            <div class="time-info">
+                <strong>⏰ Dars davomiyligi:</strong> 120 daqiqa (2 soat)
+            </div>
+        </div>
+
+        <!-- Slide 2: Dars rejasi -->
+        <div class="slide">
+            <h2>📋 Dars rejasi</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Qism</th>
+                        <th>Davomiyligi</th>
+                        <th>Mavzu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>20 daqiqa</td>
+                        <td>Kirish va Shartli operatorlar</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>25 daqiqa</td>
+                        <td>Nested if</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>20 daqiqa</td>
+                        <td>Ternary operator</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>25 daqiqa</td>
+                        <td>Amaliy mashqlar</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>20 daqiqa</td>
+                        <td>Xulosa va uy vazifasi</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>10 daqiqa</td>
+                        <td>Savollar</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 3: If operatori -->
+        <div class="slide">
+            <h2>🔍 If operatori</h2>
+            <h3>Asosiy sintaksis:</h3>
+            <div class="code-block">
+if shart:
+    # Agar shart to'g'ri bo'lsa, bu kod ishlaydi
+            </div>
+            
+            <div class="example-box">
+                <h3>Misol:</h3>
+                <div class="code-block">
+yosh = 18
+if yosh >= 18:
+    print("Siz voyaga yetgansiz!")
+                </div>
+                <div class="output">
+Natija: Siz voyaga yetgansiz!
+                </div>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <h3>Taqqoslash operatorlari:</h3>
+                <p><span class="highlight">==</span> (teng), <span class="highlight">!=</span> (teng emas), <span class="highlight">></span> (katta), <span class="highlight"><</span> (kichik), <span class="highlight">>=</span> (katta yoki teng), <span class="highlight"><=</span> (kichik yoki teng)</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: If-Else -->
+        <div class="slide">
+            <h2>🔄 If-Else operatori</h2>
+            <h3>Sintaksis:</h3>
+            <div class="code-block">
+if shart:
+    # Agar shart to'g'ri bo'lsa
+else:
+    # Agar shart noto'g'ri bo'lsa
+            </div>
+            
+            <div class="example-box">
+                <h3>Misol:</h3>
+                <div class="code-block">
+yosh = 15
+if yosh >= 18:
+    print("Siz voyaga yetgansiz!")
+else:
+    print("Siz hali voyaga yetmagansiz!")
+                </div>
+                <div class="output">
+Natija: Siz hali voyaga yetmagansiz!
+                </div>
+            </div>
+            
+            <div class="task-box">
+                <h3>🏋️ Mashq:</h3>
+                <p>son = 10 o'zgaruvchisi bilan:</p>
+                <ul>
+                    <li>Agar son juft bo'lsa, "Juft son" deb chiqaring</li>
+                    <li>Aks holda, "Toq son" deb chiqaring</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Elif -->
+        <div class="slide">
+            <h2>🎯 Elif operatori</h2>
+            <h3>Bir nechta shartni tekshirish:</h3>
+            <div class="code-block">
+if shart1:
+    # Birinchi shart to'g'ri bo'lsa
+elif shart2:
+    # Ikkinchi shart to'g'ri bo'lsa
+else:
+    # Hech qaysi shart to'g'ri bo'lmasa
+            </div>
+            
+            <div class="example-box">
+                <h3>Misol:</h3>
+                <div class="code-block">
+baholar = 85
+if baholar >= 90:
+    print("A'lo!")
+elif baholar >= 80:
+    print("Yaxshi!")
+elif baholar >= 70:
+    print("Qoniqarli!")
+else:
+    print("Yomon!")
+                </div>
+                <div class="output">
+Natija: Yaxshi!
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Mantiqiy operatorlar -->
+        <div class="slide">
+            <h2>🧠 Mantiqiy operatorlar</h2>
+            <h3>and, or, not operatorlari:</h3>
+            <div style="margin: 20px 0;">
+                <p><span class="highlight">and</span> - ikkala shart ham to'g'ri bo'lishi kerak</p>
+                <p><span class="highlight">or</span> - shartlardan biri to'g'ri bo'lsa kifoya</p>
+                <p><span class="highlight">not</span> - shartni teskarisiga o'zgartiradi</p>
+            </div>
+            
+            <div class="example-box">
+                <h3>Misol:</h3>
+                <div class="code-block">
+yosh = 16
+if yosh >= 13 and yosh <= 19:
+    print("Siz o'smirsiz!")
+    
+kun = "yakshanba"
+if kun == "shanba" or kun == "yakshanba":
+    print("Bugun dam olish kuni!")
+                </div>
+                <div class="output">
+Natija: Siz o'smirsiz!
+Natija: Bugun dam olish kuni!
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Nested if -->
+        <div class="slide">
+            <h2>🏗️ Nested if (ichma-ich shartlar)</h2>
+            <h3>Bir if ichida boshqa if:</h3>
+            <div class="code-block">
+if tashqi_shart:
+    # Tashqi shart to'g'ri bo'lsa
+    if ichki_shart:
+        # Ichki shart ham to'g'ri bo'lsa
+    else:
+        # Ichki shart noto'g'ri bo'lsa
+            </div>
+            
+            <div class="example-box">
+                <h3>Misol:</h3>
+                <div class="code-block">
+yosh = 20
+ball = 85
+if yosh >= 18:
+    print("Siz voyaga yetgansiz, ballni tekshiramiz...")
+    if ball >= 80:
+        print("Siz imtihondan o'tdingiz!")
+    else:
+        print("Afsus, ballingiz yetmadi.")
+else:
+    print("Siz hali voyaga yetmagansiz!")
+                </div>
+                <div class="output">
+Natija: Siz voyaga yetgansiz, ballni tekshiramiz...
+Natija: Siz imtihondan o'tdingiz!
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Ternary operator -->
+        <div class="slide">
+            <h2>⚡ Ternary operator</h2>
+            <h3>Bir qatorda if-else:</h3>
+            <div class="code-block">
+natija = qiymat1 if shart else qiymat2
+            </div>
+            
+            <div class="example-box">
+                <h3>Misol:</h3>
+                <div class="code-block">
+yosh = 20
+xabar = "Voyaga yetgan" if yosh >= 18 else "Voyaga yetmagan"
+print(xabar)
+                </div>
+                <div class="output">
+Natija: Voyaga yetgan
+                </div>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <h3>Oddiy if-else bilan taqqoslash:</h3>
+                <div class="code-block">
+# Oddiy usul
+if yosh >= 18:
+    xabar = "Voyaga yetgan"
+else:
+    xabar = "Voyaga yetmagan"
+
+# Ternary operator
+xabar = "Voyaga yetgan" if yosh >= 18 else "Voyaga yetmagan"
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Amaliy mashq 1 -->
+        <div class="slide">
+            <h2>🏋️ Amaliy mashq 1</h2>
+            <div class="task-box">
+                <h3>Vazifa: Shartli operatorlar</h3>
+                <p>raqam = 7 o'zgaruvchisi bilan:</p>
+                <ul>
+                    <li>Agar raqam musbat bo'lsa, "Musbat" deb chiqaring</li>
+                    <li>Agar raqam manfiy bo'lsa, "Manfiy" deb chiqaring</li>
+                    <li>Agar raqam 0 bo'lsa, "Nol" deb chiqaring</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h3>Yechim:</h3>
+                <div class="code-block">
+raqam = 7
+if raqam > 0:
+    print("Musbat")
+elif raqam < 0:
+    print("Manfiy")
+else:
+    print("Nol")
+                </div>
+                <div class="output">
+Natija: Musbat
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Amaliy mashq 2 -->
+        <div class="slide">
+            <h2>🏋️ Amaliy mashq 2</h2>
+            <div class="task-box">
+                <h3>Vazifa: Nested if</h3>
+                <p>yosh = 16 va baho = 90 o'zgaruvchilari bilan:</p>
+                <ul>
+                    <li>Agar yosh 15 dan katta bo'lsa, "Yosh yetarli" deb chiqaring va:</li>
+                    <li>Agar baho 85 dan katta bo'lsa, "A'lo baho" deb chiqaring</li>
+                    <li>Aks holda, "Baho past" deb chiqaring</li>
+                    <li>Aks holda, "Yosh yetarli emas" deb chiqaring</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h3>Yechim:</h3>
+                <div class="code-block">
+yosh = 16
+baho = 90
+if yosh > 15:
+    print("Yosh yetarli")
+    if baho > 85:
+        print("A'lo baho")
+    else:
+        print("Baho past")
+else:
+    print("Yosh yetarli emas")
+                </div>
+                <div class="output">
+Natija: Yosh yetarli
+Natija: A'lo baho
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Uy vazifasi -->
+        <div class="slide">
+            <h2>🏠 Uy vazifasi</h2>
+            <div class="task-box">
+                <h3>Vazifa 1:</h3>
+                <p>son = 25 o'zgaruvchisi bilan:</p>
+                <ul>
+                    <li>Agar son 20 dan katta bo'lsa, "Katta son" deb chiqaring</li>
+                    <li>Agar son 10 va 20 orasida bo'lsa, "O'rtacha son" deb chiqaring</li>
+                    <li>Aks holda, "Kichik son" deb chiqaring</li>
+                </ul>
+            </div>
+            
+            <div class="task-box">
+                <h3>Vazifa 2:</h3>
+                <p>yosh = 14 va ball = 70 o'zgaruvchilari bilan nested if ishlatib, imtihon natijasini aniqlang.</p>
+            </div>
+            
+            <div class="task-box">
+                <h3>Vazifa 3:</h3>
+                <p>raqam = 8 o'zgaruvchisi bilan ternary operator yordamida juft-toq aniqlang.</p>
+            </div>
+        </div>
+
+        <!-- Slide 12: Xulosa -->
+        <div class="slide">
+            <h2>🎯 Xulosa</h2>
+            <div style="text-align: center; margin: 40px 0;">
+                <h3>Bugun o'rganganlar:</h3>
+                <div style="font-size: 1.2em; margin: 20px 0;">
+                    <p>✅ <span class="highlight">if, else, elif</span> operatorlari</p>
+                    <p>✅ <span class="highlight">and, or, not</span> mantiqiy operatorlari</p>
+                    <p>✅ <span class="highlight">Nested if</span> (ichma-ich shartlar)</p>
+                    <p>✅ <span class="highlight">Ternary operator</span> (qisqa yozuv)</p>
+                    <p>✅ Amaliy mashqlar va misollar</p>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h3>Keyingi dars:</h3>
+                <p style="font-size: 1.1em; text-align: center;">
+                    <strong>For Loop: Iteratsiya, range() funksiyasi, nested loops</strong>
+                </p>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <h2>Savollar? 🤔</h2>
+                <p style="font-size: 1.2em;">Rahmat! 😊</p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" onclick="previousSlide()">⬅️ Oldingi</button>
+            <button class="nav-btn" onclick="nextSlide()">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            document.getElementById('currentSlide').textContent = index + 1;
+        }
+        
+        function nextSlide() {
+            if (currentSlideIndex < totalSlides - 1) {
+                currentSlideIndex++;
+                showSlide(currentSlideIndex);
+            }
+        }
+        
+        function previousSlide() {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                showSlide(currentSlideIndex);
+            }
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') previousSlide();
+        });
+        
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
