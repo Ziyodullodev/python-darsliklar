@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python For Loop: Iteratsiya, range(), nested loops</title>
+    <link rel="stylesheet" href="../../main-style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .slide {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            min-height: 500px;
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .slide h1 {
+            color: #4a5568;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .slide h2 {
+            color: #2d3748;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .slide h3 {
+            color: #4a5568;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            overflow-x: auto;
+            border-left: 4px solid #48bb78;
+        }
+        
+        .output {
+            background: #1a202c;
+            color: #48bb78;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #48bb78;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .slide-counter {
+            text-align: center;
+            color: white;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        
+        .time-info {
+            background: #e6fffa;
+            border: 1px solid #38b2ac;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .example-box {
+            background: #f0fff4;
+            border: 2px solid #48bb78;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .task-box {
+            background: #fef5e7;
+            border: 2px solid #ed8936;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+        }
+        
+        .emoji {
+            font-size: 1.5em;
+            margin: 0 10px;
+        }
+        
+        .highlight {
+            background: #fef5e7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .loop-visualization {
+            background: #f7fafc;
+            border: 2px solid #4299e1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .step-box {
+            background: #e6f3ff;
+            border-left: 4px solid #4299e1;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        
+        .warning-box {
+            background: #fed7d7;
+            border: 2px solid #fc8181;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">14</span>
+        </div>
+        
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>🔄 Python For Loop: Iteratsiya</h1>
+            <div style="text-align: center; margin: 40px 0;">
+                <h2>Mavzular:</h2>
+                <div style="font-size: 1.3em; margin: 20px 0;">
+                    <p>📌 For loop va iteratsiya</p>
+                    <p>📌 range() funksiyasi</p>
+                    <p>📌 Nested loops (ichma-ich)</p>
+                    <p>📌 Amaliy mashqlar</p>
+                </div>
+            </div>
+            <div class="time-info">
+                <strong>⏰ Dars davomiyligi:</strong> 120 daqiqa (2 soat)
+            </div>
+        </div>
+
+        <!-- Slide 2: Dars rejasi -->
+        <div class="slide">
+            <h2>📋 Dars rejasi</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Qism</th>
+                        <th>Davomiyligi</th>
+                        <th>Mavzu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>20 daqiqa</td>
+                        <td>Kirish va Iteratsiya</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>25 daqiqa</td>
+                        <td>range() funksiyasi</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>20 daqiqa</td>
+                        <td>Nested loops</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>25 daqiqa</td>
+                        <td>Amaliy mashqlar</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>20 daqiqa</td>
+                        <td>Xulosa va uy vazifasi</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>10 daqiqa</td>
+                        <td>Savollar</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 3: For loop nima? -->
+        <div class="slide">
+            <h2>🔄 For loop nima?</h2>
+            <div class="loop-visualization">
+                <h3>For loop - takroriy harakatlar uchun!</h3>
+                <p>For loop ro'yxat, string yoki boshqa iterable obyektlar ustida ishlaydi.</p>
+            </div>
+            
+            <h3>Asosiy sintaksis:</h3>
+            <div class="code-block">
+for o'zgaruvchi in iterable:
+    # Har bir element uchun bu kod ishlaydi
+            </div>
+            
+            <div class="example-box">
+                <h3>Misol - Ro'yxat elementlari:</h3>
+                <div class="code-block">
+mevalar = ["olma", "banan", "anor"]
+for meva in mevalar:
+    print(meva)
+                </div>
+                <div class="output">
+Natija:
+olma
+banan
+anor
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: String bilan for loop -->
+        <div class="slide">
+            <h2>🔤 String bilan for loop</h2>
+            <div class="example-box">
+                <h3>String harflarini birma-bir chiqarish:</h3>
+                <div class="code-block">
+matn = "Salom"
+for harf in matn:
+    print(harf)
+                </div>
+                <div class="output">
+Natija:
+S
+a
+l
+o
+m
+                </div>
+            </div>
+            
+            <div class="step-box">
+                <h3>Qanday ishlaydi:</h3>
+                <p>1. "Salom" stringining har bir harfini birma-bir oladi</p>
+                <p>2. Har bir harfni <span class="highlight">harf</span> o'zgaruvchisiga yuklaydi</p>
+                <p>3. Kod bloki (print) ishlaydi</p>
+                <p>4. Keyingi harfga o'tadi</p>
+            </div>
+            
+            <div class="task-box">
+                <h3>🏋️ Mashq:</h3>
+                <p>ranglar = ["qizil", "yashil", "ko'k"] ro'yxati bilan:</p>
+                <ul>
+                    <li>Har bir rangni ekranga chiqaring</li>
+                    <li>Har bir rangni "Mening sevimli rangim: [rang]" shaklida chiqaring</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: range() funksiyasi -->
+        <div class="slide">
+            <h2>📊 range() funksiyasi</h2>
+            <div class="loop-visualization">
+                <h3>range() - sonlar ketma-ketligini yaratadi</h3>
+                <p>Sintaksis: <span class="highlight">range(boshlang'ich, oxirgi, qadam)</span></p>
+            </div>
+            
+            <div class="example-box">
+                <h3>Oddiy range() - 0 dan boshlanadi:</h3>
+                <div class="code-block">
+for i in range(5):  # 0 dan 4 gacha
+    print(i)
+                </div>
+                <div class="output">
+Natija:
+0
+1
+2
+3
+4
+                </div>
+            </div>
+            
+            <div class="warning-box">
+                <strong>⚠️ Eslatma:</strong> range(5) da 5 raqami kirmaydi! 0, 1, 2, 3, 4 chiqadi.
+            </div>
+        </div>
+
+        <!-- Slide 6: range() parametrlari -->
+        <div class="slide">
+            <h2>⚙️ range() parametrlari</h2>
+            
+            <div class="example-box">
+                <h3>Boshlang'ich va oxirgi:</h3>
+                <div class="code-block">
+for i in range(2, 6):  # 2 dan 5 gacha
+    print(i)
+                </div>
+                <div class="output">
+Natija: 2, 3, 4, 5
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h3>Qadam (step) parametri:</h3>
+                <div class="code-block">
+for i in range(1, 10, 2):  # 1 dan 9 gacha, har ikkinchi
+    print(i)
+                </div>
+                <div class="output">
+Natija: 1, 3, 5, 7, 9
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h3>Teskari tartib:</h3>
+                <div class="code-block">
+for i in range(5, 0, -1):  # 5 dan 1 gacha
+    print(i)
+                </div>
+                <div class="output">
+Natija: 5, 4, 3, 2, 1
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: range() amaliy ishlatish -->
+        <div class="slide">
+            <h2>🎯 range() amaliy ishlatish</h2>
+            
+            <div class="example-box">
+                <h3>Takroriy harakatlar:</h3>
+                <div class="code-block">
+for i in range(5):
+    print("Salom")
+                </div>
+                <div class="output">
+Natija:
+Salom
+Salom
+Salom
+Salom
+Salom
+                </div>
+            </div>
+            
+            <div class="task-box">
+                <h3>🏋️ Mashq:</h3>
+                <p>range() yordamida:</p>
+                <ul>
+                    <li>1 dan 10 gacha bo'lgan sonlarni chiqaring</li>
+                    <li>10 dan 1 gacha teskari tartibda chiqaring</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 8: Nested loops kirish -->
+        <div class="slide">
+            <h2>🏗️ Nested loops (ichma-ich)</h2>
+            <div class="loop-visualization">
+                <h3>Nested loop - bir for loop ichida boshqa for loop</h3>
+                <p>Ko'p darajali takroriy harakatlar uchun ishlatiladi</p>
+            </div>
+            
+            <div class="example-box">
+                <h3>Oddiy nested loop:</h3>
+                <div class="code-block">
+for i in range(3):
+    for j in range(2):
+        print(f"i={i}, j={j}")
+                </div>
+                <div class="output">
+Natija:
+i=0, j=0
+i=0, j=1
+i=1, j=0
+i=1, j=1
+i=2, j=0
+i=2, j=1
+                </div>
+            </div>
+            
+            <div class="step-box">
+                <h3>Ishlash tartibi:</h3>
+                <p>Tashqi loop (i) 3 marta, ichki loop (j) har safar 2 marta = 6 ta iteratsiya</p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Nested loops - jadval -->
+        <div class="slide">
+            <h2>📋 Nested loops - jadval yaratish</h2>
+            
+            <div class="example-box">
+                <h3>Yulduzcha bilan 3x3 kvadrat:</h3>
+                <div class="code-block">
+for i in range(3):
+    for j in range(3):
+        print("*", end=" ")
+    print()  # Yangi qatorga o'tish
+                </div>
+                <div class="output">
+Natija:
+* * * 
+* * * 
+* * * 
+                </div>
+            </div>
+            
+            <div class="warning-box">
+                <strong>⚠️ Eslatma:</strong> Nested loop'lar dasturni sekinlashtirishi mumkin, ehtiyot bo'ling!
+            </div>
+            
+            <div class="task-box">
+                <h3>🏋️ Mashq:</h3>
+                <ul>
+                    <li>4 qator, 5 ustun "#" belgilari jadvali</li>
+                    <li>1-3 gacha sonlarni 1-2 gacha sonlar bilan juftlash</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 10: Amaliy mashq 1 -->
+        <div class="slide">
+            <h2>🏋️ Amaliy mashq 1 - Iteratsiya</h2>
+            <div class="task-box">
+                <h3>Vazifa:</h3>
+                <p>sozlar = ["kitob", "ruchka", "daftar"] ro'yxati bilan:</p>
+                <ul>
+                    <li>Har bir so'zni ekranga chiqaring</li>
+                    <li>Har bir so'zni "Mening buyumim: [so'z]" shaklida chiqaring</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h3>Yechim:</h3>
+                <div class="code-block">
+sozlar = ["kitob", "ruchka", "daftar"]
+
+for soz in sozlar:
+    print(soz)
+
+print("---")
+
+for soz in sozlar:
+    print(f"Mening buyumim: {soz}")
+                </div>
+                <div class="output">
+Natija:
+kitob
+ruchka
+daftar
+---
+Mening buyumim: kitob
+Mening buyumim: ruchka
+Mening buyumim: daftar
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Amaliy mashq 2 -->
+        <div class="slide">
+            <h2>🏋️ Amaliy mashq 2 - range()</h2>
+            <div class="task-box">
+                <h3>Vazifa:</h3>
+                <p>range() yordamida:</p>
+                <ul>
+                    <li>5 dan 15 gacha sonlarni chiqaring</li>
+                    <li>20 dan 10 gacha juft sonlarni teskari tartibda chiqaring</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h3>Yechim:</h3>
+                <div class="code-block">
+for i in range(5, 16):
+    print(i)
+
+print("---")
+
+for i in range(20, 9, -2):
+    print(i)
+                </div>
+                <div class="output">
+Natija:
+5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+---
+20, 18, 16, 14, 12, 10
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Amaliy mashq 3 -->
+        <div class="slide">
+            <h2>🏋️ Amaliy mashq 3 - Nested loops</h2>
+            <div class="task-box">
+                <h3>Vazifa:</h3>
+                <ul>
+                    <li>5 qator, 4 ustun "$" belgilari jadvali</li>
+                    <li>1-2 gacha sonlarni 1-3 gacha sonlar bilan juftlash</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h3>Yechim:</h3>
+                <div class="code-block">
+for i in range(5):
+    for j in range(4):
+        print("$", end=" ")
+    print()
+
+print("---")
+
+for i in range(1, 3):
+    for j in range(1, 4):
+        print(f"({i}, {j})")
+                </div>
+                <div class="output">
+Natija:
+$ $ $ $ 
+$ $ $ $ 
+$ $ $ $ 
+$ $ $ $ 
+$ $ $ $ 
+---
+(1, 1), (1, 2), (1, 3)
+(2, 1), (2, 2), (2, 3)
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Uy vazifasi -->
+        <div class="slide">
+            <h2>🏠 Uy vazifasi</h2>
+            <div class="task-box">
+                <h3>Vazifa 1:</h3>
+                <p>mevalar = ["uzum", "nok", "banan"] ro'yxati bilan:</p>
+                <p>Har bir mevani "Sevimli mevam: [meva]" shaklida chiqaring</p>
+            </div>
+            
+            <div class="task-box">
+                <h3>Vazifa 2:</h3>
+                <p>range() yordamida:</p>
+                <ul>
+                    <li>3 dan 12 gacha toq sonlarni chiqaring</li>
+                    <li>15 dan 5 gacha teskari tartibda chiqaring</li>
+                </ul>
+            </div>
+            
+            <div class="task-box">
+                <h3>Vazifa 3:</h3>
+                <p>Nested loop yordamida:</p>
+                <ul>
+                    <li>3 qator, 5 ustun "@" belgilari jadvali</li>
+                    <li>1-3 gacha sonlarni 1-4 gacha sonlar bilan juftlash</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 14: Xulosa -->
+        <div class="slide">
+            <h2>🎯 Xulosa</h2>
+            <div style="text-align: center; margin: 40px 0;">
+                <h3>Bugun o'rganganlar:</h3>
+                <div style="font-size: 1.2em; margin: 20px 0;">
+                    <p>✅ <span class="highlight">for loop</span> va iteratsiya</p>
+                    <p>✅ <span class="highlight">range()</span> funksiyasi parametrlari</p>
+                    <p>✅ <span class="highlight">nested loops</span> (ichma-ich)</p>
+                    <p>✅ String va ro'yxat bilan ishlash</p>
+                    <p>✅ Amaliy mashqlar va misollar</p>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h3>Keyingi dars:</h3>
+                <p style="font-size: 1.1em; text-align: center;">
+                    <strong>While Loop: Cheksiz looplar, break, continue, else bilan loop</strong>
+                </p>
+            </div>
+            
+            <div class="loop-visualization">
+                <h3>Eslab qoling:</h3>
+                <p>🔄 For loop = ma'lum sonli takroriy harakatlar</p>
+                <p>📊 range() = sonlar ketma-ketligi</p>
+                <p>🏗️ Nested loops = jadval va murakkab tuzilmalar</p>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <h2>Savollar? 🤔</h2>
+                <p style="font-size: 1.2em;">Rahmat! 😊</p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" onclick="previousSlide()">⬅️ Oldingi</button>
+            <button class="nav-btn" onclick="nextSlide()">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            document.getElementById('currentSlide').textContent = index + 1;
+        }
+        
+        function nextSlide() {
+            if (currentSlideIndex < totalSlides - 1) {
+                currentSlideIndex++;
+                showSlide(currentSlideIndex);
+            }
+        }
+        
+        function previousSlide() {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                showSlide(currentSlideIndex);
+            }
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') previousSlide();
+        });
+        
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
