@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Asoslari - To'liq Dars</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .page-navigation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .page-nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            min-width: 120px;
+        }
+
+        .page-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-nav-btn.active {
+            background: rgba(255, 255, 255, 0.4);
+            font-weight: bold;
+        }
+
+        .page-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-counter {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .page {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 30px;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section h2 {
+            color: #4a5568;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            position: relative;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: #764ba2;
+        }
+
+        .section h3 {
+            color: #2d3748;
+            font-size: 1.5rem;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h4 {
+            color: #4a5568;
+            font-size: 1.2rem;
+            margin: 20px 0 10px 0;
+        }
+
+        .code-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+            position: relative;
+            font-family: 'Courier New', monospace;
+        }
+
+        .code-block::before {
+            content: 'Python';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 12px;
+            color: #667eea;
+            opacity: 0.7;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #4299e1;
+        }
+
+        .info-box h4 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .task-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ed8936;
+        }
+
+        .task-box h4 {
+            color: #c05621;
+            margin-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .emoji {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .interactive-demo {
+            background: #f7fafc;
+            border: 2px dashed #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .demo-input {
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 5px;
+            margin: 10px;
+            font-size: 16px;
+        }
+
+        .demo-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .demo-button:hover {
+            background: #5a6fd8;
+        }
+
+        .demo-output {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border: 1px solid #e2e8f0;
+            min-height: 50px;
+            font-family: monospace;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        .table tr:hover {
+            background: #f7fafc;
+        }
+
+        .nav-arrows {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding: 20px 0;
+        }
+
+        .nav-arrow {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-arrow:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-arrow:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .page-navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-arrows {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+</head>
+
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+    <div class="container">
+        <div class="header">
+            <h1>🐍 Python Asoslari</h1>
+            <p>To'liq Dars Prezentatsiyasi</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <div class="page-navigation">
+            <button class="page-nav-btn" onclick="goToPage(1)">Kirish</button>
+            <button class="page-nav-btn" onclick="goToPage(2)">Ma'lumot turlari</button>
+            <button class="page-nav-btn" onclick="goToPage(3)">Shart operatorlari</button>
+            <button class="page-nav-btn" onclick="goToPage(4)">Takrorlash</button>
+            <button class="page-nav-btn" onclick="goToPage(5)">Ro'yxatlar</button>
+            <button class="page-nav-btn" onclick="goToPage(6)">Kortejlar</button>
+            <button class="page-nav-btn" onclick="goToPage(7)">To'plamlar</button>
+            <button class="page-nav-btn" onclick="goToPage(8)">Amaliyot</button>
+            <div class="page-counter">
+                <span id="currentPage">1</span> / <span id="totalPages">8</span>
+            </div>
+        </div>
+
+        <!-- Sahifa 1: Kirish -->
+        <div class="page active" id="page1">
+            <div class="section">
+                <h2><span class="emoji">🚀</span>Python Dasturlash Tiliga Xush Kelibsiz!</h2>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>🎯 Kurs maqsadi</h3>
+                        <p>Bu kurs Python dasturlash tilining asosiy tushunchalarini o'rganishga bag'ishlangan. Siz
+                            Python'ning eng muhim elementlarini amaliy misollar bilan o'rganasiz.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>📋 Kurs tarkibi</h3>
+                        <ul>
+                            <li>Ma'lumot turlari (int, float, str, bool)</li>
+                            <li>Shart operatorlari (if, elif, else)</li>
+                            <li>Takrorlash operatorlari (for, while)</li>
+                            <li>Ro'yxatlar (Lists)</li>
+                            <li>Kortejlar (Tuples)</li>
+                            <li>To'plamlar (Sets)</li>
+                            <li>Amaliyot topshiriqlari</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h3>⏱️ Kurs davomiyligi</h3>
+                        <p>Kurs taxminan 3-4 soat davom etadi. Har bir mavzu amaliy misollar va topshiriklar bilan
+                            to'ldirilgan.</p>
+                    </div>
+
+                    <div class="card pulse">
+                        <h3>💡 Muvaffaqiyat sirlari</h3>
+                        <ul>
+                            <li><strong>Amaliyot qiling</strong> - ko'p kod yozing</li>
+                            <li><strong>Xatolardan qo'rqmang</strong> - ular o'rganish qismi</li>
+                            <li><strong>Savollar bering</strong> - bu normal holat</li>
+                            <li><strong>Sabr-toqat</strong> - dasturlash vaqt talab qiladi</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>🎓 Kursdan keyin nimani bilasiz?</h4>
+                    <p>Python dasturlash tilining asosiy tushunchalarini, ma'lumotlar bilan ishlashni, mantiqiy
+                        operatorlarni va sodda dasturlar yozishni o'rganasiz. Bu bilimlar bilan oddiy loyihalar
+                        yaratishingiz mumkin bo'ladi.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sahifa 2: Ma'lumot turlari -->
+        <div class="page" id="page2">
+            <div class="section">
+                <h2><span class="emoji">📊</span>Ma'lumot turlari (Data Types)</h2>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>🔢 Raqamlar (Numbers)</h3>
+                        <div class="code-block">
+                            <pre># Butun sonlar (int)
+age = 25
+year = 2024
+
+# O'nlik sonlar (float)
+price = 19.99
+temperature = 36.6
+
+# Kompleks sonlar (complex)
+z = 3 + 4j</pre>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>📝 Matnlar (Strings)</h3>
+                        <div class="code-block">
+                            <pre># Matn yaratish
+name = "Ahmad"
+surname = 'Karimov'
+
+# Matn methodlari
+text = "Python dasturlash"
+print(text.upper())    # PYTHON DASTURLASH
+print(text.lower())    # python dasturlash
+print(text.title())    # Python Dasturlash</pre>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>✅ Mantiqiy qiymatlar (Boolean)</h3>
+                        <div class="code-block">
+                            <pre>is_student = True
+is_graduated = False
+
+# Mantiqiy operatorlar
+print(True and False)    # False
+print(True or False)     # True
+print(not True)          # False</pre>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>🔍 Turni tekshirish</h3>
+                        <div class="code-block">
+                            <pre>age = 25
+print(type(age))         # &lt;class 'int'&gt;
+print(isinstance(age, int))  # True</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>🎮 Interaktiv Demo: Ma'lumot turlari</h4>
+                    <input type="text" id="typeInput" class="demo-input" placeholder="Qiymat kiriting...">
+                    <button class="demo-button" onclick="checkType()">Turini tekshirish</button>
+                    <div id="typeOutput" class="demo-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sahifa 3: Shart operatorlari -->
+        <div class="page" id="page3">
+            <div class="section">
+                <h2><span class="emoji">🔀</span>Shart operatorlari (If-Else)</h2>
+
+                <h3>Asosiy if-else tuzilmasi</h3>
+                <div class="code-block">
+                    <pre>age = 18
+
+if age >= 18:
+    print("Siz voyaga yetgansiz")
+else:
+    print("Siz hali voyaga yetmagansiz")</pre>
+                </div>
+
+                <h3>Elif (else if)</h3>
+                <div class="code-block">
+                    <pre>ball = 85
+
+if ball >= 90:
+    print("A'lo baho")
+elif ball >= 80:
+    print("Yaxshi baho")
+elif ball >= 70:
+    print("Qoniqarli baho")
+else:
+    print("Qoniqarsiz baho")</pre>
+                </div>
+
+                <div class="info-box">
+                    <h4>💡 Muhim eslatma</h4>
+                    <p>Ternary operator: <code>status = "Katta" if age >= 18 else "Kichik"</code></p>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>🎮 Interaktiv Demo: Baho tizimi</h4>
+                    <input type="number" id="scoreInput" class="demo-input" placeholder="Balingizni kiriting (0-100)">
+                    <button class="demo-button" onclick="checkGrade()">Bahoni tekshirish</button>
+                    <div id="gradeOutput" class="demo-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sahifa 4: Takrorlash -->
+        <div class="page" id="page4">
+            <div class="section">
+                <h2><span class="emoji">🔄</span>Takrorlash operatorlari (Loops)</h2>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>🔁 For loop</h3>
+                        <div class="code-block">
+                            <pre># Raqamlar bilan ishlash
+for i in range(5):
+    print(f"Qadam {i}")
+
+# Range parametrlari
+for i in range(1, 11):      # 1 dan 10 gacha
+    print(i)
+
+# Matn bilan ishlash
+name = "Python"
+for letter in name:
+    print(letter)</pre>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>🔄 While loop</h3>
+                        <div class="code-block">
+                            <pre># Oddiy while loop
+count = 0
+while count < 5:
+    print(f"Sanoq: {count}")
+    count += 1
+
+# Parol tekshirish
+password = ""
+while password != "123":
+    password = input("Parolni kiriting: ")
+    if password != "123":
+        print("Noto'g'ri parol!")</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Break va Continue</h3>
+                <div class="code-block">
+                    <pre># Break - loopni to'xtatish
+for i in range(10):
+    if i == 5:
+        break
+    print(i)  # 0, 1, 2, 3, 4
+
+# Continue - keyingi iteratsiyaga o'tish
+for i in range(10):
+    if i % 2 == 0:
+        continue
+    print(i)  # 1, 3, 5, 7, 9</pre>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>🎮 Interaktiv Demo: Takrorlash</h4>
+                    <input type="number" id="loopInput" class="demo-input" placeholder="Sonni kiriting" min="1"
+                        max="10">
+                    <button class="demo-button" onclick="runLoop()">Takrorlash</button>
+                    <div id="loopOutput" class="demo-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sahifa 5: Ro'yxatlar -->
+        <div class="page" id="page5">
+            <div class="section">
+                <h2><span class="emoji">📋</span>Ro'yxatlar (Lists)</h2>
+
+                <h3>List yaratish</h3>
+                <div class="code-block">
+                    <pre># Bo'sh list
+fruits = []
+numbers = list()
+
+# Qiymatlar bilan
+fruits = ["olma", "banan", "apelsin"]
+numbers = [1, 2, 3, 4, 5]
+mixed = [1, "salom", 3.14, True]</pre>
+                </div>
+
+                <h3>List methodlari</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Tavsif</th>
+                            <th>Misol</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.append()</td>
+                            <td>Oxiriga qo'shish</td>
+                            <td>fruits.append("uzum")</td>
+                        </tr>
+                        <tr>
+                            <td>.insert()</td>
+                            <td>Belgilangan joyga qo'shish</td>
+                            <td>fruits.insert(1, "shaftoli")</td>
+                        </tr>
+                        <tr>
+                            <td>.remove()</td>
+                            <td>Qiymat bo'yicha o'chirish</td>
+                            <td>fruits.remove("banan")</td>
+                        </tr>
+                        <tr>
+                            <td>.pop()</td>
+                            <td>Oxirigisini o'chirish</td>
+                            <td>fruits.pop()</td>
+                        </tr>
+                        <tr>
+                            <td>.sort()</td>
+                            <td>Tartibga solish</td>
+                            <td>numbers.sort()</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="task-box">
+                    <h4>🎯 List Comprehension</h4>
+                    <div class="code-block">
+                        <pre># Oddiy usul
+squares = []
+for i in range(10):
+    squares.append(i**2)
+
+# List comprehension
+squares = [i**2 for i in range(10)]
+
+# Shart bilan
+even_squares = [i**2 for i in range(10) if i % 2 == 0]</pre>
+                    </div>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>🎮 Interaktiv Demo: Ro'yxat bilan ishlash</h4>
+                    <input type="text" id="listInput" class="demo-input" placeholder="Element kiriting">
+                    <button class="demo-button" onclick="addToList()">Qo'shish</button>
+                    <button class="demo-button" onclick="clearList()">Tozalash</button>
+                    <div id="listOutput" class="demo-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sahifa 6: Kortejlar -->
+        <div class="page" id="page6">
+            <div class="section">
+                <h2><span class="emoji">📦</span>Kortejlar (Tuples)</h2>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>Tuple yaratish</h3>
+                        <div class="code-block">
+                            <pre># Bo'sh tuple
+empty_tuple = ()
+empty_tuple = tuple()
+
+# Qiymatlar bilan
+coordinates = (10, 20)
+colors = ("qizil", "yashil", "ko'k")
+
+# Bir elementli tuple
+single = (42,)  # vergul muhim!</pre>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Tuple unpacking</h3>
+                        <div class="code-block">
+                            <pre># Koordinatalar
+point = (10, 20)
+x, y = point
+
+# Qiymatlarni almashtirish
+a, b = 10, 20
+a, b = b, a  # a=20, b=10</pre>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Tuple vs List</h3>
+                        <div class="code-block">
+                            <pre># Tuple - o'zgarmas
+my_tuple = (1, 2, 3)
+# my_tuple[0] = 10  # Xato!
+
+# List - o'zgaruvchan
+my_list = [1, 2, 3]
+my_list[0] = 10  # To'g'ri!</pre>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Tuple methodlari</h3>
+                        <div class="code-block">
+                            <pre>numbers = (1, 2, 3, 2, 4, 2)
+
+# Element sonini hisoblash
+count = numbers.count(2)  # 3
+
+# Element joylashuvini topish
+index = numbers.index(3)  # 2</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>⚠️ Muhim xususiyat</h4>
+                    <p>Tuple o'zgarmas (immutable)! Yaratilgandan keyin o'zgartirib bo'lmaydi. Bu xususiyat tuple'ni
+                        xavfsiz va tezroq qiladi.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sahifa 7: To'plamlar -->
+        <div class="page" id="page7">
+            <div class="section">
+                <h2><span class="emoji">🎯</span>To'plamlar (Sets)</h2>
+
+                <h3>Set yaratish</h3>
+                <div class="code-block">
+                    <pre># Bo'sh set
+empty_set = set()  # {} dict yaratadi!
+
+# Qiymatlar bilan
+numbers = {1, 2, 3, 4, 5}
+fruits = {"olma", "banan", "apelsin"}
+
+# Listdan set yaratish
+numbers_list = [1, 2, 2, 3, 3, 3, 4]
+unique_numbers = set(numbers_list)  # {1, 2, 3, 4}</pre>
+                </div>
+
+                <h3>Set operatsiyalari</h3>
+                <div class="grid">
+                    <div class="card">
+                        <h4>🔗 Birlashtirish (Union)</h4>
+                        <div class="code-block">
+                            <pre>
+set1 = {1, 2, 3}
+set2 = {3, 4, 5}
+union_set = set1 | set2  # {1, 2, 3, 4, 5}
+# yoki
+union_set = set1.union(set2)
+            </pre>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h4>🔀 Kesishma (Intersection)</h4>
+                        <div class="code-block">
+                            <pre>
+set1 = {1, 2, 3}
+set2 = {2, 3, 4}
+intersection_set = set1 & set2  # {2, 3}
+# yoki
+intersection_set = set1.intersection(set2)
+            </pre>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h4>➖ Ayirma (Difference)</h4>
+                        <div class="code-block">
+                            <pre>
+set1 = {1, 2, 3}
+set2 = {2, 3, 4}
+difference_set = set1 - set2  # {1}
+# yoki
+difference_set = set1.difference(set2)
+            </pre>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h4>🔄 Simmetrik ayirma</h4>
+                        <div class="code-block">
+                            <pre>
+set1 = {1, 2, 3}
+set2 = {2, 3, 4}
+symmetric_diff = set1 ^ set2  # {1, 4}
+# yoki
+symmetric_diff = set1.symmetric_difference(set2)
+            </pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Set methodlari</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Tavsif</th>
+                            <th>Misol</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.add()</td>
+                            <td>Element qo'shish</td>
+                            <td>fruits.add("uzum")</td>
+                        </tr>
+                        <tr>
+                            <td>.remove()</td>
+                            <td>Element o'chirish (xato beradi agar element yo'q bo'lsa)</td>
+                            <td>fruits.remove("banan")</td>
+                        </tr>
+                        <tr>
+                            <td>.discard()</td>
+                            <td>Element o'chirish (xato bermaydi)</td>
+                            <td>fruits.discard("banan")</td>
+                        </tr>
+                        <tr>
+                            <td>.pop()</td>
+                            <td>Ixtiyoriy elementni o'chirish</td>
+                            <td>fruits.pop()</td>
+                        </tr>
+                        <tr>
+                            <td>.clear()</td>
+                            <td>Barcha elementlarni o'chirish</td>
+                            <td>fruits.clear()</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box">
+                    <h4>💡 Muhim xususiyat</h4>
+                    <p>To'plamlar takrorlanuvchi elementlarni saqlamaydi va tartib saqlanmaydi. Bu ularni unikal
+                        qiymatlar bilan ishlash uchun ideal qiladi.</p>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>🎮 Interaktiv Demo: To'plamlar bilan ishlash</h4>
+                    <input type="text" id="setInput" class="demo-input" placeholder="Element kiriting">
+                    <button class="demo-button" onclick="addToSet()">Qo'shish</button>
+                    <button class="demo-button" onclick="clearSet()">Tozalash</button>
+                    <div id="setOutput" class="demo-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sahifa 8: Amaliyot -->
+        <div class="page" id="page8">
+            <div class="section">
+                <h2><span class="emoji">🏋️</span>Amaliyot topshiriqlari</h2>
+
+                <div class="task-box">
+                    <h4>1-topshiriq: Sonlar filtri</h4>
+                    <p>1 dan 20 gacha sonlardan faqat juft sonlarni ro'yxatga kiritadigan dastur yozing.</p>
+                    <div class="code-block">
+                        <pre>
+# Yechim
+even_numbers = [x for x in range(1, 21) if x % 2 == 0]
+print(even_numbers)
+        </pre>
+                    </div>
+                </div>
+
+                <div class="task-box">
+                    <h4>2-topshiriq: Matn teskari aylantirish</h4>
+                    <p>Foydalanuvchidan matn qabul qilib, uni teskari tartibda chiqaradigan dastur yozing.</p>
+                    <div class="code-block">
+                        <pre>
+# Yechim
+text = input("Matn kiriting: ")
+reversed_text = text[::-1]
+print(reversed_text)
+        </pre>
+                    </div>
+                </div>
+
+                <div class="task-box">
+                    <h4>3-topshiriq: To'plamlar bilan ishlash</h4>
+                    <p>Ikkita ro'yxatdan umumiy elementlarni topib, yangi to'plam sifatida chiqaring.</p>
+                    <div class="code-block">
+                        <pre>
+# Yechim
+list1 = [1, 2, 3, 4, 5]
+list2 = [4, 5, 6, 7, 8]
+common_elements = set(list1) & set(list2)
+print(common_elements)
+        </pre>
+                    </div>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>🎮 Interaktiv Demo: Amaliyot topshirig'i</h4>
+                    <p>Matn kiritib, undagi harflar sonini hisoblang</p>
+                    <input type="text" id="practiceInput" class="demo-input" placeholder="Matn kiriting">
+                    <button class="demo-button" onclick="countLetters()">Hisoblash</button>
+                    <div id="practiceOutput" class="demo-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-arrows">
+            <button class="nav-arrow" id="prevBtn" onclick="prevPage()" disabled><span>⬅️</span> Oldingi</button>
+            <button class="nav-arrow" id="nextBtn" onclick="nextPage()">Keyingi <span>➡️</span></button>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 8;
+        let myList = [];
+        let mySet = new Set();
+
+        function updateProgressBar() {
+            const progress = (currentPage / totalPages) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            document.getElementById('currentPage').textContent = currentPage;
+        }
+
+        function goToPage(page) {
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+
+            // Sahifalarni yangilash
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page${page}`).classList.add('active');
+
+            // Navigatsiya tugmalarini yangilash
+            document.querySelectorAll('.page-nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`button[onclick="goToPage(${page})"]`).classList.add('active');
+
+            // Oldingi/keyingi tugmalar holati
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+
+            updateProgressBar();
+        }
+
+        function prevPage() {
+            if (currentPage > 1) goToPage(currentPage - 1);
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) goToPage(currentPage + 1);
+        }
+
+        function checkType() {
+            const input = document.getElementById('typeInput').value;
+            let output;
+            try {
+                const value = eval(input);
+                output = `Qiymat: ${value}, Tur: ${typeof value}`;
+                if (value !== undefined) {
+                    output += `, Class: ${value.constructor.name}`;
+                }
+            } catch {
+                output = "Matn: string";
+            }
+            document.getElementById('typeOutput').textContent = output;
+        }
+
+        function checkGrade() {
+            const score = parseInt(document.getElementById('scoreInput').value);
+            let grade;
+            if (isNaN(score) || score < 0 || score > 100) {
+                grade = "Iltimos, 0-100 oralig'ida raqam kiriting";
+            } else if (score >= 90) {
+                grade = "A'lo baho";
+            } else if (score >= 80) {
+                grade = "Yaxshi baho";
+            } else if (score >= 70) {
+                grade = "Qoniqarli baho";
+            } else {
+                grade = "Qoniqarsiz baho";
+            }
+            document.getElementById('gradeOutput').textContent = grade;
+        }
+
+        function runLoop() {
+            const count = parseInt(document.getElementById('loopInput').value);
+            let output = "";
+            if (isNaN(count) || count < 1 || count > 10) {
+                output = "Iltimos, 1-10 oralig'ida raqam kiriting";
+            } else {
+                for (let i = 1; i <= count; i++) {
+                    output += `Qadam ${i}\n`;
+                }
+            }
+            document.getElementById('loopOutput').textContent = output;
+        }
+
+        function addToList() {
+            const input = document.getElementById('listInput').value.trim();
+            if (input) {
+                myList.push(input);
+                document.getElementById('listOutput').textContent = `Ro'yxat: [${myList.join(', ')}]`;
+                document.getElementById('listInput').value = '';
+            }
+        }
+
+        function clearList() {
+            myList = [];
+            document.getElementById('listOutput').textContent = 'Ro\'yxat bo\'sh';
+        }
+
+        function addToSet() {
+            const input = document.getElementById('setInput').value.trim();
+            if (input) {
+                mySet.add(input);
+                document.getElementById('setOutput').textContent = `To'plam: {${Array.from(mySet).join(', ')}}`;
+                document.getElementById('setInput').value = '';
+            }
+        }
+
+        function clearSet() {
+            mySet.clear();
+            document.getElementById('setOutput').textContent = 'To\'plam bo\'sh';
+        }
+
+        function countLetters() {
+            const input = document.getElementById('practiceInput').value;
+            const letterCount = input.replace(/[^a-zA-Z]/g, '').length;
+            document.getElementById('practiceOutput').textContent =
+                `Matn: "${input}"\nHarflar soni: ${letterCount}`;
+        }
+
+        // Dastlabki sahifani yuklash
+        window.onload = () => {
+            goToPage(1);
+        };
+    </script>
+</body>
+
+</html>
