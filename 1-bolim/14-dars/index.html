@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funksiyalar - To'liq Dars</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .page-navigation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .page-nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            min-width: 120px;
+        }
+
+        .page-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-nav-btn.active {
+            background: rgba(255, 255, 255, 0.4);
+            font-weight: bold;
+        }
+
+        .page-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-counter {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .page {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 30px;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section h2 {
+            color: #4a5568;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            position: relative;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: #764ba2;
+        }
+
+        .section h3 {
+            color: #2d3748;
+            font-size: 1.5rem;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .code-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+            position: relative;
+            font-family: 'Courier New', monospace;
+        }
+
+        .code-block::before {
+            content: 'Python';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 12px;
+            color: #667eea;
+            opacity: 0.7;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #4299e1;
+        }
+
+        .info-box h4 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .task-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ed8936;
+        }
+
+        .task-box h4 {
+            color: #c05621;
+            margin-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .emoji {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .interactive-demo {
+            background: #f7fafc;
+            border: 2px dashed #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .demo-input {
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 5px;
+            margin: 10px;
+            font-size: 16px;
+        }
+
+        .demo-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .demo-button:hover {
+            background: #5a6fd8;
+        }
+
+        .demo-output {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border: 1px solid #e2e8f0;
+            min-height: 50px;
+            font-family: monospace;
+            text-align: left;
+            white-space: pre-wrap;
+        }
+        
+        .nav-arrows {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding: 20px 0;
+        }
+
+        .nav-arrow {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-arrow:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-arrow:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .page-navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-arrows {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><span class="emoji">📦</span>Funksiyalar Python'da</h1>
+            <p>Definition, Arguments va Return operatori</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <div class="page-navigation">
+            <button class="page-nav-btn" onclick="goToPage(1)">Kirish</button>
+            <button class="page-nav-btn" onclick="goToPage(2)">Argumentlar</button>
+            <button class="page-nav-btn" onclick="goToPage(3)">Return</button>
+            <button class="page-nav-btn" onclick="goToPage(4)">Amaliyot</button>
+            <button class="page-nav-btn" onclick="goToPage(5)">Xulosa</button>
+            <button class="page-nav-btn" onclick="goToPage(6)">Savol-javob</button>
+            <div class="page-counter">
+                <span id="currentPage">1</span> / <span id="totalPages">6</span>
+            </div>
+        </div>
+
+        <div class="page active" id="page1">
+            <div class="section">
+                <h2><span class="emoji">🚀</span>Kirish va Funksiya Tushunchasi</h2>
+                <p>Assalomu alaykum, yosh dasturchilar! 😊 Bugun biz Python’da funksiyalar haqida o‘rganamiz. Funksiya — bu ma’lum bir vazifani bajaradigan kod bloki bo‘lib, uni kerak bo‘lganda bir necha marta chaqirib ishlatish mumkin.</p>
+                <p>Funksiyalar dasturimizni tartibli va qayta ishlatiladigan qilishda juda muhim. Ularni <code>def</code> kalit so'zi yordamida aniqlaymiz.</p>
+
+                <h3>Oddiy funksiya misoli</h3>
+                <div class="code-block">
+<pre>
+# Funksiyani aniqlash
+def salom_ber():
+    print("Assalomu alaykum!")
+
+# Funksiyani chaqirish
+salom_ber()
+
+# Natija: Assalomu alaykum!
+</pre>
+                </div>
+
+                <div class="info-box">
+                    <h4>💡 Nima uchun funksiyalar kerak?</h4>
+                    <p>Funksiyalar <strong>DRY (Don't Repeat Yourself - O'zingni Takrorlama)</strong> tamoyiliga amal qilishga yordam beradi. Kodni qayta-qayta yozish o‘rniga uni bir joyda saqlab, kerakli joylarda chaqirish orqali vaqtdan yutamiz va xatoliklarni kamaytiramiz.</p>
+                </div>
+                
+                <div class="interactive-demo">
+                    <h4>🎮 Interaktiv Demo: Funksiyani chaqiring</h4>
+                    <p>Quyidagi tugmani bosib, `salom_ber()` funksiyasini chaqiring va natijani ko'ring.</p>
+                    <button class="demo-button" onclick="demoSalomBer()">`salom_ber()` ni chaqirish</button>
+                    <div id="demoSalomOutput" class="demo-output"></div>
+                </div>
+
+                <div class="task-box">
+                    <h4>🎯 Mashq: Birinchi funksiyangiz</h4>
+                    <p><code>xayrli_tun()</code> nomli funksiya yarating va u “Xayrli tun!” deb chiqarsin. Funksiyani 2 marta chaqiring.</p>
+                    <div class="code-block">
+<pre>
+def xayrli_tun():
+    print("Xayrli tun!")
+
+xayrli_tun()
+xayrli_tun()
+</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page2">
+            <div class="section">
+                <h2><span class="emoji">📥</span>Argumentlar (Parametrlar)</h2>
+                <p>Argumentlar funksiyaga tashqaridan ma’lumot uzatish imkonini beradi. Ular funksiya aniqlanayotganda qavslar ichida yoziladi.</p>
+                
+                <h3>Argumentli funksiya</h3>
+                <div class="code-block">
+<pre>
+def salom_ber(ism):
+    print(f"Assalomu alaykum, {ism}!")
+
+salom_ber("Ali")    # Natija: Assalomu alaykum, Ali!
+salom_ber("Zilola") # Natija: Assalomu alaykum, Zilola!
+</pre>
+                </div>
+                
+                <h3>Standart (Default) argumentlar</h3>
+                <p>Agar argumentga standart qiymat berib qo'ysak, funksiyani chaqirganda o‘sha argumentni kiritmasak ham u xato bermaydi.</p>
+                <div class="code-block">
+<pre>
+def salom_ber(ism="Mehmon"):
+    print(f"Assalomu alaykum, {ism}!")
+
+salom_ber()          # Natija: Assalomu alaykum, Mehmon!
+salom_ber("Sardor")  # Natija: Assalomu alaykum, Sardor!
+</pre>
+                </div>
+
+                <h3>Noma'lum sonli argumentlar (*args)</h3>
+                <p>Agar funksiyaga nechta argument berilishi oldindan noma'lum bo'lsa, <code>*args</code> dan foydalanamiz. Bu barcha argumentlarni bitta kortej (tuple) ichiga yig'ib beradi.</p>
+                <div class="code-block">
+<pre>
+def yigindi(*sonlar):
+    print(f"Kiritilgan sonlar: {sonlar}")
+    print(f"Yig'indi: {sum(sonlar)}")
+
+yigindi(1, 2, 3)       # Natija: Yig'indi: 6
+yigindi(10, 20, 30, 40) # Natija: Yig'indi: 100
+</pre>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>🎮 Interaktiv Demo: Argumentlar bilan ishlash</h4>
+                    <p>Ismingizni kiriting va funksiya siz bilan qanday salomlashishini ko'ring. Agar bo'sh qoldirsangiz, standart qiymat ishlatiladi.</p>
+                    <input type="text" id="nameInput" class="demo-input" placeholder="Ismingizni kiriting...">
+                    <button class="demo-button" onclick="demoGreet()">Salomlashish</button>
+                    <div id="greetOutput" class="demo-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page3">
+            <div class="section">
+                <h2><span class="emoji">📤</span>return operatori</h2>
+                <p><code>return</code> operatori funksiyadan natija qaytarish uchun ishlatiladi. <code>print()</code> faqat ekranga chiqarsa, <code>return</code> qiymatni funksiyadan tashqariga olib chiqadi va uni biror o'zgaruvchiga saqlab, keyinchalik ishlatish imkonini beradi.</p>
+                
+                <h3>`print` vs `return`</h3>
+                 <div class="grid">
+                    <div class="card">
+                        <h4>Faqat `print` bilan</h4>
+                        <div class="code-block">
+<pre>
+def yigindi_print(a, b):
+    print(a + b)
+
+natija = yigindi_print(3, 7) 
+# Ekranga 10 chiqadi
+print(natija) # natija: None
+</pre>
+                        </div>
+                    </div>
+                     <div class="card">
+                        <h4>`return` bilan</h4>
+                        <div class="code-block">
+<pre>
+def yigindi_return(a, b):
+    return a + b
+
+natija = yigindi_return(3, 7)
+print(natija) # natija: 10
+</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>`return`dan keyingi kod ishlamaydi</h3>
+                <p>Funksiya <code>return</code> operatoriga duch kelishi bilan o'z ishini yakunlaydi. Undan keyingi kodlar bajarilmaydi.</p>
+                <div class="code-block">
+<pre>
+def test_funksiya():
+    print("Bu xabar chiqadi")
+    return 42
+    print("Bu xabar esa chiqmaydi!")
+
+qiymat = test_funksiya() # Natija: Bu xabar chiqadi
+print(qiymat)            # Natija: 42
+</pre>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>🎮 Interaktiv Demo: `return` bilan ishlash</h4>
+                    <p>Ikkita son kiriting va ularning yig'indisini `return` qiluvchi funksiya natijasini ko'ring.</p>
+                    <input type="number" id="num1Input" class="demo-input" placeholder="Birinchi son" value="5">
+                    <input type="number" id="num2Input" class="demo-input" placeholder="Ikkinchi son" value="10">
+                    <button class="demo-button" onclick="demoReturn()">Hisoblash</button>
+                    <div id="returnOutput" class="demo-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page4">
+            <div class="section">
+                <h2><span class="emoji">🏋️</span>Amaliy mashqlar</h2>
+                <p>Endi o‘rganganlarimizni amalda sinab ko‘ramiz! Quyidagi mashqlarni bajaring.</p>
+                
+                <div class="grid">
+                    <div class="task-box">
+                        <h4>Mashq 1: Funksiya aniqlash</h4>
+                        <p><code>xayrli_kun()</code> nomli funksiya yarating, u “Xayrli kun!” deb chiqarsin va uni 3 marta chaqiring.</p>
+                        <div class="code-block">
+<pre>
+def xayrli_kun():
+    print("Xayrli kun!")
+
+xayrli_kun()
+xayrli_kun()
+xayrli_kun()
+</pre>
+                        </div>
+                    </div>
+
+                    <div class="task-box">
+                        <h4>Mashq 2: Argumentlar</h4>
+                        <p><code>ayirish(a, b)</code> nomli funksiya yarating, u ikki sonni ayirib, natijani ekranga chiqarsin. Funksiyani (10, 4) va (20, 15) juftliklari uchun chaqiring.</p>
+                        <div class="code-block">
+<pre>
+def ayirish(a, b):
+    print(f"{a} - {b} = {a - b}")
+
+ayirish(10, 4)
+ayirish(20, 15)
+</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-box">
+                    <h4>Mashq 3: `return` operatori</h4>
+                    <p><code>kopaytirish(a, b)</code> nomli funksiya yarating, u ikki sonni ko‘paytirib, natijani `return` qilsin. Funksiyani (3, 4) va (5, 6) uchun chaqirib, natijalarni alohida o'zgaruvchilarga saqlang va ekranga chiqaring.</p>
+                    <div class="code-block">
+<pre>
+def kopaytirish(a, b):
+    return a * b
+
+natija1 = kopaytirish(3, 4)
+natija2 = kopaytirish(5, 6)
+
+print(f"Birinchi natija: {natija1}")
+print(f"Ikkinchi natija: {natija2}")
+</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page5">
+            <div class="section">
+                <h2><span class="emoji">🎉</span>Xulosa va Uy Vazifasi</h2>
+                <p>Ajoyib, yosh dasturchilar! Bugun biz Python’da funksiyalar bilan ishlashni o‘rgandik: funksiyalarni aniqlash (<code>def</code>), ularga ma'lumot uzatish (argumentlar) va ulardan natija qaytarishni (<code>return</code>) ko'rdik. Funksiyalar kodni tartibli qiladi va qayta ishlatish imkonini beradi.</p>
+                
+                <div class="info-box">
+                    <h4>📌 Asosiy xulosalar:</h4>
+                    <ul>
+                        <li><b>def funksiya_nomi():</b> Funksiya yaratish uchun asosiy sintaksis.</li>
+                        <li><b>Argumentlar:</b> Funksiyani yanada moslashuvchan va kuchli qiladi.</li>
+                        <li><b>return:</b> Funksiyadan qiymat qaytarish va uni dasturning boshqa qismlarida ishlatish uchun zarur.</li>
+                    </ul>
+                </div>
+
+                <div class="task-box">
+                    <h4>📚 Uyga vazifa</h4>
+                    <ol>
+                        <li><code>xush_kelibsiz()</code> nomli funksiya yarating, u “Xush kelibsiz!” deb chiqarsin va uni 2 marta chaqiring.</li>
+                        <li><code>bolish(a, b)</code> nomli funksiya yarating, u ikki sonni bo‘lib, natijani ekranga chiqarsin. Funksiyani (15, 3) va (20, 4) uchun chaqiring.</li>
+                        <li><code>daraja(son, daraja)</code> nomli funksiya yarating, u sonni berilgan darajaga ko‘tarib, natijani <code>return</code> qilsin. Funksiyani (2, 3) va (5, 2) uchun chaqirib, natijalarni ekranga chiqaring.</li>
+                    </ol>
+                </div>
+                 <p>Keyingi darsda esa <strong>Advanced Functions: *args va **kwargs</strong> kabi tushunchalarni o'rganamiz.</p>
+            </div>
+        </div>
+
+        <div class="page" id="page6">
+            <div class="section">
+                <h2><span class="emoji">🤔</span>Qayta ko'rib chiqish va Savollar</h2>
+                <p>Ajoyib ish qildingiz! Endi o'rganganlarimizni mustahkamlab olamiz. Bugungi darsda nimalarni o‘rgandik?</p>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>🧐 Funksiyalar qanday aniqlanadi?</h3>
+                        <p>Funksiyalar Python'da <code>def</code> kalit so'zi, undan keyin funksiya nomi va qavslar <code>()</code> yordamida aniqlanadi.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>🤨 Argumentlar nima uchun kerak?</h3>
+                        <p>Argumentlar funksiyaga tashqaridan turli xil ma'lumotlarni uzatish uchun kerak. Bu funksiyani bir necha xil holatlarda qayta ishlatish imkonini beradi.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>🤓 `return` operatorining `print`dan farqi nima?</h3>
+                        <p><code>print()</code> ma'lumotni shunchaki ekranga chiqaradi. <code>return</code> esa qiymatni funksiyadan "tashqariga" qaytaradi, bu qiymatni o'zgaruvchiga saqlab, dastur davomida ishlatish mumkin.</p>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>💬 Savollaringiz bormi?</h4>
+                    <p>Qandaydir tushunmovchiliklar qoldimi? Hozir muhokama qilish uchun ayni vaqti. Bemalol savollaringizni bering! 😊</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-arrows">
+            <button class="nav-arrow" id="prevBtn" onclick="prevPage()" disabled><span>⬅️</span> Oldingi</button>
+            <button class="nav-arrow" id="nextBtn" onclick="nextPage()">Keyingi <span>➡️</span></button>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 6;
+
+        function updateProgressBar() {
+            const progress = ((currentPage - 1) / (totalPages - 1)) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            document.getElementById('currentPage').textContent = currentPage;
+        }
+
+        function goToPage(page) {
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page${page}`).classList.add('active');
+
+            document.querySelectorAll('.page-nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`button[onclick="goToPage(${page})"]`).classList.add('active');
+
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+
+            updateProgressBar();
+        }
+
+        function prevPage() {
+            if (currentPage > 1) goToPage(currentPage - 1);
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) goToPage(currentPage + 1);
+        }
+
+        // Interactive Demos
+        function demoSalomBer() {
+             document.getElementById('demoSalomOutput').textContent = "Assalomu alaykum!";
+        }
+
+        function demoGreet() {
+            const name = document.getElementById('nameInput').value;
+            const outputDiv = document.getElementById('greetOutput');
+            
+            // Funksiyani shu yerda "aniqlaymiz" va chaqiramiz
+            function salom_ber(ism = "Mehmon") {
+                return `Assalomu alaykum, ${ism}!`;
+            }
+
+            if (name.trim() === '') {
+                outputDiv.textContent = salom_ber(); // Standart qiymat bilan chaqirish
+            } else {
+                outputDiv.textContent = salom_ber(name); // Kiritilgan qiymat bilan chaqirish
+            }
+        }
+        
+        function demoReturn() {
+            const num1 = parseInt(document.getElementById('num1Input').value);
+            const num2 = parseInt(document.getElementById('num2Input').value);
+            const outputDiv = document.getElementById('returnOutput');
+
+            function yigindi_return(a, b) {
+                if (isNaN(a) || isNaN(b)) {
+                    return "Iltimos, ikkala maydonga ham son kiriting.";
+                }
+                return a + b;
+            }
+
+            const natija = yigindi_return(num1, num2);
+            outputDiv.textContent = `Funksiya qaytargan natija (return value): ${natija}`;
+        }
+
+
+        window.onload = () => {
+            goToPage(1);
+        };
+    </script>
+</body>
+
+</html>

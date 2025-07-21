@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Handling - To'liq Dars</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .page-navigation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .page-nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            min-width: 120px;
+        }
+
+        .page-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-nav-btn.active {
+            background: rgba(255, 255, 255, 0.4);
+            font-weight: bold;
+        }
+
+        .page-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-counter {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .page {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 30px;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section h2 {
+            color: #4a5568;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            position: relative;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: #764ba2;
+        }
+
+        .section h3 {
+            color: #2d3748;
+            font-size: 1.5rem;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .code-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+            position: relative;
+            font-family: 'Courier New', monospace;
+        }
+
+        .code-block::before {
+            content: 'Python';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 12px;
+            color: #667eea;
+            opacity: 0.7;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #4299e1;
+        }
+
+        .info-box h4 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .task-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ed8936;
+        }
+
+        .task-box h4 {
+            color: #c05621;
+            margin-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .emoji {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .interactive-demo {
+            background: #f7fafc;
+            border: 2px dashed #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .demo-input {
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 5px;
+            margin: 10px;
+            font-size: 16px;
+        }
+
+        .demo-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .demo-button:hover {
+            background: #5a6fd8;
+        }
+
+        .demo-output {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border: 1px solid #e2e8f0;
+            min-height: 50px;
+            font-family: monospace;
+            text-align: left;
+            white-space: pre-wrap;
+        }
+        
+        .nav-arrows {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding: 20px 0;
+        }
+
+        .nav-arrow {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-arrow:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-arrow:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .page-navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-arrows {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+</head>
+
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+
+    <div class="container">
+        <div class="header">
+            <h1><span class="emoji">🛡️</span>Error Handling in Python</h1>
+            <p>try, except, finally bloklari orqali xatolarni boshqarish</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <div class="page-navigation">
+            <button class="page-nav-btn" onclick="goToPage(1)">Kirish</button>
+            <button class="page-nav-btn" onclick="goToPage(2)">try / except</button>
+            <button class="page-nav-btn" onclick="goToPage(3)">finally</button>
+            <button class="page-nav-btn" onclick="goToPage(4)">Amaliyot</button>
+            <button class="page-nav-btn" onclick="goToPage(5)">Xulosa</button>
+            <button class="page-nav-btn" onclick="goToPage(6)">Savol-javob</button>
+            <div class="page-counter">
+                <span id="currentPage">1</span> / <span id="totalPages">6</span>
+            </div>
+        </div>
+
+        <div class="page active" id="page1">
+            <div class="section">
+                <h2><span class="emoji">🚀</span>Kirish va Xatolarni Boshqarish</h2>
+                <p>Assalomu alaykum, yosh dasturchilar! 😊 Bugun biz Python’da xatolarni boshqarish, ya’ni <strong>error handling</strong> haqida o‘rganamiz. Xatolarni boshqarish dasturimizning ishonchli ishlashi uchun juda muhim.</p>
+                <p>Dastur yozganimizda ba’zida xatolar (errors) yuzaga keladi. Masalan, foydalanuvchi noto‘g‘ri ma’lumot kiritsa yoki fayl topilmasa, dastur to‘xtab qolishi mumkin. Xatolarni boshqarish yordamida bunday holatlarni nazorat qilib, dasturni to‘xtatmasdan davom ettirish mumkin.</p>
+
+                <h3>Oddiy xato misoli: Nolga bo'lish</h3>
+                <div class="code-block">
+<pre>
+son1 = 10
+son2 = 0
+natija = son1 / son2  # ZeroDivisionError: division by zero
+</pre>
+                </div>
+                <p>Bu kod ishlaganda <strong>ZeroDivisionError</strong> xatosi chiqadi va dastur to‘xtaydi. Xatolarni boshqarish yordamida bunday xatolarni "ushlab qolib", foydalanuvchiga xabar berish mumkin.</p>
+
+                <div class="info-box">
+                    <h4>💡 Nima uchun xatolarni boshqarish kerak?</h4>
+                    <p>Xatolarni boshqarish dasturning kutilmagan vaziyatlarda to'xtab qolishining oldini oladi va foydalanuvchiga tushunarli xabar berish imkonini yaratadi. Bu dasturning barqaror (stable) va ishonchli (reliable) ishlashini ta'minlaydi.</p>
+                </div>
+
+                <div class="task-box">
+                    <h4>🎯 Mashq: Xatoni kuzating</h4>
+                    <p>Quyidagi kodni yozing va qanday xato chiqishini o'z ko'zingiz bilan ko'ring.</p>
+                    <div class="code-block">
+                        <pre>son = 5 / 0</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page2">
+            <div class="section">
+                <h2><span class="emoji">🥅</span>try va except bloklari</h2>
+                <p><code>try</code> blokida xato yuzaga kelishi mumkin bo‘lgan kod yoziladi, <code>except</code> blokida esa xato yuzaga kelsa nima qilish kerakligi belgilanadi.</p>
+                
+                <h3>Nolga bo'lish xatosini ushlash</h3>
+                <div class="code-block">
+<pre>
+try:
+    son1 = 10
+    son2 = 0
+    natija = son1 / son2
+    print(natija)
+except ZeroDivisionError:
+    print("Xato: Nolga bo‘lish mumkin emas!")
+
+# Natija: Xato: Nolga bo‘lish mumkin emas!
+</pre>
+                </div>
+                
+                <h3>Bir nechta xatolarni ushlash</h3>
+                <p>Ba’zida turli xatolar yuzaga kelishi mumkin. Bunday hollarda bir nechta <code>except</code> blokidan foydalanamiz:</p>
+                <div class="code-block">
+<pre>
+try:
+    son = int(input("Son kiriting: "))
+    natija = 10 / son
+    print(natija)
+except ZeroDivisionError:
+    print("Xato: Nolga bo‘lish mumkin emas!")
+except ValueError:
+    print("Xato: Faqat son kiritish kerak!")
+</pre>
+                </div>
+
+                <h3>Umumiy xatolarni ushlash</h3>
+                <p>Agar xato turini aniq bilmasak, umumiy <code>Exception</code> sinfidan foydalanamiz. <code>as</code> kalit so'zi yordamida xato haqida batafsil ma'lumot olish mumkin.</p>
+                <div class="code-block">
+<pre>
+try:
+    son = int(input("Son kiriting: "))
+    natija = 10 / son
+    print(natija)
+except Exception as e:
+    print(f"Kutilmagan xato yuzaga keldi: {e}")
+</pre>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>🎮 Interaktiv Demo: Xatolarni ushlab ko'ring</h4>
+                    <p>100 sonini siz kiritgan songa bo'lishga harakat qilamiz. '0' yoki 'salom' kabi qiymatlarni kiritib sinab ko'ring.</p>
+                    <input type="text" id="divInput" class="demo-input" placeholder="Bo'luvchini kiriting...">
+                    <button class="demo-button" onclick="handleDivision()">Hisoblash</button>
+                    <div id="divOutput" class="demo-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page3">
+            <div class="section">
+                <h2><span class="emoji">🧹</span>finally va Xatolarni Aniqlash</h2>
+                <p><code>finally</code> bloki <code>try-except</code> tuzilmasida har doim ishlaydi — xato bo‘ladimi yoki yo‘qmi, farqi yo‘q. Bu odatda resurslarni tozalash (masalan, faylni yopish) uchun juda foydali.</p>
+                
+                <h3>finally bloki misoli</h3>
+                <div class="code-block">
+<pre>
+try:
+    son = 10 / 2
+    print(son) # Natija: 5.0
+except ZeroDivisionError:
+    print("Xato: Nolga bo‘lish mumkin emas!")
+finally:
+    print("Bu xabar har doim chiqadi!")
+</pre>
+                </div>
+                <p>Agar xato yuzaga kelsa ham <code>finally</code> bloki ishga tushadi:</p>
+                  <div class="code-block">
+<pre>
+try:
+    son = 10 / 0
+    print(son)
+except ZeroDivisionError:
+    print("Xato: Nolga bo‘lish mumkin emas!") # Shu yer ishlaydi
+finally:
+    print("Bu xabar har doim chiqadi!") # Va bu yer ham ishlaydi
+</pre>
+                </div>
+                
+                <h3>Xato haqida ma'lumot olish</h3>
+                <p><code>except</code> blokida xato haqida batafsil ma’lumot olish uchun <code>as</code> kalit so‘zidan foydalanamiz:</p>
+                <div class="code-block">
+<pre>
+try:
+    royxat = [1, 2, 3]
+    print(royxat[5])  # IndexError
+except IndexError as xato:
+    print(f"Xato turi: IndexError. Xabar: {xato}")
+
+# Natija: Xato turi: IndexError. Xabar: list index out of range
+</pre>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>🎮 Interaktiv Demo: finally blokini sinab ko'ring</h4>
+                    <p>Ro'yxatdan (`[10, 20, 30]`) siz kiritgan indeksdagi elementni olishga harakat qilamiz. '1' (to'g'ri) va '5' (noto'g'ri) indekslarini kiritib ko'ring.</p>
+                    <input type="text" id="indexInput" class="demo-input" placeholder="Indeks kiriting...">
+                    <button class="demo-button" onclick="handleIndexAccess()">Elementni olish</button>
+                    <div id="indexOutput" class="demo-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page4">
+            <div class="section">
+                <h2><span class="emoji">🏋️</span>Amaliy mashqlar</h2>
+                <p>Endi o‘rganganlarimizni amalda sinab ko‘ramiz! Quyidagi mashqlarni bajaring.</p>
+                
+                <div class="grid">
+                    <div class="task-box">
+                        <h4>Mashq 1: try va except</h4>
+                        <p>Foydalanuvchidan son kiritishni so‘rang va uni 100 ga bo‘ling. <code>ZeroDivisionError</code> va <code>ValueError</code> xatolarini ushlab, mos xabarni chiqaring.</p>
+                        <div class="code-block">
+<pre>
+try:
+    son = int(input("Son kiriting: "))
+    natija = 100 / son
+    print(f"Natija: {natija}")
+except ZeroDivisionError:
+    print("Xato: Nolga bo‘lish mumkin emas!")
+except ValueError:
+    print("Xato: Faqat son kiritish kerak!")
+</pre>
+                        </div>
+                    </div>
+
+                    <div class="task-box">
+                        <h4>Mashq 2: Bir nechta xato</h4>
+                        <p>Foydalanuvchidan ro‘yxat indeksini so‘rang (<code>royxat = [10, 20, 30]</code>) va elementni chiqaring. <code>IndexError</code> va <code>ValueError</code> xatolarini ushlab, mos xabarni chiqaring.</p>
+                        <div class="code-block">
+<pre>
+royxat = [10, 20, 30]
+try:
+    indeks = int(input("Indeks kiriting: "))
+    print(royxat[indeks])
+except IndexError:
+    print("Xato: Indeks ro‘yxatda mavjud emas!")
+except ValueError:
+    print("Xato: Faqat butun son kiritish kerak!")
+</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-box">
+                    <h4>Mashq 3: finally bloki</h4>
+                    <p><code>son = 15</code> o‘zgaruvchisini 3 ga bo‘ling. <code>ZeroDivisionError</code> xatosini ushlang va <code>finally</code> bloki yordamida “Amaliyot tugadi” deb chiqaring.</p>
+                    <div class="code-block">
+<pre>
+try:
+    son = 15
+    natija = son / 3
+    print(natija)
+except ZeroDivisionError:
+    print("Xato: Nolga bo‘lish mumkin emas!")
+finally:
+    print("Amaliyot tugadi")
+</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page5">
+            <div class="section">
+                <h2><span class="emoji">🎉</span>Xulosa va Uy Vazifasi</h2>
+                <p>Ajoyib, yosh dasturchilar! Bugun biz Python’da xatolarni boshqarishning muhim vositalari — <strong>try</strong>, <strong>except</strong>, va <strong>finally</strong> bloklarini o‘rgandik. Endi sizning dasturlaringiz kutilmagan xatolarga nisbatan ancha chidamli va ishonchli bo'ladi.</p>
+                
+                <div class="info-box">
+                    <h4>📌 Asosiy xulosalar:</h4>
+                    <ul>
+                        <li><b>try:</b> Xato kelib chiqishi mumkin bo'lgan kodni shu blok ichiga yozamiz.</li>
+                        <li><b>except:</b> Agar `try` blokida xato yuz bersa, `except` bloki ishga tushadi.</li>
+                        <li><b>finally:</b> Bu blok har doim — xato bo'lsa ham, bo'lmasa ham — ishlaydi.</li>
+                        <li><b>Exception as e:</b> Xato haqida batafsil ma'lumot olish imkonini beradi.</li>
+                    </ul>
+                </div>
+
+                <div class="task-box">
+                    <h4>📚 Uyga vazifa</h4>
+                    <ol>
+                        <li>Foydalanuvchidan son kiritishni so‘rang va uni 50 ga bo‘ling. `ZeroDivisionError` va `ValueError` xatolarini alohida ushlab, mos xabar chiqaring.</li>
+                        <li>`royxat = [5, 10, 15]` ro‘yxatidan foydalanuvchi kiritgan indeksdagi elementni chiqaring. `IndexError` va `ValueError` xatolarini ushlang.</li>
+                        <li>Foydalanuvchidan ikki son kiritishni so‘rab, ularni bo‘ling. `ZeroDivisionError` xatosini ushlang va `finally` bloki yordamida “Hisoblash yakunlandi” deb chiqaring.</li>
+                    </ol>
+                </div>
+                 <p>Keyingi darsda esa <strong>Funksiyalar: Definition, arguments, return operatori</strong> mavzusini o‘rganamiz.</p>
+            </div>
+        </div>
+
+        <div class="page" id="page6">
+            <div class="section">
+                <h2><span class="emoji">🤔</span>Qayta ko'rib chiqish va Savollar</h2>
+                <p>Ajoyib ish qildingiz! Endi o'rganganlarimizni mustahkamlab olamiz. Bugungi darsda nimalarni o‘rgandik?</p>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>🧐 try va except bloklari qanday ishlaydi?</h3>
+                        <p><code>try</code> bloki kodni "sinab ko'radi", agar xato chiqsa, dasturni to'xtatmasdan, boshqaruvni mos <code>except</code> blokiga o'tkazadi.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>🤨 finally bloki qachon ishlaydi?</h3>
+                        <p><code>finally</code> bloki har doim, istisnosiz ishga tushadi: `try` bloki muvaffaqiyatli yakunlansa ham, `except` bloki ishga tushsa ham.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>🤓 Xatolarni boshqarish qachon foydali?</h3>
+                        <p>Foydalanuvchi kiritadigan ma'lumotlarni tekshirishda, fayllar bilan ishlashda, tarmoqqa ulanishda va dastur barqarorligini ta'minlash kerak bo'lgan har qanday vaziyatda.</p>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>💬 Savollaringiz bormi?</h4>
+                    <p>Qandaydir tushunmovchiliklar qoldimi? Hozir muhokama qilish uchun ayni vaqti. Bemalol savollaringizni bering! 😊</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-arrows">
+            <button class="nav-arrow" id="prevBtn" onclick="prevPage()" disabled><span>⬅️</span> Oldingi</button>
+            <button class="nav-arrow" id="nextBtn" onclick="nextPage()">Keyingi <span>➡️</span></button>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 6;
+
+        function updateProgressBar() {
+            const progress = ((currentPage - 1) / (totalPages - 1)) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            document.getElementById('currentPage').textContent = currentPage;
+        }
+
+        function goToPage(page) {
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page${page}`).classList.add('active');
+
+            document.querySelectorAll('.page-nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`button[onclick="goToPage(${page})"]`).classList.add('active');
+
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+
+            updateProgressBar();
+        }
+
+        function prevPage() {
+            if (currentPage > 1) goToPage(currentPage - 1);
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) goToPage(currentPage + 1);
+        }
+
+        // Interactive Demos
+        function handleDivision() {
+            const input = document.getElementById('divInput').value;
+            const outputDiv = document.getElementById('divOutput');
+            try {
+                const num = parseInt(input);
+                if (isNaN(num)) {
+                    throw new Error("ValueError"); // Simulate ValueError
+                }
+                if (num === 0) {
+                    throw new Error("ZeroDivisionError");
+                }
+                const result = 100 / num;
+                outputDiv.style.color = 'green';
+                outputDiv.textContent = `Natija: ${result}`;
+            } catch (e) {
+                outputDiv.style.color = 'red';
+                if (e.message === "ValueError") {
+                    outputDiv.textContent = "Xato: Faqat son kiritish kerak!";
+                } else if (e.message === "ZeroDivisionError") {
+                    outputDiv.textContent = "Xato: Nolga bo‘lish mumkin emas!";
+                } else {
+                    outputDiv.textContent = `Kutilmagan xato: ${e.message}`;
+                }
+            }
+        }
+
+        function handleIndexAccess() {
+            const input = document.getElementById('indexInput').value;
+            const outputDiv = document.getElementById('indexOutput');
+            const royxat = [10, 20, 30];
+            let resultText = '';
+
+            try {
+                const index = parseInt(input);
+                if (isNaN(index)) {
+                    throw new Error("ValueError");
+                }
+                if (index >= 0 && index < royxat.length) {
+                    resultText = `Natija: royxat[${index}] = ${royxat[index]}`;
+                    outputDiv.style.color = 'green';
+                } else {
+                    throw new Error("IndexError");
+                }
+            } catch (e) {
+                outputDiv.style.color = 'red';
+                 if (e.message === "ValueError") {
+                    resultText = "Xato: Faqat butun son kiritishingiz kerak.";
+                } else if (e.message === "IndexError") {
+                    resultText = `Xato: Indeks xato. Ro'yxatda bunday indeks yo'q.`;
+                }
+            } finally {
+                outputDiv.textContent = resultText + "\n\nFinally: Bu xabar har doim chiqadi!";
+            }
+        }
+
+        window.onload = () => {
+            goToPage(1);
+        };
+    </script>
+</body>
+
+</html>
