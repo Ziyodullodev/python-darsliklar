@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Set'lar - Test</title>
+    <link rel="stylesheet" href="../../style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐍 Python If…Else Test</h1>
+            <p>10 ta savol orqali bilimingizni sinab ko'ring!</p>
+        </div>
+
+        <!-- Ism kiritish bo'limi -->
+        <div class="name-section" id="nameSection">
+            <h2>👤 Ismingizni kiriting</h2>
+            <input type="text" id="studentName" placeholder="Ismingizni kiriting..." maxlength="50">
+            <br>
+            <button class="btn btn-primary" onclick="startQuiz()">🚀 Testni boshlash</button>
+        </div>
+
+        <!-- Test bo'limi -->
+        <div class="quiz-section" id="quizSection">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="question-container" id="questionContainer">
+                <!-- Savollar bu yerda ko'rsatiladi -->
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" disabled>◀ Oldingi</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Keyingi ▶</button>
+            </div>
+        </div>
+
+        <!-- Natijalar bo'limi -->
+        <div class="results" id="resultsSection">
+            <h2>🎉 Test yakunlandi!</h2>
+            <div class="score" id="scoreDisplay"></div>
+            <div class="score-details" id="scoreDetails"></div>
+            <div class="wrong-answers" id="wrongAnswers"></div>
+            <div class="sending-status" id="sendingStatus"></div>
+            <button class="btn btn-primary" onclick="restartQuiz()">🔄 Qayta boshlash</button>
+        </div>
+    </div>
+
+    <script src="test.js"></script>
+    <script src="../../script.js"></script>
+</body>
+
+</html>
