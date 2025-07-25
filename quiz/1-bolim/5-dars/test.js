@@ -1,4 +1,4 @@
-const questions_lesson_5 = [
+const questions = [
     {
         question: "Python'da list (ro'yxat) yaratish uchun qaysi qavslardan foydalaniladi?",
         options: ["()", "{}", "[]", "<>"],

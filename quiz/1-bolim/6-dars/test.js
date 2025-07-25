@@ -1,4 +1,4 @@
-const questions_lesson_6 = [
+const questions = [
     {
         question: "Ichma-ich list (nested list) nima?",
         options: ["Faqat raqamlar saqlaydigan list", "Boshqa listlarni element sifatida saqlaydigan list", "Faqat bir xil turdagi elementlar saqlaydigan list", "List ichidagi Tuple"],

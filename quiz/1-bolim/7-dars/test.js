@@ -1,4 +1,4 @@
-const questions_lesson_7 = [
+const questions = [
     {
         question: "Python'da tuple (kortej) yaratish uchun qaysi qavslardan foydalaniladi?",
         options: ["[]", "{}", "()", "<>"],
