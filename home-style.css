@@ -44,7 +44,7 @@
     padding-left: 15px;
   }
   .lessons.open {
-    max-height: 1200px;
+    max-height: 900px;
   }
   .lessons a {
     display: block;
