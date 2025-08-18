@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loyiha Ishi: Mehmonxona Dasturi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
+            color: white;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            display: none;
+            padding: 40px;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #4DD0E1, #B2EBF2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            color: #4DD0E1;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        h3 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #FFC107;
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .code-block {
+            background: rgba(0,0,0,0.7);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            border-left: 5px solid #FFC107;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            text-align: left;
+        }
+
+        .highlight {
+            color: #4DD0E1;
+            font-weight: bold;
+        }
+
+        .comment {
+            color: #B2FF59;
+            font-style: italic;
+        }
+
+        .string {
+            color: #FF8A80;
+        }
+
+        .list {
+            text-align: left;
+            font-size: 1.3em;
+            line-height: 2;
+        }
+
+        .list li {
+            margin: 15px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .list li:before {
+            content: "🏨";
+            position: absolute;
+            left: 0;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1.1em;
+        }
+
+        .example-box {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid rgba(255,193,7,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .info {
+            background: rgba(30,144,255,0.2);
+            border: 2px solid #1E90FF;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .success {
+            background: rgba(50,205,50,0.2);
+            border: 2px solid #32CD32;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">9</span>
+        </div>
+
+        <div class="slide active">
+            <div class="content">
+                <h1>🏨 Loyiha Ishi: Mehmonxona Dasturi</h1>
+                <p class="subtitle">O'tilgan mavzularni amalda qo'llash</p>
+                <div class="example-box">
+                    <h3>Vaqt taqsimoti</h3>
+                    <ul class="list" style="font-size: 1.1em;">
+                        <li>Kirish va loyiha talablari - 20 daqiqa</li>
+                        <li>Mehmonxona dasturini tuzish (1-qism) - 25 daqiqa</li>
+                        <li>Mehmonxona dasturini tuzish (2-qism) - 20 daqiqa</li>
+                        <li>Amaliy mashqlar - 25 daqiqa</li>
+                        <li>Xulosa va uy vazifasi - 20 daqiqa</li>
+                        <li>Qayta aloqa va savollar - 10 daqiqa</li>
+                    </ul>
+                </div>
+                <div class="info">
+                    <p><strong>Jami:</strong> 120 daqiqa (2 soat) 🕐</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="content">
+                <h2>📋 Loyiha Talablari</h2>
+                <div class="info">
+                    <h3>Dastur vazifalari:</h3>
+                    <ul class="list" style="font-size: 1.1em;">
+                        <li>Xonalar ro‘yxatini faylda saqlash.</li>
+                        <li>Narxlarga chegirma qo‘llash (map va lambda).</li>
+                        <li>Bo‘sh xonalarni filtrlab ko‘rsatish (filter).</li>
+                        <li>Jami to‘lovni hisoblash (reduce).</li>
+                        <li>Amal vaqtini o‘lchash (dekorator).</li>
+                        <li>Xona ID generatori (generatorlar).</li>
+                        <li>Standart va custom modullar.</li>
+                    </ul>
+                </div>
+                <div class="example-box">
+                    <h3>Loyiha tuzilmasi:</h3>
+                    <p>📂 `xonalar.txt` — xona ma'lumotlari</p>
+                    <p>📁 `utils.py` — yordamchi funksiyalar moduli</p>
+                    <p>📄 `main.py` — asosiy dastur fayli</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="content">
+                <h2>🛠️ Dastur Tuzish (1-qism)</h2>
+                <h3>1. Xonalarni fayldan o'qish</h3>
+                <div class="code-block">
+<span class="comment"># main.py</span>
+<span class="highlight">def</span> xonalarni_ol():
+    <span class="highlight">with</span> open(<span class="string">"xonalar.txt"</span>, <span class="string">"r"</span>) <span class="highlight">as</span> fayl:
+        xonalar = {}
+        <span class="highlight">for</span> qator <span class="highlight">in</span> fayl:
+            nomi, narxi, holati = qator.strip().split(<span class="string">": "</span>)
+            xonalar[nomi] = {<span class="string">"narx"</span>: <span class="highlight">int</span>(narxi), <span class="string">"holat"</span>: holati}
+        <span class="highlight">return</span> xonalar
+                </div>
+                <h3>2. Cheksiz ID generatori</h3>
+                <div class="code-block">
+<span class="comment"># main.py</span>
+<span class="highlight">def</span> id_generator():
+    id = 1
+    <span class="highlight">while</span> <span class="highlight">True</span>:
+        <span class="highlight">yield</span> id
+        id += 1
+
+gen = id_generator()
+<span class="highlight">for</span> _ <span class="highlight">in</span> <span class="highlight">range</span>(3):
+    <span class="highlight">print</span>(f<span class="string">"Xona ID: {next(gen)}"</span>)
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="content">
+                <h2>🛠️ Dastur Tuzish (1-qism)</h2>
+                <h3>3. Chegirma qo‘llash (<span class="highlight">map</span> va <span class="highlight">lambda</span>)</h3>
+                <div class="code-block">
+<span class="comment"># main.py</span>
+xonalar = xonalarni_ol()
+chegirma = 0.15
+<span class="highlight">for</span> xona <span class="highlight">in</span> xonalar:
+    xonalar[xona][<span class="string">"narx"</span>] = <span class="highlight">list</span>(<span class="highlight">map</span>(<span class="highlight">lambda</span> x: x * (1 - chegirma), [xonalar[xona][<span class="string">"narx"</span>]]))[0]
+<span class="highlight">print</span>(xonalar)
+                </div>
+                <h3>4. Bo‘sh xonalarni filtrlash (<span class="highlight">filter</span>)</h3>
+                <div class="code-block">
+<span class="comment"># main.py</span>
+xonalar = xonalarni_ol()
+bosh_xonalar = <span class="highlight">dict</span>(<span class="highlight">filter</span>(<span class="highlight">lambda</span> x: x[1][<span class="string">"holat"</span>] == <span class="string">"bo‘sh"</span>, xonalar.items()))
+<span class="highlight">print</span>(bosh_xonalar)
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="content">
+                <h2>🛠️ Dastur Tuzish (2-qism)</h2>
+                <h3>1. Vaqtni o‘lchash uchun dekorator</h3>
+                <div class="code-block">
+<span class="highlight">import</span> time
+
+<span class="highlight">def</span> vaqt_olchagich(funksiya):
+    <span class="highlight">def</span> wrapper(*args, **kwargs):
+        boshlanish = time.time()
+        natija = funksiya(*args, **kwargs)
+        tugash = time.time()
+        <span class="highlight">print</span>(f<span class="string">"{funksiya.__name__} {tugash - boshlanish:.4f} sekund davom etdi."</span>)
+        <span class="highlight">return</span> natija
+    <span class="highlight">return</span> wrapper
+
+@vaqt_olchagich
+<span class="highlight">def</span> xonalarni_korsat():
+    xonalar = xonalarni_ol()
+    <span class="highlight">for</span> nomi, info <span class="highlight">in</span> xonalar.items():
+        <span class="highlight">print</span>(f<span class="string">"{nomi}: {info['narx']} so‘m, Holat: {info['holat']}"</span>)
+
+xonalarni_korsat()
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="content">
+                <h2>🛠️ Dastur Tuzish (2-qism)</h2>
+                <h3>2. Jami narxni hisoblash (<span class="highlight">reduce</span>)</h3>
+                <div class="code-block">
+<span class="highlight">from</span> functools <span class="highlight">import</span> reduce
+
+xonalar = xonalarni_ol()
+bosh_xonalar = <span class="highlight">dict</span>(<span class="highlight">filter</span>(<span class="highlight">lambda</span> x: x[1][<span class="string">"holat"</span>] == <span class="string">"bo‘sh"</span>, xonalar.items()))
+jami_narx = <span class="highlight">reduce</span>(<span class="highlight">lambda</span> x, y: x + y, [info[<span class="string">"narx"</span>] <span class="highlight">for</span> info <span class="highlight">in</span> bosh_xonalar.values()])
+<span class="highlight">print</span>(f<span class="string">"Bo‘sh xonalar jami narxi: {jami_narx} so‘m"</span>)
+                </div>
+                <h3>3. Custom modul yaratish (<span class="highlight">utils.py</span>)</h3>
+                <div class="code-block">
+<span class="comment"># utils.py</span>
+<span class="highlight">import</span> random
+<span class="highlight">def</span> tasodifiy_xona(xonalar):
+    <span class="highlight">return</span> random.choice(<span class="highlight">list</span>(xonalar.keys()))
+
+<span class="comment"># main.py da ishlatish:</span>
+<span class="highlight">from</span> utils <span class="highlight">import</span> tasodifiy_xona
+tanlangan = tasodifiy_xona(xonalar)
+<span class="highlight">print</span>(f<span class="string">"Tasodifiy xona: {tanlangan}"</span>)
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="content">
+                <h2>🏋️ Amaliy Mashqlar</h2>
+                <div class="example-box">
+                    <h3>Mashq 1 & 2: Faylga yozish & map</h3>
+                    <ul class="list" style="font-size: 1.1em;">
+                        <li>`xonalar.txt` ga "Xona 104: 400000: band" ni qo'shing.</li>
+                        <li>Barcha xonalar narxlariga 5% chegirma qo‘llang.</li>
+                    </ul>
+                </div>
+                <div class="example-box">
+                    <h3>Mashq 3: reduce & filter</h3>
+                    <ul class="list" style="font-size: 1.1em;">
+                        <li>Barcha xonalar uchun jami narxni hisoblang.</li>
+                        <li>Band holatdagi xonalarni filtrlab chiqaring.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="content">
+                <h2>🎯 Xulosa va 🏠 Uy Vazifasi</h2>
+                <div class="example-box">
+                    <h3>Bugun o'rgandik:</h3>
+                    <p>✅ O‘tilgan barcha mavzularni (fayllar, map, filter, reduce, generator, dekoratorlar, modullar) bir loyiha ichida qo‘lladik.</p>
+                </div>
+                <div class="info">
+                    <h3>Uy vazifasi:</h3>
+                    <ul class="list" style="font-size: 1.1em;">
+                        <li>`xonalar.txt` ga yana 2 ta xona qo‘shing.</li>
+                        <li>Barcha narxlarga 25% chegirma qo‘llang.</li>
+                        <li>300000 so‘mdan qimmat xonalarni filtrlang.</li>
+                        <li>`utils.py`ga jami narx hisoblaydigan funksiya yozing (`reduce` bilan).</li>
+                    </ul>
+                </div>
+                <div class="success">
+                    <p><strong>Keyingi dars:</strong> "Tic Tac Toe" O'yini loyihasi 🎲</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="content">
+                <h2>🗣️ Savollar va Qayta Aloqa</h2>
+                <h3 style="margin-top: 40px;">Savollaringiz bormi? 🤔</h3>
+                <p style="font-size: 1.5em; margin-top: 20px;">Bugungi darsda faol ishtirok etganingiz uchun rahmat! 👏</p>
+                <div class="info" style="margin-top: 30px;">
+                    <p><strong>Asosiy qoida:</strong> Nazariy bilimlarni amaliyotda qo'llash dasturchi uchun eng muhim ko'nikmadir.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Oldingi</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = index + 1;
+            
+            // Navigation buttons
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            if (currentSlideIndex < 0) currentSlideIndex = 0;
+            if (currentSlideIndex >= totalSlides) currentSlideIndex = totalSlides - 1;
+            
+            showSlide(currentSlideIndex);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') {
+                currentSlideIndex = 0;
+                showSlide(currentSlideIndex);
+            }
+            if (e.key === 'End') {
+                currentSlideIndex = totalSlides - 1;
+                showSlide(currentSlideIndex);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

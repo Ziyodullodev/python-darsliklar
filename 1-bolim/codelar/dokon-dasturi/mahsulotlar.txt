@@ -1,0 +1,4 @@
+Telefon: 5000000
+Noutbuk: 8000000
+Televizor: 3000000
+asdf: 400
