@@ -39,3 +39,5 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 For questions or feedback, please contact [admin@fintechhub.com](mailto:admin@fintechhub.com).
+
+<!-- Security scan triggered at 2025-09-02 14:20:34 -->
