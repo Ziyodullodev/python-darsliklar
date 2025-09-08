@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python OOP: Polymorphism</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+
+        .highlight {
+            background: #fed7d7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c53030;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .task-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .task-title {
+            color: #856404;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .time-badge {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .polymorphism-box {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">12</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1><span class="emoji">📚</span> Python OOP - 13-dars</h1>
+            <h2 style="text-align: center; color: #764ba2;">Polymorphism</h2>
+            <div style="text-align: center; margin-top: 40px;">
+                <h3>Method overloading va overriding</h3>
+                <p style="font-size: 1.2em; margin-top: 30px; color: #666;">
+                    Assalomu alaykum, yosh dasturchilar! <span class="emoji">😊</span><br>
+                    Bugun biz Polymorphism tushunchasini o'rganamiz
+                </p>
+                <div class="time-badge">120 daqiqa</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Dars rejasi -->
+        <div class="slide">
+            <h2><span class="emoji">📋</span> Dars rejasi</h2>
+            <ul style="font-size: 1.1em;">
+                <li>1. Kirish va Polimorfizm tushunchasi <span class="time-badge">20 min</span></li>
+                <li>2. Method overriding bilan ishlash <span class="time-badge">25 min</span></li>
+                <li>3. Method overloading simulyatsiyasi <span class="time-badge">20 min</span></li>
+                <li>4. Amaliy mashqlar <span class="time-badge">25 min</span></li>
+                <li>5. Xulosa va uy vazifasi <span class="time-badge">20 min</span></li>
+                <li>6. Qayta aloqa va savollar <span class="time-badge">10 min</span></li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Polymorphism nima? -->
+        <div class="slide">
+            <h2><span class="emoji">🤔</span> Polymorphism nima?</h2>
+            
+            <p style="margin-bottom: 20px;">Polymorphism so'zi "poly" (ko'p) va "morph" (shakl) so'zlaridan kelib chiqqan bo'lib, "ko'p shakllilik" ma'nosini beradi.</p>
+            
+            <div class="polymorphism-box">
+                <h3><span class="emoji">🔄</span> Polymorphism turlari:</h3>
+                <ul>
+                    <li><strong>Method Overriding</strong> - Bola sinfda ota sinfning metodini qayta yozish</li>
+                    <li><strong>Method Overloading</strong> - Bir sinf ichida bir xil nomli metodning turli parametrlarga ega bo'lishi</li>
+                </ul>
+            </div>
+            
+            <div class="code-block">
+<pre>class Hayvon:
+    def ovoz_chiqar(self):
+        return "Men hayvonman!"
+
+class Mushuk(Hayvon):
+    def ovoz_chiqar(self):  # Method overriding
+        return "Miyov!"
+
+class It(Hayvon):
+    def ovoz_chiqar(self):  # Method overriding
+        return "Hav!"
+
+# Test qilish
+hayvonlar = [Mushuk(), It()]
+for hayvon in hayvonlar:
+    print(hayvon.ovoz_chiqar())  # Har xil natija</pre>
+            </div>
+        </div>
+
+        <!-- Slide 4: Method Overriding -->
+        <div class="slide">
+            <h2><span class="emoji">🔄</span> Method Overriding</h2>
+            
+            <p style="margin-bottom: 20px;">Method Overriding - bola sinfda ota sinfning metodini qayta yozish:</p>
+            
+            <div class="code-block">
+<pre>class Shaxs:
+    def __init__(self, ism, yosh):
+        self.ism = ism
+        self.yosh = yosh
+    
+    def salom_ber(self):
+        return f"Salom, men {self.ism}!"
+
+class Talaba(Shaxs):
+    def __init__(self, ism, yosh, kurs):
+        super().__init__(ism, yosh)
+        self.kurs = kurs
+    
+    def salom_ber(self):  # Method overriding
+        return f"Salom, men {self.ism}, {self.kurs}-kurs talabasiman!"
+
+class O_quvchi(Shaxs):
+    def __init__(self, ism, yosh, sinf):
+        super().__init__(ism, yosh)
+        self.sinf = sinf
+    
+    def salom_ber(self):  # Method overriding
+        return f"Salom, men {self.ism}, {self.sinf} sinfida o'qiyman!"
+
+# Test qilish
+shaxslar = [
+    Shaxs("Ali", 25),
+    Talaba("Zilola", 20, 2),
+    O_quvchi("Sardor", 16, "10-A")
+]
+
+for shaxs in shaxslar:
+    print(shaxs.salom_ber())</pre>
+            </div>
+        </div>
+
+        <!-- Slide 5: Method Overloading simulyatsiyasi -->
+        <div class="slide">
+            <h2><span class="emoji">🔄</span> Method Overloading simulyatsiyasi</h2>
+            
+            <p style="margin-bottom: 20px;">Python'da method overloading to'g'ridan-to'g'ri qo'llab-quvvatlanmaydi, lekin simulyatsiya qilinadi:</p>
+            
+            <div class="code-block">
+<pre>class Kalkulyator:
+    def qo_shish(self, a, b=None, c=None):
+        if b is None and c is None:
+            return a
+        elif c is None:
+            return a + b
+        else:
+            return a + b + c
+    
+    def ko_paytirish(self, a, b=None, c=None):
+        if b is None and c is None:
+            return a
+        elif c is None:
+            return a * b
+        else:
+            return a * b * c
+
+# Test qilish
+kalkulyator = Kalkulyator()
+
+print(kalkulyator.qo_shish(5))           # 5
+print(kalkulyator.qo_shish(5, 3))        # 8
+print(kalkulyator.qo_shish(5, 3, 2))     # 10
+
+print(kalkulyator.ko_paytirish(5))       # 5
+print(kalkulyator.ko_paytirish(5, 3))    # 15
+print(kalkulyator.ko_paytirish(5, 3, 2)) # 30</pre>
+            </div>
+        </div>
+
+        <!-- Slide 6: Duck Typing -->
+        <div class="slide">
+            <h2><span class="emoji">🦆</span> Duck Typing</h2>
+            
+            <p style="margin-bottom: 20px;">Python'da Duck Typing - "agar u o'rdak kabi yursa va o'rdak kabi ovoz chiqarsa, demak u o'rdak" prinsipi:</p>
+            
+            <div class="code-block">
+<pre>class Mashina:
+    def harakatlanish(self):
+        return "Mashina yo'lda harakatlanmoqda"
+
+class Samolyot:
+    def harakatlanish(self):
+        return "Samolyot osmonda uchmoqda"
+
+class Kema:
+    def harakatlanish(self):
+        return "Kema dengizda suzmoqda"
+
+def harakatlanish_funksiyasi(transport):
+    """Har qanday transport obyektini qabul qiladi"""
+    return transport.harakatlanish()
+
+# Test qilish
+transportlar = [Mashina(), Samolyot(), Kema()]
+
+for transport in transportlar:
+    print(harakatlanish_funksiyasi(transport))</pre>
+            </div>
+        </div>
+
+        <!-- Slide 7: Amaliy mashq 1 -->
+        <div class="slide">
+            <h2><span class="emoji">💪</span> Amaliy mashq 1</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🎵</span> Musiqa asboblari</div>
+                <p><strong>Vazifa:</strong> Musiqa asboblari tizimi yarating</p>
+                <ul>
+                    <li><code>Musiqa_asbobi</code> sinfi - nomi, ovoz_chiqar() metodi</li>
+                    <li><code>Gitara</code>, <code>Piano</code>, <code>Skripka</code> sinflari</li>
+                    <li>Har bir sinfda ovoz_chiqar() metodini override qiling</li>
+                    <li>Duck typing ishlatib, barcha asboblarni chalib ko'ring</li>
+                </ul>
+                <p style="margin-top: 15px; color: #856404;">
+                    <strong>Vaqt: 10 daqiqa</strong> <span class="emoji">⏰</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Amaliy mashq 2 -->
+        <div class="slide">
+            <h2><span class="emoji">💪</span> Amaliy mashq 2</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🍕</span> Ovqat tayyorlash</div>
+                <p><strong>Vazifa:</strong> Ovqat tayyorlash tizimi yarating</p>
+                <ul>
+                    <li><code>Ovqat</code> sinfi - nomi, tayyorlash() metodi</li>
+                    <li><code>Pizza</code>, <code>Salat</code>, <code>Shashlik</code> sinflari</li>
+                    <li>Har bir sinfda tayyorlash() metodini override qiling</li>
+                    <li>Method overloading simulyatsiyasi qiling</li>
+                </ul>
+                <p style="margin-top: 15px; color: #856404;">
+                    <strong>Vaqt: 10 daqiqa</strong> <span class="emoji">⏰</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Uy vazifasi -->
+        <div class="slide">
+            <h2><span class="emoji">🏠</span> Uy vazifasi</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🎮</span> Vazifa 1: O'yin tizimi</div>
+                <ul>
+                    <li><code>O_yinchi</code> sinfi - nomi, harakat() metodi</li>
+                    <li><code>Jangchi</code>, <code>Sehrgar</code>, <code>Kamondor</code> sinflari</li>
+                    <li>Har bir sinfda harakat() metodini override qiling</li>
+                </ul>
+            </div>
+
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🏫</span> Vazifa 2: Ta'lim tizimi</div>
+                <ul>
+                    <li><code>O_quvchi</code> sinfi - nomi, o_qish() metodi</li>
+                    <li><code>Talaba</code>, <code>O_quvchi</code>, <code>Magistr</code> sinflari</li>
+                    <li>Method overloading simulyatsiyasi qiling</li>
+                </ul>
+            </div>
+
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🚗</span> Vazifa 3: Transport tizimi</div>
+                <ul>
+                    <li><code>Transport</code> sinfi - nomi, harakatlanish() metodi</li>
+                    <li><code>Mashina</code>, <code>Samolyot</code>, <code>Kema</code> sinflari</li>
+                    <li>Duck typing ishlatib, barcha transportlarni harakatlantiring</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 10: Xulosa -->
+        <div class="slide">
+            <h1><span class="emoji">🎉</span> Xulosa</h1>
+            
+            <div style="text-align: center;">
+                <h2 style="color: #48bb78;">Bugun nimalarni o'rgandik?</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
+                    <div class="example-box">
+                        <h3><span class="emoji">🔄</span> Method Overriding</h3>
+                        <p>Bola sinfda ota sinf metodini qayta yozish</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🔄</span> Method Overloading</h3>
+                        <p>Bir xil nomli metodning turli parametrlarga ega bo'lishi</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🦆</span> Duck Typing</h3>
+                        <p>Obyektning turi emas, xatti-harakati muhim</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🎯</span> Polymorphism</h3>
+                        <p>Bir xil nomli metodlarning turli xil xatti-harakatlar</p>
+                    </div>
+                </div>
+
+                <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">
+                    Keyingi dars: Encapsulation mavzusini o'rganamiz
+                </p>
+
+                <p style="margin-top: 20px; color: #666;">
+                    Savollaringiz bo'lsa, yozib qoldiring! <span class="emoji">😊</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 11: Qayta ko'rib chiqish -->
+        <div class="slide">
+            <h2><span class="emoji">🔄</span> Qayta ko'rib chiqish</h2>
+            
+            <div class="example-box">
+                <h3><span class="emoji">❓</span> Savollar:</h3>
+                <ul>
+                    <li>Polymorphism nima?</li>
+                    <li>Method overriding va overloading o'rtasidagi farq nima?</li>
+                    <li>Duck typing nima?</li>
+                    <li>Python'da method overloading qanday simulyatsiya qilinadi?</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <p><span class="emoji">💡</span> <strong>Muhim eslatma:</strong></p>
+                <p>Polymorphism yordamida kodni moslashuvchan va kengaytiriladigan qilish mumkin. Har bir sinf o'z vazifasini bajarishi kerak!</p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">⬅️ Oldingi</button>
+            <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Button states
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

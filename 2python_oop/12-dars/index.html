@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python OOP: Inheritance (Meros)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+
+        .highlight {
+            background: #fed7d7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c53030;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .task-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .task-title {
+            color: #856404;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .time-badge {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .inheritance-box {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">12</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1><span class="emoji">📚</span> Python OOP - 12-dars</h1>
+            <h2 style="text-align: center; color: #764ba2;">Inheritance (Meros)</h2>
+            <div style="text-align: center; margin-top: 40px;">
+                <h3>Single, Multiple, Multilevel inheritance</h3>
+                <p style="font-size: 1.2em; margin-top: 30px; color: #666;">
+                    Assalomu alaykum, yosh dasturchilar! <span class="emoji">😊</span><br>
+                    Bugun biz Inheritance (Meros) tushunchasini o'rganamiz
+                </p>
+                <div class="time-badge">120 daqiqa</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Dars rejasi -->
+        <div class="slide">
+            <h2><span class="emoji">📋</span> Dars rejasi</h2>
+            <ul style="font-size: 1.1em;">
+                <li>1. Kirish va Inheritance tushunchasi <span class="time-badge">20 min</span></li>
+                <li>2. Single va Multilevel inheritance <span class="time-badge">25 min</span></li>
+                <li>3. Multiple inheritance bilan ishlash <span class="time-badge">20 min</span></li>
+                <li>4. Amaliy mashqlar <span class="time-badge">25 min</span></li>
+                <li>5. Xulosa va uy vazifasi <span class="time-badge">20 min</span></li>
+                <li>6. Qayta aloqa va savollar <span class="time-badge">10 min</span></li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Inheritance nima? -->
+        <div class="slide">
+            <h2><span class="emoji">🤔</span> Inheritance nima?</h2>
+            
+            <p style="margin-bottom: 20px;">Inheritance bir sinfning (ota sinf) atributlari va metodlarini boshqa sinfga (bola sinf) meros qilib berish imkonini beradi.</p>
+            
+            <div class="inheritance-box">
+                <h3><span class="emoji">🔗</span> Inheritance turlari:</h3>
+                <ul>
+                    <li><strong>Single Inheritance</strong> - Bitta ota sinfdan meros olish</li>
+                    <li><strong>Multiple Inheritance</strong> - Bir nechta ota sinfdan meros olish</li>
+                    <li><strong>Multilevel Inheritance</strong> - Sinflar zanjir shaklida meros olishi</li>
+                </ul>
+            </div>
+            
+            <div class="code-block">
+<pre>class Hayvon:  # Ota sinf
+    def __init__(self, turi):
+        self.turi = turi
+
+    def ovoz_chiqar(self):
+        return "Men hayvonman!"
+
+class Mushuk(Hayvon):  # Bola sinf
+    def ovoz_chiqar(self):
+        return "Miyov!"
+
+mushuk = Mushuk("Mushuk")
+print(mushuk.turi)  # Mushuk
+print(mushuk.ovoz_chiqar())  # Miyov!</pre>
+            </div>
+        </div>
+
+        <!-- Slide 4: Single Inheritance -->
+        <div class="slide">
+            <h2><span class="emoji">🔗</span> Single Inheritance</h2>
+            
+            <p style="margin-bottom: 20px;">Single Inheritance - bitta ota sinfdan meros olish:</p>
+            
+            <div class="code-block">
+<pre>class Transport:  # Ota sinf
+    def __init__(self, nom, tezlik):
+        self.nom = nom
+        self.tezlik = tezlik
+    
+    def harakatlanish(self):
+        return f"{self.nom} harakatlanmoqda"
+
+class Mashina(Transport):  # Bola sinf
+    def __init__(self, nom, tezlik, rang):
+        super().__init__(nom, tezlik)  # Ota sinf konstruktorini chaqirish
+        self.rang = rang
+    
+    def harakatlanish(self):
+        return f"{self.rang} {self.nom} yo'lda harakatlanmoqda"
+
+class Samolyot(Transport):  # Bola sinf
+    def __init__(self, nom, tezlik, balandlik):
+        super().__init__(nom, tezlik)
+        self.balandlik = balandlik
+    
+    def harakatlanish(self):
+        return f"{self.nom} osmonda {self.balandlik}m balandlikda uchmoqda"
+
+# Test qilish
+mashina = Mashina("Toyota", 120, "Qizil")
+samolyot = Samolyot("Boeing", 800, 10000)
+
+print(mashina.harakatlanish())
+print(samolyot.harakatlanish())</pre>
+            </div>
+        </div>
+
+        <!-- Slide 5: Multilevel Inheritance -->
+        <div class="slide">
+            <h2><span class="emoji">🔗</span> Multilevel Inheritance</h2>
+            
+            <p style="margin-bottom: 20px;">Multilevel Inheritance - sinflar zanjir shaklida meros olishi:</p>
+            
+            <div class="code-block">
+<pre>class Hayvon:  # Ota sinf
+    def __init__(self, nom):
+        self.nom = nom
+    
+    def ovoz_chiqar(self):
+        return "Men hayvonman!"
+
+class Sut_emizuvchi(Hayvon):  # Bola sinf
+    def __init__(self, nom, sut_emizuvchi):
+        super().__init__(nom)
+        self.sut_emizuvchi = sut_emizuvchi
+    
+    def sut_berish(self):
+        return f"{self.nom} sut beradi"
+
+class It(Sut_emizuvchi):  # Nabira sinf
+    def __init__(self, nom, zot):
+        super().__init__(nom, True)
+        self.zot = zot
+    
+    def ovoz_chiqar(self):
+        return f"{self.nom} havlayapti: Woof! Woof!"
+
+# Test qilish
+it = It("Rex", "Olmon cho'pon iti")
+print(it.ovoz_chiqar())  # Rex havlayapti: Woof! Woof!
+print(it.sut_berish())   # Rex sut beradi
+print(f"Zot: {it.zot}")  # Zot: Olmon cho'pon iti</pre>
+            </div>
+        </div>
+
+        <!-- Slide 6: Multiple Inheritance -->
+        <div class="slide">
+            <h2><span class="emoji">🔗</span> Multiple Inheritance</h2>
+            
+            <p style="margin-bottom: 20px;">Multiple Inheritance - bir nechta ota sinfdan meros olish:</p>
+            
+            <div class="code-block">
+<pre>class Qo_ng_iroq:
+    def qo_ng_iroq_qilish(self):
+        return "Qo'ng'iroq qilmoqda..."
+
+class Xabar:
+    def xabar_yuborish(self):
+        return "Xabar yubormoqda..."
+
+class Internet:
+    def internet_ochish(self):
+        return "Internet ochmoqda..."
+
+class Smartfon(Qo_ng_iroq, Xabar, Internet):  # Multiple inheritance
+    def __init__(self, nom):
+        self.nom = nom
+    
+    def barcha_funksiyalar(self):
+        return f"{self.nom}: {self.qo_ng_iroq_qilish()} {self.xabar_yuborish()} {self.internet_ochish()}"
+
+# Test qilish
+telefon = Smartfon("iPhone")
+print(telefon.barcha_funksiyalar())
+
+# MRO (Method Resolution Order) ko'rish
+print(Smartfon.__mro__)</pre>
+            </div>
+        </div>
+
+        <!-- Slide 7: super() funksiyasi -->
+        <div class="slide">
+            <h2><span class="emoji">🔧</span> super() funksiyasi</h2>
+            
+            <p style="margin-bottom: 20px;"><strong>super()</strong> funksiyasi ota sinfning metodlarini chaqirish uchun ishlatiladi:</p>
+            
+            <div class="code-block">
+<pre>class Shaxs:
+    def __init__(self, ism, yosh):
+        self.ism = ism
+        self.yosh = yosh
+    
+    def ma_lumot(self):
+        return f"Ism: {self.ism}, Yosh: {self.yosh}"
+
+class Talaba(Shaxs):
+    def __init__(self, ism, yosh, kurs):
+        super().__init__(ism, yosh)  # Ota sinf konstruktorini chaqirish
+        self.kurs = kurs
+    
+    def ma_lumot(self):
+        # Ota sinf metodini chaqirish va qo'shimcha ma'lumot qo'shish
+        ota_ma_lumot = super().ma_lumot()
+        return f"{ota_ma_lumot}, Kurs: {self.kurs}"
+
+class O_quvchi(Talaba):
+    def __init__(self, ism, yosh, kurs, sinf):
+        super().__init__(ism, yosh, kurs)
+        self.sinf = sinf
+    
+    def ma_lumot(self):
+        ota_ma_lumot = super().ma_lumot()
+        return f"{ota_ma_lumot}, Sinf: {self.sinf}"
+
+# Test qilish
+o_quvchi = O_quvchi("Ali", 18, 1, "10-A")
+print(o_quvchi.ma_lumot())</pre>
+            </div>
+        </div>
+
+        <!-- Slide 8: Amaliy mashq 1 -->
+        <div class="slide">
+            <h2><span class="emoji">💪</span> Amaliy mashq 1</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🐾</span> Hayvonlar tizimi</div>
+                <p><strong>Vazifa:</strong> Hayvonlar tizimi yarating</p>
+                <ul>
+                    <li><code>Hayvon</code> sinfi - nomi, yoshi</li>
+                    <li><code>Sut_emizuvchi</code> sinfi - Hayvon'dan meros oladi</li>
+                    <li><code>It</code> sinfi - Sut_emizuvchi'dan meros oladi</li>
+                    <li>Har bir sinfda o'ziga xos metodlar</li>
+                </ul>
+                <p style="margin-top: 15px; color: #856404;">
+                    <strong>Vaqt: 10 daqiqa</strong> <span class="emoji">⏰</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Amaliy mashq 2 -->
+        <div class="slide">
+            <h2><span class="emoji">💪</span> Amaliy mashq 2</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🚗</span> Transport tizimi</div>
+                <p><strong>Vazifa:</strong> Transport tizimi yarating</p>
+                <ul>
+                    <li><code>Transport</code> sinfi - nomi, tezligi</li>
+                    <li><code>Quruqlik_transport</code> sinfi - Transport'dan meros oladi</li>
+                    <li><code>Mashina</code> va <code>Velosiped</code> sinflari - Quruqlik_transport'dan meros oladi</li>
+                    <li>Multiple inheritance ishlatish</li>
+                </ul>
+                <p style="margin-top: 15px; color: #856404;">
+                    <strong>Vaqt: 10 daqiqa</strong> <span class="emoji">⏰</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 10: Uy vazifasi -->
+        <div class="slide">
+            <h2><span class="emoji">🏠</span> Uy vazifasi</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">👨‍💼</span> Vazifa 1: Xodimlar tizimi</div>
+                <ul>
+                    <li><code>Xodim</code> sinfi - ismi, maoshi</li>
+                    <li><code>Menejer</code> sinfi - Xodim'dan meros oladi</li>
+                    <li><code>Dasturchi</code> sinfi - Xodim'dan meros oladi</li>
+                    <li>Har bir sinfda o'ziga xos metodlar</li>
+                </ul>
+            </div>
+
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">📚</span> Vazifa 2: Kitoblar tizimi</div>
+                <ul>
+                    <li><code>Kitob</code> sinfi - nomi, muallifi</li>
+                    <li><code>Darslik</code> sinfi - Kitob'dan meros oladi</li>
+                    <li><code>Roman</code> sinfi - Kitob'dan meros oladi</li>
+                    <li>Multilevel inheritance ishlatish</li>
+                </ul>
+            </div>
+
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🏠</span> Vazifa 3: Uy-joy tizimi</div>
+                <ul>
+                    <li><code>Bino</code> sinfi - qavati, maydoni</li>
+                    <li><code>Uy</code> va <code>Ofis</code> sinflari - Bino'dan meros oladi</li>
+                    <li>Multiple inheritance ishlatish</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 11: Xulosa -->
+        <div class="slide">
+            <h1><span class="emoji">🎉</span> Xulosa</h1>
+            
+            <div style="text-align: center;">
+                <h2 style="color: #48bb78;">Bugun nimalarni o'rgandik?</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
+                    <div class="example-box">
+                        <h3><span class="emoji">🔗</span> Single Inheritance</h3>
+                        <p>Bitta ota sinfdan meros olish</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🔗</span> Multilevel Inheritance</h3>
+                        <p>Sinflar zanjir shaklida meros olishi</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🔗</span> Multiple Inheritance</h3>
+                        <p>Bir nechta ota sinfdan meros olish</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🔧</span> super() funksiyasi</h3>
+                        <p>Ota sinf metodlarini chaqirish</p>
+                    </div>
+                </div>
+
+                <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">
+                    Keyingi dars: Polymorphism mavzusini o'rganamiz
+                </p>
+
+                <p style="margin-top: 20px; color: #666;">
+                    Savollaringiz bo'lsa, yozib qoldiring! <span class="emoji">😊</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 12: Qayta ko'rib chiqish -->
+        <div class="slide">
+            <h2><span class="emoji">🔄</span> Qayta ko'rib chiqish</h2>
+            
+            <div class="example-box">
+                <h3><span class="emoji">❓</span> Savollar:</h3>
+                <ul>
+                    <li>Inheritance nima?</li>
+                    <li>Single va Multiple inheritance o'rtasidagi farq nima?</li>
+                    <li>super() funksiyasi nima uchun kerak?</li>
+                    <li>MRO nima?</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <p><span class="emoji">💡</span> <strong>Muhim eslatma:</strong></p>
+                <p>Inheritance yordamida kodni qayta ishlatish va tartibga solish mumkin. Har bir sinf o'z vazifasini bajarishi kerak!</p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">⬅️ Oldingi</button>
+            <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Button states
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
