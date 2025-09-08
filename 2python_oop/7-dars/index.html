@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python OOP: Properties va Decorators</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+
+        .highlight {
+            background: #fed7d7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c53030;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .task-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .task-title {
+            color: #856404;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .time-badge {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .decorator-box {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .property-box {
+            background: #fef5e7;
+            border: 2px solid #f6ad55;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">14</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1><span class="emoji">📚</span> Python OOP - 7-dars</h1>
+            <h2 style="text-align: center; color: #764ba2;">Properties va Decorators</h2>
+            <div style="text-align: center; margin-top: 40px;">
+                <h3>@property, @staticmethod, @classmethod</h3>
+                <p style="font-size: 1.2em; margin-top: 30px; color: #666;">
+                    Assalomu alaykum, yosh dasturchilar! <span class="emoji">😊</span><br>
+                    Bugun biz Python'ning juda qiziqarli va kuchli xususiyati - Decorators'ni o'rganamiz
+                </p>
+                <div class="time-badge">120 daqiqa</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Dars rejasi -->
+        <div class="slide">
+            <h2><span class="emoji">📋</span> Dars rejasi</h2>
+            <ul style="font-size: 1.1em;">
+                <li>1. Decorators nima? <span class="time-badge">20 min</span></li>
+                <li>2. @property decorator <span class="time-badge">25 min</span></li>
+                <li>3. @staticmethod va @classmethod <span class="time-badge">25 min</span></li>
+                <li>4. Custom decorators <span class="time-badge">20 min</span></li>
+                <li>5. Amaliy loyiha: Bank hisob <span class="time-badge">20 min</span></li>
+                <li>6. Xulosa va uy vazifasi <span class="time-badge">10 min</span></li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Decorators nima? -->
+        <div class="slide">
+            <h2><span class="emoji">🤔</span> Decorators nima?</h2>
+            
+            <p style="margin-bottom: 20px;">Decorator - bu funksiya yoki class'ni boshqa funksiya yoki class bilan "o'rab" olish va uning xatti-harakatini o'zgartirish.</p>
+            
+            <div class="decorator-box">
+                <p><span class="emoji">💡</span> <strong>Real hayotdan misol:</strong></p>
+                <p>Agar sizda uyingiz bo'lsa, siz uni bezash uchun gul, rasmlar, mebellar qo'shasiz. Bu narsalar uyingizning asosiy funksiyasini o'zgartirmaydi, lekin uni chiroyliroq qiladi. Decorators ham xuddi shunday - ular funksiyalar yoki class'larni "bezaydi" va ularning funksiyasini kengaytiradi.</p>
+            </div>
+            
+            <div class="code-block">
+<pre>def bezash_decorator(func):
+    def ichki_funksiya():
+        print("=== Funksiya boshlanmoqda ===")
+        func()
+        print("=== Funksiya tugadi ===")
+    return ichki_funksiya
+
+@bezash_decorator
+def salom_aytish():
+    print("Salom, dunyo!")
+
+# Test qilish
+salom_aytish()</pre>
+            </div>
+        </div>
+
+        <!-- Slide 4: Decorators afzalliklari -->
+        <div class="slide">
+            <h2><span class="emoji">✅</span> Decorators'ning afzalliklari</h2>
+            
+            <div class="grid-layout">
+                <div class="decorator-box">
+                    <h3><span class="emoji">📝</span> Kodni qisqartirish</h3>
+                    <p>Takroriy kodlarni kamaytirish</p>
+                </div>
+                
+                <div class="decorator-box">
+                    <h3><span class="emoji">🔧</span> Funksionallikni kengaytirish</h3>
+                    <p>Mavjud kodni o'zgartirmasdan yangi xususiyatlar qo'shish</p>
+                </div>
+                
+                <div class="decorator-box">
+                    <h3><span class="emoji">📋</span> Tartibli kod</h3>
+                    <p>Mantiqiy tuzilish</p>
+                </div>
+                
+                <div class="decorator-box">
+                    <h3><span class="emoji">🔄</span> Qayta ishlatish</h3>
+                    <p>Bir decorator'ni ko'p joyda ishlatish</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: @property decorator -->
+        <div class="slide">
+            <h2><span class="emoji">🏷️</span> @property decorator</h2>
+            
+            <p style="margin-bottom: 20px;"><strong>@property decorator</strong> - getter va setter'ni oddiy attribute kabi ishlatish imkonini beradi.</p>
+            
+            <div class="code-block">
+<pre>class Talaba:
+    def __init__(self, ism, yosh):
+        self.ism = ism
+        self._yosh = yosh  # Protected attribute
+        self.__ball = 0    # Private attribute
+    
+    @property
+    def yosh(self):
+        return self._yosh
+    
+    @yosh.setter
+    def yosh(self, yangi_yosh):
+        if 16 <= yangi_yosh <= 25:
+            self._yosh = yangi_yosh
+            print(f"Yosh {yangi_yosh} ga o'zgartirildi")
+        else:
+            print("Yosh 16-25 orasida bo'lishi kerak!")
+    
+    @property
+    def ball(self):
+        return self.__ball
+    
+    @ball.setter
+    def ball(self, yangi_ball):
+        if 0 <= yangi_ball <= 100:
+            self.__ball = yangi_ball
+            print(f"Ball {yangi_ball} ga o'zgartirildi")
+        else:
+            print("Ball 0-100 orasida bo'lishi kerak!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 6: @property ishlatish -->
+        <div class="slide">
+            <h2><span class="emoji">💻</span> @property ishlatish</h2>
+            
+            <div class="code-block">
+<pre>    @property
+    def baho(self):
+        if self.__ball >= 90:
+            return "A'lo"
+        elif self.__ball >= 80:
+            return "Yaxshi"
+        elif self.__ball >= 70:
+            return "Qoniqarli"
+        else:
+            return "Qoniqarsiz"
+    
+    def ma_lumot_ko_rsatish(self):
+        print(f"=== {self.ism} ma'lumotlari ===")
+        print(f"Yosh: {self.yosh}")
+        print(f"Ball: {self.ball}")
+        print(f"Baho: {self.baho}")
+
+# Test qilish
+talaba = Talaba("Ali", 18)
+talaba.ma_lumot_ko_rsatish()
+
+# Property'lar oddiy attribute kabi ishlatiladi
+talaba.yosh = 19  # Setter ishlaydi
+talaba.ball = 85  # Setter ishlaydi
+
+print(f"Yosh: {talaba.yosh}")  # Getter ishlaydi
+print(f"Ball: {talaba.ball}")  # Getter ishlaydi
+print(f"Baho: {talaba.baho}")  # Getter ishlaydi</pre>
+            </div>
+        </div>
+
+        <!-- Slide 7: @staticmethod va @classmethod -->
+        <div class="slide">
+            <h2><span class="emoji">🔧</span> @staticmethod va @classmethod</h2>
+            
+            <div class="grid-layout">
+                <div>
+                    <h3>@classmethod</h3>
+                    <div class="code-block">
+<pre>@classmethod
+def universitet_haqida(cls):
+    print(f"Bu {cls.universitet} universiteti!")
+    print(f"Jami talabalar soni: {cls.talabalar_soni}")
+
+@classmethod
+def yangi_talaba(cls, ism, yosh, kurs):
+    print(f"Yangi talaba qabul qilindi: {ism}")
+    return cls(ism, yosh, kurs)</pre>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>@staticmethod</h3>
+                    <div class="code-block">
+<pre>@staticmethod
+def yosh_tekshirish(yosh):
+    if yosh >= 16:
+        return "Talaba bo'lish mumkin"
+    else:
+        return "Yosh yetarli emas"
+
+@staticmethod
+def ball_hisoblash(imtihon_balli, maksimal_ball):
+    foiz = (imtihon_balli / maksimal_ball) * 100
+    if foiz >= 90:
+        return "A'lo"
+    elif foiz >= 80:
+        return "Yaxshi"
+    elif foiz >= 70:
+        return "Qoniqarli"
+    else:
+        return "Qoniqarsiz"</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: @staticmethod va @classmethod test -->
+        <div class="slide">
+            <h2><span class="emoji">🧪</span> @staticmethod va @classmethod test</h2>
+            
+            <div class="code-block">
+<pre># Test qilish
+print("=== Class Method test ===")
+Talaba.universitet_haqida()
+
+print("\n=== Static Method test ===")
+print(Talaba.yosh_tekshirish(18))  # Class orqali
+print(Talaba.ball_hisoblash(85, 100))  # Class orqali
+
+print("\n=== Object yaratish ===")
+talaba1 = Talaba("Ali", 18, 1)
+talaba2 = Talaba("Zilola", 19, 2)
+
+print("\n=== Class Method object orqali ===")
+talaba1.universitet_haqida()  # Object orqali ham ishlaydi
+
+print("\n=== Static Method object orqali ===")
+print(talaba1.yosh_tekshirish(17))  # Object orqali ham ishlaydi
+
+print("\n=== Yangi talaba yaratish ===")
+talaba3 = Talaba.yangi_talaba("Sardor", 20, 3)</pre>
+            </div>
+        </div>
+
+        <!-- Slide 9: Custom decorators -->
+        <div class="slide">
+            <h2><span class="emoji">🎨</span> Custom decorators</h2>
+            
+            <p style="margin-bottom: 20px;"><strong>Custom decorators</strong> - o'zingizning decorator'lar yaratish.</p>
+            
+            <div class="code-block">
+<pre>def vaqt_olchash(func):
+    import time
+    def ichki_funksiya(*args, **kwargs):
+        boshlanish = time.time()
+        natija = func(*args, **kwargs)
+        tugash = time.time()
+        print(f"{func.__name__} funksiyasi {tugash - boshlanish:.4f} soniya davom etdi")
+        return natija
+    return ichki_funksiya
+
+def parol_tekshirish(func):
+    def ichki_funksiya(*args, **kwargs):
+        parol = input("Parolni kiriting: ")
+        if parol == "1234":
+            return func(*args, **kwargs)
+        else:
+            print("Noto'g'ri parol!")
+            return None
+    return ichki_funksiya
+
+def ma_lumot_tekshirish(func):
+    def ichki_funksiya(*args, **kwargs):
+        print(f"=== {func.__name__} funksiyasi chaqirildi ===")
+        print(f"Argumentlar: {args}")
+        print(f"Kalit so'zlar: {kwargs}")
+        natija = func(*args, **kwargs)
+        print(f"Natija: {natija}")
+        print("=== Funksiya tugadi ===")
+        return natija
+    return ichki_funksiya</pre>
+            </div>
+        </div>
+
+        <!-- Slide 10: Custom decorators ishlatish -->
+        <div class="slide">
+            <h2><span class="emoji">🎯</span> Custom decorators ishlatish</h2>
+            
+            <div class="code-block">
+<pre># Decorators ishlatish
+@vaqt_olchash
+@ma_lumot_tekshirish
+def hisoblash(a, b):
+    return a + b
+
+@parol_tekshirish
+def maxfiy_ma_lumot():
+    return "Bu maxfiy ma'lumot!"
+
+# Test qilish
+print("=== Hisoblash funksiyasi ===")
+natija = hisoblash(5, 3)
+print(f"Natija: {natija}")
+
+print("\n=== Maxfiy ma'lumot ===")
+maxfiy = maxfiy_ma_lumot()
+if maxfiy:
+    print(maxfiy)</pre>
+            </div>
+        </div>
+
+        <!-- Slide 11: Amaliy loyiha: Bank hisob -->
+        <div class="slide">
+            <h2><span class="emoji">🏦</span> Amaliy loyiha: Bank hisob</h2>
+            
+            <div class="code-block">
+<pre>def parol_tekshirish(func):
+    def ichki_funksiya(self, *args, **kwargs):
+        parol = input("Parolni kiriting: ")
+        if parol == self._parol:
+            return func(self, *args, **kwargs)
+        else:
+            print("Noto'g'ri parol!")
+            return None
+    return ichki_funksiya
+
+def ma_lumot_tekshirish(func):
+    def ichki_funksiya(self, *args, **kwargs):
+        print(f"=== {func.__name__} funksiyasi chaqirildi ===")
+        natija = func(self, *args, **kwargs)
+        print("=== Funksiya tugadi ===")
+        return natija
+    return ichki_funksiya
+
+class BankHisob:
+    def __init__(self, ism, dastlabki_summa=0):
+        self.ism = ism
+        self._balans = dastlabki_summa
+        self._parol = "1234"
+        self._max_kunlik_chiqim = 1000000
+        self._kunlik_chiqim = 0
+        self._harakatlar = []</pre>
+            </div>
+        </div>
+
+        <!-- Slide 12: Bank hisob metodlari -->
+        <div class="slide">
+            <h2><span class="emoji">💰</span> Bank hisob metodlari</h2>
+            
+            <div class="code-block">
+<pre>    @property
+    def balans(self):
+        return self._balans
+    
+    @balans.setter
+    def balans(self, yangi_balans):
+        if yangi_balans >= 0:
+            self._balans = yangi_balans
+        else:
+            print("Balans manfiy bo'lishi mumkin emas!")
+    
+    @property
+    def kunlik_chiqim(self):
+        return self._kunlik_chiqim
+    
+    @classmethod
+    def bank_ma_lumotlari(cls):
+        print("=== Bank ma'lumotlari ===")
+        print("Bank nomi: Toshkent Bank")
+        print("Bosh ofis: Toshkent shahar")
+        print("Telefon: +998 71 123 45 67")
+    
+    @staticmethod
+    def foiz_hisoblash(summa, foiz, yil):
+        return summa * (1 + foiz/100) ** yil
+    
+    @staticmethod
+    def parol_tekshirish(parol):
+        if len(parol) >= 4 and parol.isdigit():
+            return True
+        else:
+            return False</pre>
+            </div>
+        </div>
+
+        <!-- Slide 13: Bank hisob test -->
+        <div class="slide">
+            <h2><span class="emoji">🧪</span> Bank hisob test</h2>
+            
+            <div class="code-block">
+<pre>    @parol_tekshirish
+    @ma_lumot_tekshirish
+    def pul_qo_shish(self, miqdor):
+        if miqdor > 0:
+            self._balans += miqdor
+            self._harakatlar.append(f"+{miqdor} so'm")
+            print(f"{miqdor} so'm qo'shildi. Yangi balans: {self._balans}")
+        else:
+            print("Miqdor musbat bo'lishi kerak!")
+    
+    @parol_tekshirish
+    @ma_lumot_tekshirish
+    def pul_olish(self, miqdor):
+        if miqdor > 0:
+            if self._balans >= miqdor:
+                if self._kunlik_chiqim + miqdor <= self._max_kunlik_chiqim:
+                    self._balans -= miqdor
+                    self._kunlik_chiqim += miqdor
+                    self._harakatlar.append(f"-{miqdor} so'm")
+                    print(f"{miqdor} so'm olindi. Yangi balans: {self._balans}")
+                else:
+                    print("Kunlik chiqim limiti oshib ketdi!")
+            else:
+                print("Yetarli mablag' yo'q!")
+        else:
+            print("Miqdor musbat bo'lishi kerak!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 14: Xulosa -->
+        <div class="slide">
+            <h1><span class="emoji">🎉</span> Xulosa</h1>
+            
+            <div style="text-align: center;">
+                <h2 style="color: #48bb78;">Bugun nimalarni o'rgandik?</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
+                    <div class="example-box">
+                        <h3><span class="emoji">🎨</span> Decorators</h3>
+                        <p>Funksiyalar yoki class'larni "o'rab" olish</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🏷️</span> @property</h3>
+                        <p>Getter/setter'ni oddiy attribute kabi ishlatish</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🏗️</span> @classmethod</h3>
+                        <p>Class bilan ishlaydi, cls parametrini oladi</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🔧</span> @staticmethod</h3>
+                        <p>Mustaqil ishlaydi, parametr olmaydi</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🎯</span> Custom decorators</h3>
+                        <p>O'zingizning decorator'lar yaratish</p>
+                    </div>
+                </div>
+
+                <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">
+                    Keyingi dars: Abstract Classes mavzusini o'rganamiz
+                </p>
+
+                <p style="margin-top: 20px; color: #666;">
+                    Savollaringiz bo'lsa, yozib qoldiring! <span class="emoji">😊</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">⬅️ Oldingi</button>
+            <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Button states
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

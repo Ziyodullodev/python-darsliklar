@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python OOP: Polymorphism (Ko'p shakllilik)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+
+        .highlight {
+            background: #fed7d7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c53030;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .task-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .task-title {
+            color: #856404;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .time-badge {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .polymorphism-box {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">14</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1><span class="emoji">📚</span> Python OOP - 4-dars</h1>
+            <h2 style="text-align: center; color: #764ba2;">Polymorphism (Ko'p shakllilik)</h2>
+            <div style="text-align: center; margin-top: 40px;">
+                <h3>Bir xil interfeys, turli xatti-harakat</h3>
+                <p style="font-size: 1.2em; margin-top: 30px; color: #666;">
+                    Assalomu alaykum, yosh dasturchilar! <span class="emoji">😊</span><br>
+                    Bugun biz OOP'ning eng qiziqarli prinsiplaridan biri - Polymorphism'ni o'rganamiz
+                </p>
+                <div class="time-badge">120 daqiqa</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Dars rejasi -->
+        <div class="slide">
+            <h2><span class="emoji">📋</span> Dars rejasi</h2>
+            <ul style="font-size: 1.1em;">
+                <li>1. Polymorphism nima? <span class="time-badge">20 min</span></li>
+                <li>2. Method Overriding bilan Polymorphism <span class="time-badge">25 min</span></li>
+                <li>3. Duck Typing <span class="time-badge">20 min</span></li>
+                <li>4. Operator Overloading <span class="time-badge">20 min</span></li>
+                <li>5. Amaliy loyiha: Shaxslar tizimi <span class="time-badge">25 min</span></li>
+                <li>6. Xulosa va uy vazifasi <span class="time-badge">10 min</span></li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Polymorphism nima? -->
+        <div class="slide">
+            <h2><span class="emoji">🤔</span> Polymorphism nima?</h2>
+            
+            <p style="margin-bottom: 20px;">Polymorphism - bu bir xil metod nomi, lekin turli class'larda turli xatti-harakat ko'rsatishi.</p>
+            
+            <div class="polymorphism-box">
+                <p><span class="emoji">💡</span> <strong>Real hayotdan misol:</strong></p>
+                <p>Agar sizda "Ovqat" degan umumiy tushuncha bo'lsa, unda "Non", "Sabzavot", "Meva" kabi turli xil ovqatlar bor. Har birining o'ziga xos ta'mi va tayyorlanish usuli bor, lekin ularning barchasi "ovqat" deb ataladi.</p>
+            </div>
+            
+            <div class="code-block">
+<pre>class Hayvon:
+    def __init__(self, nom):
+        self.nom = nom
+    
+    def ovoz_chiqarish(self):
+        print(f"{self.nom} ovoz chiqarayapti...")
+
+class It(Hayvon):
+    def ovoz_chiqarish(self):  # Method Overriding
+        print(f"{self.nom} havlayapti: Woof! Woof!")
+
+class Mushuk(Hayvon):
+    def ovoz_chiqarish(self):  # Method Overriding
+        print(f"{self.nom} miyovlayapti: Meow! Meow!")
+
+class Qush(Hayvon):
+    def ovoz_chiqarish(self):  # Method Overriding
+        print(f"{self.nom} qo'nqiroq qilayapti: Tweet! Tweet!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 4: Polymorphism ishlatish -->
+        <div class="slide">
+            <h2><span class="emoji">🎯</span> Polymorphism ishlatish</h2>
+            
+            <div class="code-block">
+<pre># Polymorphism test qilish
+hayvonlar = [
+    It("Rex"),
+    Mushuk("Mimi"),
+    Qush("Qarg'a")
+]
+
+print("=== Polymorphism misoli ===")
+for hayvon in hayvonlar:
+    hayvon.ovoz_chiqarish()  # Har bir hayvon o'ziga xos ovoz chiqaradi</pre>
+            </div>
+            
+            <div class="example-box">
+                <p><span class="emoji">✅</span> <strong>Polymorphism'ning afzalliklari:</strong></p>
+                <ul>
+                    <li><strong>Moslashuvchanlik</strong> - bir xil kod turli object'lar bilan ishlaydi</li>
+                    <li><strong>Kodni qisqartirish</strong> - takroriy kodlarni kamaytirish</li>
+                    <li><strong>Oson kengaytirish</strong> - yangi class'lar qo'shish oson</li>
+                    <li><strong>Tushunarli kod</strong> - bir xil interfeys, turli xatti-harakat</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Method Overriding bilan Polymorphism -->
+        <div class="slide">
+            <h2><span class="emoji">🔄</span> Method Overriding bilan Polymorphism</h2>
+            
+            <div class="code-block">
+<pre>class Transport:
+    def __init__(self, nom, tezlik=0):
+        self.nom = nom
+        self.tezlik = tezlik
+    
+    def harakatlanish(self):
+        print(f"{self.nom} harakatlanmoqda...")
+    
+    def toxtash(self):
+        self.tezlik = 0
+        print(f"{self.nom} to'xtadi!")
+
+class Mashina(Transport):
+    def __init__(self, nom, rang):
+        super().__init__(nom)
+        self.rang = rang
+    
+    def harakatlanish(self):  # Method Overriding
+        print(f"{self.rang} {self.nom} yo'lda harakatlanmoqda!")
+        print("Dvigatel ishlamoqda: Vroom! Vroom!")
+        self.tezlik = 60
+    
+    def toxtash(self):  # Method Overriding
+        self.tezlik = 0
+        print(f"{self.nom} yo'lda to'xtadi!")
+        print("Tormoz ishlamoqda: Squeak! Squeak!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 6: Transport tizimi -->
+        <div class="slide">
+            <h2><span class="emoji">🚗</span> Transport tizimi</h2>
+            
+            <div class="code-block">
+<pre>class Samolyot(Transport):
+    def __init__(self, nom, model):
+        super().__init__(nom)
+        self.model = model
+    
+    def harakatlanish(self):  # Method Overriding
+        print(f"{self.model} {self.nom} osmonda uchmoqda!")
+        print("Dvigatel ishlamoqda: Whoosh! Whoosh!")
+        self.tezlik = 800
+    
+    def toxtash(self):  # Method Overriding
+        self.tezlik = 0
+        print(f"{self.nom} aeroportda qo'ndi!")
+        print("Tormoz ishlamoqda: Screech! Screech!")
+
+class Kema(Transport):
+    def __init__(self, nom, tur):
+        super().__init__(nom)
+        self.tur = tur
+    
+    def harakatlanish(self):  # Method Overriding
+        print(f"{self.tur} {self.nom} dengizda suzmoqda!")
+        print("Dvigatel ishlamoqda: Chug! Chug!")
+        self.tezlik = 30</pre>
+            </div>
+        </div>
+
+        <!-- Slide 7: Duck Typing -->
+        <div class="slide">
+            <h2><span class="emoji">🦆</span> Duck Typing</h2>
+            
+            <p style="margin-bottom: 20px;"><strong>Duck Typing</strong> - "Agar u o'rdak kabi yurasa va o'rdak kabi ovoz chiqarsa, demak u o'rdak!" degan prinsip.</p>
+            
+            <div class="code-block">
+<pre>class It:
+    def __init__(self, nom):
+        self.nom = nom
+    
+    def ovoz_chiqarish(self):
+        print(f"{self.nom} havlayapti: Woof! Woof!")
+    
+    def harakatlanish(self):
+        print(f"{self.nom} yugurmoqda...")
+
+class Mushuk:
+    def __init__(self, nom):
+        self.nom = nom
+    
+    def ovoz_chiqarish(self):
+        print(f"{self.nom} miyovlayapti: Meow! Meow!")
+    
+    def harakatlanish(self):
+        print(f"{self.nom} sakramoqda...")
+
+# Duck Typing funksiyasi
+def hayvon_ko_rsatish(hayvon):
+    print(f"=== {hayvon.nom} ===")
+    hayvon.ovoz_chiqarish()  # Har qanday hayvon uchun ishlaydi
+    hayvon.harakatlanish()   # Har qanday hayvon uchun ishlaydi</pre>
+            </div>
+        </div>
+
+        <!-- Slide 8: Operator Overloading -->
+        <div class="slide">
+            <h2><span class="emoji">➕</span> Operator Overloading</h2>
+            
+            <p style="margin-bottom: 20px;"><strong>Operator Overloading</strong> - class'da operator'larni (+, -, *, /, ==, !=) o'ziga xos tarzda ishlatish.</p>
+            
+            <div class="code-block">
+<pre>class Vektor:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    
+    def __str__(self):  # print() da ko'rsatish uchun
+        return f"Vektor({self.x}, {self.y})"
+    
+    def __add__(self, boshqa):  # + operator
+        return Vektor(self.x + boshqa.x, self.y + boshqa.y)
+    
+    def __sub__(self, boshqa):  # - operator
+        return Vektor(self.x - boshqa.x, self.y - boshqa.y)
+    
+    def __mul__(self, son):  # * operator
+        return Vektor(self.x * son, self.y * son)
+    
+    def __eq__(self, boshqa):  # == operator
+        return self.x == boshqa.x and self.y == boshqa.y</pre>
+            </div>
+        </div>
+
+        <!-- Slide 9: Operator Overloading test -->
+        <div class="slide">
+            <h2><span class="emoji">🧪</span> Operator Overloading test</h2>
+            
+            <div class="code-block">
+<pre># Test qilish
+v1 = Vektor(3, 4)
+v2 = Vektor(1, 2)
+
+print(f"v1 = {v1}")
+print(f"v2 = {v2}")
+print(f"v1 + v2 = {v1 + v2}")
+print(f"v1 - v2 = {v1 - v2}")
+print(f"v1 * 2 = {v1 * 2}")
+print(f"v1 == v2: {v1 == v2}")</pre>
+            </div>
+            
+            <div class="example-box">
+                <p><span class="emoji">✅</span> <strong>Operator Overloading'ning afzalliklari:</strong></p>
+                <ul>
+                    <li><strong>Tabiiy kod</strong> - matematik ifodalar yozish</li>
+                    <li><strong>Tushunarli kod</strong> - operator'lar ma'noli</li>
+                    <li><strong>Kuchli funksionallik</strong> - murakkab hisob-kitoblar</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 10: Amaliy loyiha: Shaxslar tizimi -->
+        <div class="slide">
+            <h2><span class="emoji">👥</span> Amaliy loyiha: Shaxslar tizimi</h2>
+            
+            <div class="code-block">
+<pre>class Shaxs:
+    def __init__(self, ism, yosh):
+        self.ism = ism
+        self.yosh = yosh
+        self.jon = 100
+    
+    def ishlash(self):
+        print(f"{self.ism} ishlayapti...")
+        self.jon -= 10
+    
+    def dam_olish(self):
+        print(f"{self.ism} dam olayapti...")
+        self.jon += 20
+    
+    def ma_lumot_ko_rsatish(self):
+        print(f"=== {self.ism} ma'lumotlari ===")
+        print(f"Yosh: {self.yosh}")
+        print(f"Jon: {self.jon}")
+    
+    def __str__(self):
+        return f"{self.ism} ({self.yosh} yosh)"</pre>
+            </div>
+        </div>
+
+        <!-- Slide 11: Shaxslar child class'lari -->
+        <div class="slide">
+            <h2><span class="emoji">👨‍🎓</span> Shaxslar child class'lari</h2>
+            
+            <div class="code-block">
+<pre>class Talaba(Shaxs):
+    def __init__(self, ism, yosh, kurs):
+        super().__init__(ism, yosh)
+        self.kurs = kurs
+        self.ball = 0
+    
+    def oqish(self):  # Method Overriding
+        print(f"{self.ism} {self.kurs}-kursda o'qiyapti...")
+        self.ball += 5
+        self.jon -= 5
+    
+    def ishlash(self):  # Method Overriding
+        print(f"{self.ism} uy vazifasini qilayapti...")
+        self.ball += 3
+        self.jon -= 8
+
+class O_qituvchi(Shaxs):
+    def __init__(self, ism, yosh, fan):
+        super().__init__(ism, yosh)
+        self.fan = fan
+        self.tajriba = 0
+    
+    def dars_berish(self):  # Method Overriding
+        print(f"{self.ism} {self.fan} fanidan dars berayapti...")
+        self.tajriba += 1
+        self.jon -= 12
+    
+    def ishlash(self):  # Method Overriding
+        print(f"{self.ism} dars tayyorlayapti...")
+        self.tajriba += 0.3
+        self.jon -= 6</pre>
+            </div>
+        </div>
+
+        <!-- Slide 12: Polymorphism funksiyasi -->
+        <div class="slide">
+            <h2><span class="emoji">🎯</span> Polymorphism funksiyasi</h2>
+            
+            <div class="code-block">
+<pre># Polymorphism funksiyasi
+def shaxs_ishlashi(shaxs):
+    print(f"=== {shaxs.ism} ishlayapti ===")
+    shaxs.ishlash()  # Har qanday shaxs uchun ishlaydi
+    shaxs.ma_lumot_ko_rsatish()
+    print()
+
+# Test qilish
+shaxslar = [
+    Talaba("Ali", 18, 1),
+    O_qituvchi("Zilola", 35, "Matematika"),
+    Doktor("Sardor", 40, "Kardiolog")
+]
+
+print("=== Shaxslar tizimi ===")
+for shaxs in shaxslar:
+    shaxs_ishlashi(shaxs)  # Polymorphism</pre>
+            </div>
+        </div>
+
+        <!-- Slide 13: Mashq -->
+        <div class="slide">
+            <h2><span class="emoji">🎯</span> Mashq</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🍎</span> Vazifa: Ovqat tizimi</div>
+                <ul>
+                    <li><strong>Ovqat</strong> parent class yarating</li>
+                    <li>Undan <strong>Non</strong>, <strong>Sabzavot</strong>, <strong>Meva</strong> child class'lar yarating</li>
+                    <li>Har birida <strong>tayyorlanish</strong> va <strong>ta'm</strong> metodlarini override qiling</li>
+                    <li>Polymorphism'dan foydalaning</li>
+                </ul>
+                <p style="margin-top: 15px; color: #856404;">
+                    <strong>Vaqt: 10 daqiqa</strong> <span class="emoji">⏰</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 14: Xulosa -->
+        <div class="slide">
+            <h1><span class="emoji">🎉</span> Xulosa</h1>
+            
+            <div style="text-align: center;">
+                <h2 style="color: #48bb78;">Bugun nimalarni o'rgandik?</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
+                    <div class="example-box">
+                        <h3><span class="emoji">🔄</span> Polymorphism</h3>
+                        <p>Bir xil metod nomi, turli xatti-harakat</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🦆</span> Duck Typing</h3>
+                        <p>Object'ning turi emas, metodlari muhim</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">➕</span> Operator Overloading</h3>
+                        <p>Operator'larni o'ziga xos tarzda ishlatish</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🎯</span> Method Overriding</h3>
+                        <p>Child class'da parent metodini qayta yozish</p>
+                    </div>
+                </div>
+
+                <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">
+                    Keyingi dars: Encapsulation (Kapsulatsiya) mavzusini o'rganamiz
+                </p>
+
+                <p style="margin-top: 20px; color: #666;">
+                    Savollaringiz bo'lsa, yozib qoldiring! <span class="emoji">😊</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">⬅️ Oldingi</button>
+            <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Button states
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

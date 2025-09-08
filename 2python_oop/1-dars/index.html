@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python OOP: Class va Object</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+
+        .highlight {
+            background: #fed7d7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c53030;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .task-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .task-title {
+            color: #856404;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">12</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1><span class="emoji">📚</span> Python'da OOP</h1>
+            <h2 style="text-align: center; color: #764ba2;">Obyektga yo'naltirilgan dasturlash</h2>
+            <div style="text-align: center; margin-top: 40px;">
+                <h3>Class va Object tushunchasi</h3>
+                <p style="font-size: 1.2em; margin-top: 30px; color: #666;">
+                    Assalomu alaykum, yosh dasturchilar! <span class="emoji">😊</span><br>
+                    Bugun biz Python'ning eng muhim mavzusini o'rganamiz
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 2: OOP nima? -->
+        <div class="slide">
+            <h2><span class="emoji">🤔</span> OOP nima?</h2>
+            <p style="font-size: 1.1em; margin-bottom: 20px;">
+                <strong>OOP</strong> — bu dasturlash paradigmasi bo'lib, unda ma'lumotlar va ular bilan ishlovchi funksiyalar bir butun sifatida (obyekt sifatida) tashkil qilinadi.
+            </p>
+            
+            <h3><span class="emoji">✅</span> OOPning asosiy afzalliklari:</h3>
+            <ul style="font-size: 1.1em;">
+                <li><strong>Kodni tartibli saqlash</strong></li>
+                <li><strong>Qayta ishlatish imkoniyati</strong></li>
+                <li><strong>Katta loyihalarda boshqaruvni osonlashtirish</strong></li>
+            </ul>
+
+            <div class="example-box">
+                <p><span class="emoji">💡</span> <strong>Real hayotdan misol:</strong> Mashina zavodida har bir mashina bir xil chizmaga ko'ra yasaladi, lekin har birining o'ziga xos rangi, modeli bo'ladi!</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Asosiy tushunchalar -->
+        <div class="slide">
+            <h2><span class="emoji">🧩</span> OOPning asosiy tushunchalari</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                <div class="example-box">
+                    <h3><span class="highlight">Class (Sinf)</span></h3>
+                    <p>Obyektlar uchun shablon.<br>Masalan: "Mashina" sinfi</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3><span class="highlight">Object (Obyekt)</span></h3>
+                    <p>Sinfdan yaratilgan konkret nusxa.<br>Masalan: "Toyota" obyekti</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3><span class="highlight">Atributlar</span></h3>
+                    <p>Obyektning xususiyatlari.<br>Masalan: mashina rangi</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3><span class="highlight">Metodlar</span></h3>
+                    <p>Obyektning harakatlari.<br>Masalan: mashina yurishi</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Birinchi kod misoli -->
+        <div class="slide">
+            <h2><span class="emoji">💻</span> Birinchi kod misoli</h2>
+            
+            <div class="code-block">
+<pre># Class yaratish
+class Mashina:
+    def __init__(self, rang, model):
+        self.rang = rang
+        self.model = model
+    
+    def yuri(self):
+        print(f"{self.rang} {self.model} yurdi!")
+
+# Obyekt yaratish
+mashina1 = Mashina("Qizil", "Toyota")
+mashina1.yuri()  # Qizil Toyota yurdi!</pre>
+            </div>
+            
+            <div class="example-box">
+                <p><span class="emoji">📝</span> <strong>Bu yerda:</strong></p>
+                <ul>
+                    <li><code>Mashina</code> — sinf (class)</li>
+                    <li><code>mashina1</code> — obyekt (object)</li>
+                    <li><code>__init__</code> — konstruktor metodi</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Mashq 1 -->
+        <div class="slide">
+            <h2><span class="emoji">🎯</span> Birinchi mashq</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">✏️</span> Vazifa:</div>
+                <ul>
+                    <li><strong>Talaba</strong> nomli sinf yarating</li>
+                    <li><code>ism</code> va <code>yosh</code> atributlariga ega bo'lsin</li>
+                    <li>Bitta obyekt yarating va atributlarini chiqaring</li>
+                </ul>
+                <p style="margin-top: 15px; color: #856404;">
+                    <strong>Vaqt: 5 daqiqa</strong> <span class="emoji">⏰</span>
+                </p>
+            </div>
+
+            <div class="code-block">
+<pre># Sizning kodingiz shu yerga...
+class Talaba:
+    def __init__(self, ism, yosh):
+        # Bu yerga kod yozing
+        pass</pre>
+            </div>
+        </div>
+
+        <!-- Slide 6: Class va Object yaratish -->
+        <div class="slide">
+            <h2><span class="emoji">🏗️</span> Class va Object yaratish</h2>
+            
+            <h3>Kitob sinfi misoli:</h3>
+            <div class="code-block">
+<pre>class Kitob:
+    def __init__(self, nomi, muallif):
+        self.nomi = nomi
+        self.muallif = muallif
+
+# Obyektlar yaratish
+kitob1 = Kitob("Alpomish", "Xalq ertagi")
+kitob2 = Kitob("O'tgan kunlar", "Abdulla Qodiriy")
+
+print(kitob1.nomi, kitob1.muallif)  # Alpomish Xalq ertagi
+print(kitob2.nomi, kitob2.muallif)  # O'tgan kunlar Abdulla Qodiriy</pre>
+            </div>
+
+            <div class="example-box">
+                <p><span class="emoji">💡</span> Bir sinfdan bir nechta obyekt yaratish mumkin!</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Metodlar bilan ishlash -->
+        <div class="slide">
+            <h2><span class="emoji">⚙️</span> Metodlar bilan ishlash</h2>
+            
+            <div class="code-block">
+<pre>class Kitob:
+    def __init__(self, nomi, muallif):
+        self.nomi = nomi
+        self.muallif = muallif
+    
+    def malumot(self):
+        return f"Kitob: {self.nomi}, Muallif: {self.muallif}"
+
+kitob1 = Kitob("Alpomish", "Xalq ertagi")
+print(kitob1.malumot())  # Kitob: Alpomish, Muallif: Xalq ertagi</pre>
+            </div>
+
+            <div class="example-box">
+                <p><span class="emoji">🔧</span> <strong>Metodlar</strong> — obyektning qila oladigan harakatlari!</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Sinf va obyekt atributlari -->
+        <div class="slide">
+            <h2><span class="emoji">📊</span> Atributlar turlari</h2>
+            
+            <h3>1. Sinf atributlari (umumiy):</h3>
+            <div class="code-block">
+<pre>class Universitet:
+    # Sinf atributi (umumiy)
+    nom = "TATU"
+    
+    def __init__(self, talaba_ism):
+        self.talaba_ism = talaba_ism
+
+talaba1 = Universitet("Sardor")
+print(f"{talaba1.talaba_ism} {Universitet.nom}da o'qiydi.")</pre>
+            </div>
+
+            <h3>2. Obyekt atributlari (alohida):</h3>
+            <div class="code-block">
+<pre>class Hayvon:
+    def __init__(self, turi, yosh):
+        self.turi = turi  # Obyekt atributi
+        self.yosh = yosh  # Obyekt atributi</pre>
+            </div>
+        </div>
+
+        <!-- Slide 9: Metodlar bilan boshqarish -->
+        <div class="slide">
+            <h2><span class="emoji">🎮</span> Metodlar bilan boshqarish</h2>
+            
+            <div class="code-block">
+<pre>class Talaba:
+    def __init__(self, ism, baho):
+        self.ism = ism
+        self.baho = baho
+    
+    def baho_korsat(self):
+        return f"{self.ism}ning bahosi: {self.baho}"
+    
+    def baho_ozgartir(self, yangi_baho):
+        self.baho = yangi_baho
+        return f"{self.ism}ning yangi bahosi: {self.baho}"
+
+talaba = Talaba("Ali", 85)
+print(talaba.baho_korsat())        # Alining bahosi: 85
+print(talaba.baho_ozgartir(90))    # Alining yangi bahosi: 90</pre>
+            </div>
+        </div>
+
+        <!-- Slide 10: Amaliy mashqlar -->
+        <div class="slide">
+            <h2><span class="emoji">💪</span> Amaliy mashqlar</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">📱</span> Mashq 1: Telefon sinfi</div>
+                <p><strong>Telefon</strong> nomli sinf yarating, u <code>marka</code> va <code>narx</code> atributlariga ega bo'lsin.</p>
+            </div>
+
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">👨‍🎓</span> Mashq 2: O'quvchi sinfi</div>
+                <p><strong>Oquvchi</strong> sinfi yaratib, <code>malumot</code> metodini qo'shing.</p>
+            </div>
+
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🚗</span> Mashq 3: Mashina sinfi</div>
+                <p><code>tezlik_oshir</code> metodini yaratib, tezlikni boshqaring.</p>
+            </div>
+
+            <p style="text-align: center; color: #856404; font-weight: bold; margin-top: 20px;">
+                Har bir mashq uchun 8-9 daqiqa vaqt! <span class="emoji">⏰</span>
+            </p>
+        </div>
+
+        <!-- Slide 11: Uyga vazifa -->
+        <div class="slide">
+            <h2><span class="emoji">🏠</span> Uyga vazifa</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">📚</span> Vazifa 1: Kitobxona sinfi</div>
+                <ul>
+                    <li><strong>Kitobxona</strong> sinfi yarating</li>
+                    <li><code>nomi</code> va <code>kitoblar_soni</code> atributlari</li>
+                    <li><code>kitob_qosh</code> metodi (kitoblar sonini oshiradi)</li>
+                </ul>
+            </div>
+
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">👨‍🎓</span> Vazifa 2: Talaba sinfi</div>
+                <ul>
+                    <li><code>ism</code> va <code>kurs</code> atributlari</li>
+                    <li><code>kurs_oshir</code> metodi</li>
+                </ul>
+            </div>
+
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🚙</span> Vazifa 3: Mashina sinfi</div>
+                <ul>
+                    <li><code>model</code> va <code>yil</code> atributlari</li>
+                    <li><code>malumot</code> metodi</li>
+                    <li>Ikkita obyekt yarating</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 12: Xulosa -->
+        <div class="slide">
+            <h1><span class="emoji">🎉</span> Ajoyib!</h1>
+            
+            <div style="text-align: center;">
+                <h2 style="color: #48bb78;">Bugun nimalarni o'rgandik?</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
+                    <div class="example-box">
+                        <h3><span class="emoji">🏗️</span> Class (Sinf)</h3>
+                        <p>Obyektlar uchun shablon</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">📦</span> Object (Obyekt)</h3>
+                        <p>Sinfdan yaratilgan nusxa</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🏷️</span> Atributlar</h3>
+                        <p>Obyektning xususiyatlari</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">⚙️</span> Metodlar</h3>
+                        <p>Obyektning harakatlari</p>
+                    </div>
+                </div>
+
+                <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">
+                    Keyingi darsda: Class atributlari, instance atributlari, __init__ metodi
+                </p>
+
+                <p style="margin-top: 20px; color: #666;">
+                    Savollaringiz bo'lsa, yozib qoldiring! <span class="emoji">😊</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">⬅️ Oldingi</button>
+            <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Button states
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

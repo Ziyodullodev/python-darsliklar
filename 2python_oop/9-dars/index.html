@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python OOP: Advanced OOP Concepts</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+
+        .highlight {
+            background: #fed7d7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c53030;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .task-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .task-title {
+            color: #856404;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .time-badge {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .mixin-box {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .pattern-box {
+            background: #fef5e7;
+            border: 2px solid #f6ad55;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">14</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1><span class="emoji">📚</span> Python OOP - 9-dars</h1>
+            <h2 style="text-align: center; color: #764ba2;">Advanced OOP Concepts</h2>
+            <div style="text-align: center; margin-top: 40px;">
+                <h3>Mixins, Composition, Design Patterns</h3>
+                <p style="font-size: 1.2em; margin-top: 30px; color: #666;">
+                    Assalomu alaykum, yosh dasturchilar! <span class="emoji">😊</span><br>
+                    Bugun biz Python'ning juda kuchli va professional xususiyatlarini o'rganamiz
+                </p>
+                <div class="time-badge">120 daqiqa</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Dars rejasi -->
+        <div class="slide">
+            <h2><span class="emoji">📋</span> Dars rejasi</h2>
+            <ul style="font-size: 1.1em;">
+                <li>1. Mixins nima? <span class="time-badge">20 min</span></li>
+                <li>2. Composition vs Inheritance <span class="time-badge">25 min</span></li>
+                <li>3. Design Patterns <span class="time-badge">25 min</span></li>
+                <li>4. Singleton Pattern <span class="time-badge">20 min</span></li>
+                <li>5. Amaliy loyiha: O'yin tizimi <span class="time-badge">20 min</span></li>
+                <li>6. Xulosa va uy vazifasi <span class="time-badge">10 min</span></li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Mixins nima? -->
+        <div class="slide">
+            <h2><span class="emoji">🤔</span> Mixins nima?</h2>
+            
+            <p style="margin-bottom: 20px;">Mixins - bu kichik, maxsus maqsadli class'lar. Ular to'liq class emas, balki faqat ma'lum funksionallikni ta'minlaydi.</p>
+            
+            <div class="mixin-box">
+                <p><span class="emoji">💡</span> <strong>Real hayotdan misol:</strong></p>
+                <p>Agar sizda "Telefon" class bo'lsa, unda "Qo'ng'iroq qilish", "Xabar yuborish", "Internet", "Kamera" kabi xususiyatlar bor. Lekin ba'zi telefonlarda "Kamera" yo'q, ba'zilarida "Internet" yo'q. Mixins - bu xususiyatlarni alohida class'lar sifatida yaratish va kerakli joyda ishlatish.</p>
+            </div>
+            
+            <div class="code-block">
+<pre>class Qo_ng_iroq_mixin:
+    def qo_ng_iroq_qilish(self, raqam):
+        print(f"{self.nom} {raqam} raqamiga qo'ng'iroq qilmoqda...")
+    
+    def qo_ng_iroq_qabul_qilish(self):
+        print(f"{self.nom} qo'ng'iroqni qabul qilmoqda...")
+
+class Xabar_mixin:
+    def xabar_yuborish(self, raqam, xabar):
+        print(f"{self.nom} {raqam} raqamiga xabar yuborayapti: {xabar}")
+    
+    def xabar_qabul_qilish(self, xabar):
+        print(f"{self.nom} xabar qabul qildi: {xabar}")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 4: Mixins ishlatish -->
+        <div class="slide">
+            <h2><span class="emoji">💻</span> Mixins ishlatish</h2>
+            
+            <div class="code-block">
+<pre>class Internet_mixin:
+    def internet_ochish(self):
+        print(f"{self.nom} internetga ulandi...")
+    
+    def veb_sayt_ochish(self, url):
+        print(f"{self.nom} {url} saytini ochmoqda...")
+
+class Kamera_mixin:
+    def rasm_olish(self):
+        print(f"{self.nom} rasm olayapti...")
+    
+    def video_olish(self):
+        print(f"{self.nom} video olayapti...")
+
+class Telefon:
+    def __init__(self, nom, model):
+        self.nom = nom
+        self.model = model
+        self.batareya = 100
+
+class Smartfon(Telefon, Qo_ng_iroq_mixin, Xabar_mixin, Internet_mixin, Kamera_mixin):
+    def __init__(self, nom, model):
+        super().__init__(nom, model)
+        self.ram = 4
+        self.xotira = 64
+
+class Oddiy_telefon(Telefon, Qo_ng_iroq_mixin, Xabar_mixin):
+    def __init__(self, nom, model):
+        super().__init__(nom, model)
+        self.sim_karta = True</pre>
+            </div>
+        </div>
+
+        <!-- Slide 5: Mixins test -->
+        <div class="slide">
+            <h2><span class="emoji">🧪</span> Mixins test</h2>
+            
+            <div class="code-block">
+<pre># Test qilish
+smartfon = Smartfon("iPhone", "14")
+oddiy_telefon = Oddiy_telefon("Nokia", "3310")
+
+print("=== Smartfon ===")
+smartfon.qo_ng_iroq_qilish("+998901234567")
+smartfon.xabar_yuborish("+998901234567", "Salom!")
+smartfon.internet_ochish()
+smartfon.rasm_olish()
+
+print("\n=== Oddiy telefon ===")
+oddiy_telefon.qo_ng_iroq_qilish("+998901234567")
+oddiy_telefon.xabar_yuborish("+998901234567", "Salom!")
+# oddiy_telefon.internet_ochish()  # Bu ishlamaydi - Internet_mixin yo'q</pre>
+            </div>
+            
+            <div class="mixin-box">
+                <h3><span class="emoji">✅</span> Mixins'ning afzalliklari:</h3>
+                <ul>
+                    <li><strong>Kodni qisqartirish</strong> - takroriy kodlarni kamaytirish</li>
+                    <li><strong>Moslashuvchanlik</strong> - kerakli xususiyatlarni tanlash</li>
+                    <li><strong>Tartibli kod</strong> - mantiqiy tuzilish</li>
+                    <li><strong>Qayta ishlatish</strong> - bir mixin'ni ko'p joyda ishlatish</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 6: Composition vs Inheritance -->
+        <div class="slide">
+            <h2><span class="emoji">🔄</span> Composition vs Inheritance</h2>
+            
+            <div class="grid-layout">
+                <div>
+                    <h3>Inheritance</h3>
+                    <p><strong>"IS-A" munosabati</strong></p>
+                    <p>Mashina IS-A Transport</p>
+                    <div class="code-block">
+<pre>class Transport:
+    def __init__(self, nom):
+        self.nom = nom
+        self.tezlik = 0
+    
+    def harakatlanish(self):
+        print(f"{self.nom} harakatlanmoqda...")
+
+class Mashina(Transport):  # Inheritance
+    def __init__(self, nom, rang):
+        super().__init__(nom)
+        self.rang = rang</pre>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>Composition</h3>
+                    <p><strong>"HAS-A" munosabati</strong></p>
+                    <p>Mashina HAS-A Dvigatel</p>
+                    <div class="code-block">
+<pre>class Dvigatel:
+    def __init__(self, kuch):
+        self.kuch = kuch
+        self.yoniq = False
+    
+    def yoqish(self):
+        self.yoniq = True
+        print(f"Dvigatel yoqildi! Kuch: {self.kuch} ot kuchi")
+
+class Mashina_composition:
+    def __init__(self, nom, rang):
+        self.nom = nom
+        self.rang = rang
+        self.dvigatel = Dvigatel(150)  # Composition</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Composition misoli -->
+        <div class="slide">
+            <h2><span class="emoji">🏗️</span> Composition misoli</h2>
+            
+            <div class="code-block">
+<pre>class Tormoz:
+    def __init__(self, tur):
+        self.tur = tur
+        self.ishlamoqda = False
+    
+    def ishlatish(self):
+        self.ishlamoqda = True
+        print(f"{self.tur} tormoz ishlatildi!")
+
+class Koleso:
+    def __init__(self, o_lcham):
+        self.o_lcham = o_lcham
+        self.tezlik = 0
+    
+    def aylanish(self, tezlik):
+        self.tezlik = tezlik
+        print(f"Koleso {tezlik} km/h tezlikda aylanmoqda!")
+
+class Mashina_composition:
+    def __init__(self, nom, rang):
+        self.nom = nom
+        self.rang = rang
+        self.tezlik = 0
+        # Composition - mashina boshqa object'larni o'z ichiga oladi
+        self.dvigatel = Dvigatel(150)
+        self.tormoz = Tormoz("Disk")
+        self.kolesolar = [Koleso(17) for _ in range(4)]
+    
+    def yoqish(self):
+        self.dvigatel.yoqish()
+        print(f"{self.rang} {self.nom} yoqildi!")
+    
+    def harakatlanish(self):
+        if self.dvigatel.yoniq:
+            self.tezlik = 60
+            for koleso in self.kolesolar:
+                koleso.aylanish(self.tezlik)
+            print(f"{self.nom} harakatlanmoqda! Tezlik: {self.tezlik} km/h")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 8: Design Patterns -->
+        <div class="slide">
+            <h2><span class="emoji">🎨</span> Design Patterns</h2>
+            
+            <p style="margin-bottom: 20px;">Design Patterns - bu dasturlashda tez-tez uchraydigan muammolarni yechish uchun ishlatiladigan tayyor yechimlar.</p>
+            
+            <div class="pattern-box">
+                <h3><span class="emoji">🏭</span> Factory Pattern</h3>
+                <div class="code-block">
+<pre>class Transport_factory:
+    @staticmethod
+    def transport_yaratish(tur, nom, **kwargs):
+        if tur == "mashina":
+            return Mashina(nom, kwargs.get("rang", "Oq"))
+        elif tur == "samolyot":
+            return Samolyot(nom, kwargs.get("model", "Boeing"))
+        elif tur == "kema":
+            return Kema(nom, kwargs.get("tur", "Passajir"))
+        else:
+            raise ValueError(f"Noto'g'ri transport turi: {tur}")</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Observer Pattern -->
+        <div class="slide">
+            <h2><span class="emoji">👀</span> Observer Pattern</h2>
+            
+            <div class="code-block">
+<pre>class Observer:
+    def update(self, xabar):
+        pass
+
+class Subject:
+    def __init__(self):
+        self.observers = []
+    
+    def observer_qo_shish(self, observer):
+        self.observers.append(observer)
+    
+    def observer_olish(self, observer):
+        self.observers.remove(observer)
+    
+    def xabar_yuborish(self, xabar):
+        for observer in self.observers:
+            observer.update(xabar)
+
+class Telefon(Observer):
+    def __init__(self, nom):
+        self.nom = nom
+    
+    def update(self, xabar):
+        print(f"{self.nom} xabar qabul qildi: {xabar}")
+
+class Kompyuter(Observer):
+    def __init__(self, nom):
+        self.nom = nom
+    
+    def update(self, xabar):
+        print(f"{self.nom} xabar qabul qildi: {xabar}")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 10: Singleton Pattern -->
+        <div class="slide">
+            <h2><span class="emoji">🔒</span> Singleton Pattern</h2>
+            
+            <p style="margin-bottom: 20px;">Singleton Pattern - bu class'ning faqat bitta instance (nusxasi) yaratilishini ta'minlaydi.</p>
+            
+            <div class="code-block">
+<pre>class Singleton:
+    _instance = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+    
+    def __init__(self):
+        if not hasattr(self, 'initialized'):
+            self.initialized = True
+            self.ma_lumot = "Singleton ma'lumoti"
+            print("Singleton yaratildi!")
+
+# Test qilish
+singleton1 = Singleton()
+singleton2 = Singleton()
+
+print(f"singleton1: {singleton1}")
+print(f"singleton2: {singleton2}")
+print(f"singleton1 == singleton2: {singleton1 == singleton2}")
+
+singleton1.ma_lumot = "Yangi ma'lumot"
+print(f"singleton2.ma_lumot: {singleton2.ma_lumot}")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 11: Singleton Decorator -->
+        <div class="slide">
+            <h2><span class="emoji">🎯</span> Singleton Decorator</h2>
+            
+            <div class="code-block">
+<pre># Decorator bilan Singleton
+def singleton_decorator(cls):
+    instances = {}
+    def get_instance(*args, **kwargs):
+        if cls not in instances:
+            instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+    return get_instance
+
+@singleton_decorator
+class Database:
+    def __init__(self):
+        self.ma_lumotlar = {}
+        print("Database yaratildi!")
+    
+    def ma_lumot_qo_shish(self, kalit, qiymat):
+        self.ma_lumotlar[kalit] = qiymat
+        print(f"Ma'lumot qo'shildi: {kalit} = {qiymat}")
+    
+    def ma_lumot_olish(self, kalit):
+        return self.ma_lumotlar.get(kalit, "Topilmadi")
+
+# Test qilish
+db1 = Database()
+db2 = Database()
+
+print(f"db1: {db1}")
+print(f"db2: {db2}")
+print(f"db1 == db2: {db1 == db2}")
+
+db1.ma_lumot_qo_shish("ism", "Ali")
+print(f"db2.ma_lumot_olish('ism'): {db2.ma_lumot_olish('ism')}")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 12: Amaliy loyiha: O'yin tizimi -->
+        <div class="slide">
+            <h2><span class="emoji">🎮</span> Amaliy loyiha: O'yin tizimi</h2>
+            
+            <div class="code-block">
+<pre>from abc import ABC, abstractmethod
+
+# Mixins
+class Hujum_mixin:
+    def hujum_qilish(self, dushman):
+        zarar = self.kuch * 2
+        print(f"{self.nom} {dushman}ga {zarar} zarar yetkazdi!")
+        return zarar
+
+class Himoya_mixin:
+    def himoya_qilish(self):
+        himoya_kuchi = self.defans * 1.5
+        print(f"{self.nom} himoya qildi! Himoya kuchi: {himoya_kuchi}")
+        return himoya_kuchi
+
+class Sehr_mixin:
+    def sehr_qilish(self, dushman):
+        if self.mana >= 20:
+            self.mana -= 20
+            zarar = self.kuch * 3
+            print(f"{self.nom} {dushman}ga sehr bilan {zarar} zarar yetkazdi!")
+            return zarar
+        else:
+            print(f"{self.nom} mana yetarli emas!")
+            return 0</pre>
+            </div>
+        </div>
+
+        <!-- Slide 13: O'yin tizimi davomi -->
+        <div class="slide">
+            <h2><span class="emoji">⚔️</span> O'yin tizimi davomi</h2>
+            
+            <div class="code-block">
+<pre># Abstract class
+class O_yinchi(ABC):
+    def __init__(self, nom, daraja=1):
+        self.nom = nom
+        self.daraja = daraja
+        self.jon = 100
+        self.kuch = 10
+        self.defans = 5
+        self.tajriba = 0
+    
+    def daraja_oshirish(self):
+        if self.tajriba >= 100:
+            self.daraja += 1
+            self.kuch += 5
+            self.defans += 3
+            self.tajriba = 0
+            print(f"{self.nom} {self.daraja}-darajaga ko'tarildi!")
+        else:
+            print(f"Daraja oshirish uchun {100 - self.tajriba} tajriba kerak!")
+    
+    @abstractmethod
+    def maxsus_kuch(self):
+        pass
+    
+    @abstractmethod
+    def ma_lumot_ko_rsatish(self):
+        pass
+
+# Concrete classes
+class Jangchi(O_yinchi, Hujum_mixin, Himoya_mixin):
+    def __init__(self, nom, daraja=1):
+        super().__init__(nom, daraja)
+        self.kuch += 10
+        self.defans += 5
+    
+    def maxsus_kuch(self):
+        print(f"{self.nom} qilich bilan maxsus hujum qildi!")
+        self.tajriba += 20
+        return self.kuch * 3
+    
+    def ma_lumot_ko_rsatish(self):
+        print(f"=== {self.nom} (Jangchi) ===")
+        print(f"Daraja: {self.daraja}")
+        print(f"Jon: {self.jon}")
+        print(f"Kuch: {self.kuch}")
+        print(f"Defans: {self.defans}")
+        print(f"Tajriba: {self.tajriba}")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 14: Xulosa -->
+        <div class="slide">
+            <h1><span class="emoji">🎉</span> Xulosa</h1>
+            
+            <div style="text-align: center;">
+                <h2 style="color: #48bb78;">Bugun nimalarni o'rgandik?</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
+                    <div class="example-box">
+                        <h3><span class="emoji">🧩</span> Mixins</h3>
+                        <p>Kichik, maxsus maqsadli class'lar</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🔄</span> Composition</h3>
+                        <p>"HAS-A" munosabati, moslashuvchanlik</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🎨</span> Design Patterns</h3>
+                        <p>Tayyor yechimlar</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🔒</span> Singleton Pattern</h3>
+                        <p>Bitta instance ta'minlash</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🎮</span> O'yin tizimi</h3>
+                        <p>Amaliy loyiha</p>
+                    </div>
+                </div>
+
+                <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">
+                    Keyingi dars: OOP Best Practices mavzusini o'rganamiz
+                </p>
+
+                <p style="margin-top: 20px; color: #666;">
+                    Savollaringiz bo'lsa, yozib qoldiring! <span class="emoji">😊</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">⬅️ Oldingi</button>
+            <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Button states
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

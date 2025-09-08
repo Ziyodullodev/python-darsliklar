@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python OOP: Abstract Classes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+
+        .highlight {
+            background: #fed7d7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c53030;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .task-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .task-title {
+            color: #856404;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .time-badge {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .abstract-box {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .interface-box {
+            background: #fef5e7;
+            border: 2px solid #f6ad55;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">14</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1><span class="emoji">📚</span> Python OOP - 8-dars</h1>
+            <h2 style="text-align: center; color: #764ba2;">Abstract Classes</h2>
+            <div style="text-align: center; margin-top: 40px;">
+                <h3>ABC (Abstract Base Classes)</h3>
+                <p style="font-size: 1.2em; margin-top: 30px; color: #666;">
+                    Assalomu alaykum, yosh dasturchilar! <span class="emoji">😊</span><br>
+                    Bugun biz Abstract Classes'ni o'rganamiz
+                </p>
+                <div class="time-badge">120 daqiqa</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Dars rejasi -->
+        <div class="slide">
+            <h2><span class="emoji">📋</span> Dars rejasi</h2>
+            <ul style="font-size: 1.1em;">
+                <li>1. Abstract Classes nima? <span class="time-badge">20 min</span></li>
+                <li>2. ABC moduli <span class="time-badge">25 min</span></li>
+                <li>3. @abstractmethod decorator <span class="time-badge">25 min</span></li>
+                <li>4. Abstract properties <span class="time-badge">20 min</span></li>
+                <li>5. Amaliy loyiha: Hayvonlar <span class="time-badge">20 min</span></li>
+                <li>6. Xulosa va uy vazifasi <span class="time-badge">10 min</span></li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Abstract Classes nima? -->
+        <div class="slide">
+            <h2><span class="emoji">🤔</span> Abstract Classes nima?</h2>
+            
+            <p style="margin-bottom: 20px;">Abstract Class - bu to'liq implementatsiya qilinmagan class. U faqat method'lar nomini belgilaydi, lekin ularning ichki qismini yozmaydi.</p>
+            
+            <div class="abstract-box">
+                <p><span class="emoji">💡</span> <strong>Real hayotdan misol:</strong></p>
+                <p>Agar sizda "Transport" nomli abstract class bo'lsa, u faqat "harakatlanish" method'ini belgilaydi, lekin qanday harakatlanishni aytmaydi. Avtomobil, velosiped, samolyot kabi konkret class'lar bu method'ni o'z usulida implementatsiya qiladi.</p>
+            </div>
+            
+            <div class="code-block">
+<pre>from abc import ABC, abstractmethod
+
+class Transport(ABC):
+    def __init__(self, nomi, tezlik):
+        self.nomi = nomi
+        self.tezlik = tezlik
+    
+    @abstractmethod
+    def harakatlanish(self):
+        pass  # Bu method child class'da implementatsiya qilinishi kerak
+    
+    def ma_lumot_ko_rsatish(self):
+        print(f"Transport: {self.nomi}, Tezlik: {self.tezlik} km/h")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 4: ABC moduli -->
+        <div class="slide">
+            <h2><span class="emoji">📦</span> ABC moduli</h2>
+            
+            <p style="margin-bottom: 20px;">Python'da abstract class'lar yaratish uchun <strong>abc</strong> moduli ishlatiladi.</p>
+            
+            <div class="code-block">
+<pre>from abc import ABC, abstractmethod, abstractproperty
+
+class Hayvon(ABC):
+    def __init__(self, nomi, yoshi):
+        self.nomi = nomi
+        self.yoshi = yoshi
+    
+    @abstractmethod
+    def ovqatlanish(self):
+        """Har bir hayvon o'z usulida ovqatlanadi"""
+        pass
+    
+    @abstractmethod
+    def uxlash(self):
+        """Har bir hayvon o'z usulida uxlaydi"""
+        pass
+    
+    @abstractproperty
+    def turi(self):
+        """Har bir hayvonning o'z turi bor"""
+        pass
+    
+    def ma_lumot_ko_rsatish(self):
+        print(f"=== {self.nomi} ma'lumotlari ===")
+        print(f"Yoshi: {self.yoshi}")
+        print(f"Turi: {self.turi}")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 5: @abstractmethod decorator -->
+        <div class="slide">
+            <h2><span class="emoji">🏷️</span> @abstractmethod decorator</h2>
+            
+            <p style="margin-bottom: 20px;"><strong>@abstractmethod decorator</strong> - method'ni abstract qiladi va child class'da implementatsiya qilinishini majbur qiladi.</p>
+            
+            <div class="code-block">
+<pre>class Mashina(Transport):
+    def __init__(self, nomi, tezlik, yoqilgi):
+        super().__init__(nomi, tezlik)
+        self.yoqilgi = yoqilgi
+    
+    def harakatlanish(self):  # Abstract method'ni implementatsiya qilish
+        print(f"{self.nomi} yo'lda {self.tezlik} km/h tezlikda harakatlanmoqda")
+        print(f"Yoqilgi: {self.yoqilgi}")
+    
+    def signal_berish(self):
+        print("Bip-bip!")
+
+class Velosiped(Transport):
+    def __init__(self, nomi, tezlik, pedallar_soni):
+        super().__init__(nomi, tezlik)
+        self.pedallar_soni = pedallar_soni
+    
+    def harakatlanish(self):  # Abstract method'ni implementatsiya qilish
+        print(f"{self.nomi} pedallar bilan {self.tezlik} km/h tezlikda harakatlanmoqda")
+        print(f"Pedallar soni: {self.pedallar_soni}")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 6: Abstract method test -->
+        <div class="slide">
+            <h2><span class="emoji">🧪</span> Abstract method test</h2>
+            
+            <div class="code-block">
+<pre># Test qilish
+print("=== Transport test ===")
+
+# Mashina yaratish
+mashina = Mashina("Toyota Camry", 120, "Benzin")
+mashina.ma_lumot_ko_rsatish()
+mashina.harakatlanish()
+mashina.signal_berish()
+
+print("\n" + "="*50 + "\n")
+
+# Velosiped yaratish
+velosiped = Velosiped("Mountain Bike", 25, 2)
+velosiped.ma_lumot_ko_rsatish()
+velosiped.harakatlanish()
+
+print("\n" + "="*50 + "\n")
+
+# Abstract class'dan to'g'ridan-to'g'ri object yaratishga urinish
+try:
+    transport = Transport("Test", 100)  # Xato!
+except TypeError as e:
+    print(f"Xato: {e}")
+    print("Abstract class'dan to'g'ridan-to'g'ri object yaratib bo'lmaydi!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 7: Abstract properties -->
+        <div class="slide">
+            <h2><span class="emoji">🔧</span> Abstract properties</h2>
+            
+            <p style="margin-bottom: 20px;">Abstract property'lar ham yaratish mumkin. Ular child class'da implementatsiya qilinishi kerak.</p>
+            
+            <div class="code-block">
+<pre>from abc import ABC, abstractmethod, abstractproperty
+
+class GeometrikShakl(ABC):
+    def __init__(self, nomi):
+        self.nomi = nomi
+    
+    @abstractproperty
+    def yuzasi(self):
+        """Har bir shaklning o'z yuzasi hisoblash usuli"""
+        pass
+    
+    @abstractproperty
+    def perimetri(self):
+        """Har bir shaklning o'z perimetri hisoblash usuli"""
+        pass
+    
+    @abstractmethod
+    def ma_lumot_ko_rsatish(self):
+        """Har bir shakl o'z ma'lumotlarini ko'rsatadi"""
+        pass
+
+class Uchburchak(GeometrikShakl):
+    def __init__(self, nomi, a, b, c):
+        super().__init__(nomi)
+        self.a = a
+        self.b = b
+        self.c = c
+    
+    @property
+    def yuzasi(self):
+        # Geron formulasi
+        p = (self.a + self.b + self.c) / 2
+        return (p * (p - self.a) * (p - self.b) * (p - self.c)) ** 0.5
+    
+    @property
+    def perimetri(self):
+        return self.a + self.b + self.c
+    
+    def ma_lumot_ko_rsatish(self):
+        print(f"=== {self.nomi} ma'lumotlari ===")
+        print(f"Tomonlar: {self.a}, {self.b}, {self.c}")
+        print(f"Yuzasi: {self.yuzasi:.2f}")
+        print(f"Perimetri: {self.perimetri}")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 8: Abstract properties test -->
+        <div class="slide">
+            <h2><span class="emoji">🧪</span> Abstract properties test</h2>
+            
+            <div class="code-block">
+<pre>class To_rtburchak(GeometrikShakl):
+    def __init__(self, nomi, uzunlik, kenglik):
+        super().__init__(nomi)
+        self.uzunlik = uzunlik
+        self.kenglik = kenglik
+    
+    @property
+    def yuzasi(self):
+        return self.uzunlik * self.kenglik
+    
+    @property
+    def perimetri(self):
+        return 2 * (self.uzunlik + self.kenglik)
+    
+    def ma_lumot_ko_rsatish(self):
+        print(f"=== {self.nomi} ma'lumotlari ===")
+        print(f"Uzunlik: {self.uzunlik}, Kenglik: {self.kenglik}")
+        print(f"Yuzasi: {self.yuzasi}")
+        print(f"Perimetri: {self.perimetri}")
+
+# Test qilish
+print("=== Geometrik shakllar test ===")
+
+uchburchak = Uchburchak("ABC uchburchak", 3, 4, 5)
+uchburchak.ma_lumot_ko_rsatish()
+
+print("\n" + "="*50 + "\n")
+
+to_rtburchak = To_rtburchak("ABCD to'rtburchak", 5, 3)
+to_rtburchak.ma_lumot_ko_rsatish()</pre>
+            </div>
+        </div>
+
+        <!-- Slide 9: Amaliy loyiha: Hayvonlar -->
+        <div class="slide">
+            <h2><span class="emoji">🐾</span> Amaliy loyiha: Hayvonlar</h2>
+            
+            <div class="code-block">
+<pre>from abc import ABC, abstractmethod, abstractproperty
+
+class Hayvon(ABC):
+    def __init__(self, nomi, yoshi, vazni):
+        self.nomi = nomi
+        self.yoshi = yoshi
+        self.vazni = vazni
+        self.energiya = 100
+    
+    @abstractmethod
+    def ovqatlanish(self):
+        """Har bir hayvon o'z usulida ovqatlanadi"""
+        pass
+    
+    @abstractmethod
+    def uxlash(self):
+        """Har bir hayvon o'z usulida uxlaydi"""
+        pass
+    
+    @abstractmethod
+    def harakatlanish(self):
+        """Har bir hayvon o'z usulida harakatlanadi"""
+        pass
+    
+    @abstractproperty
+    def turi(self):
+        """Har bir hayvonning o'z turi bor"""
+        pass
+    
+    @abstractproperty
+    def ovqat_turi(self):
+        """Har bir hayvonning o'z ovqat turi bor"""
+        pass
+    
+    def ma_lumot_ko_rsatish(self):
+        print(f"=== {self.nomi} ma'lumotlari ===")
+        print(f"Turi: {self.turi}")
+        print(f"Yoshi: {self.yoshi}")
+        print(f"Vazni: {self.vazni} kg")
+        print(f"Energiya: {self.energiya}%")
+        print(f"Ovqat turi: {self.ovqat_turi}")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 10: Hayvonlar class'lari -->
+        <div class="slide">
+            <h2><span class="emoji">🐕</span> Hayvonlar class'lari</h2>
+            
+            <div class="code-block">
+<pre>class It(Hayvon):
+    def __init__(self, nomi, yoshi, vazni, zot):
+        super().__init__(nomi, yoshi, vazni)
+        self.zot = zot
+    
+    @property
+    def turi(self):
+        return "It"
+    
+    @property
+    def ovqat_turi(self):
+        return "Go'sht va don"
+    
+    def ovqatlanish(self):
+        if self.energiya < 80:
+            self.energiya += 30
+            print(f"{self.nomi} go'sht yedi. Energiya: {self.energiya}%")
+        else:
+            print(f"{self.nomi} hozir och emas!")
+    
+    def uxlash(self):
+        self.energiya += 20
+        print(f"{self.nomi} uxlayapti... Energiya: {self.energiya}%")
+    
+    def harakatlanish(self):
+        if self.energiya >= 10:
+            self.energiya -= 10
+            print(f"{self.nomi} yugurmoqda... Energiya: {self.energiya}%")
+        else:
+            print(f"{self.nomi} juda charchagan, dam olishi kerak!")
+
+class Mushuk(Hayvon):
+    def __init__(self, nomi, yoshi, vazni, rang):
+        super().__init__(nomi, yoshi, vazni)
+        self.rang = rang
+    
+    @property
+    def turi(self):
+        return "Mushuk"
+    
+    @property
+    def ovqat_turi(self):
+        return "Baliq va sut"
+    
+    def ovqatlanish(self):
+        if self.energiya < 70:
+            self.energiya += 40
+            print(f"{self.nomi} baliq yedi. Energiya: {self.energiya}%")
+        else:
+            print(f"{self.nomi} hozir och emas!")
+    
+    def uxlash(self):
+        self.energiya += 25
+        print(f"{self.nomi} uxlayapti... Energiya: {self.energiya}%")
+    
+    def harakatlanish(self):
+        if self.energiya >= 15:
+            self.energiya -= 15
+            print(f"{self.nomi} sakrayapti... Energiya: {self.energiya}%")
+        else:
+            print(f"{self.nomi} juda charchagan, dam olishi kerak!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 11: Hayvonlar test -->
+        <div class="slide">
+            <h2><span class="emoji">🧪</span> Hayvonlar test</h2>
+            
+            <div class="code-block">
+<pre># Test qilish
+print("=== Hayvonlar test ===")
+
+# It yaratish
+it = It("Rex", 3, 25, "Olmon cho'pon iti")
+it.ma_lumot_ko_rsatish()
+
+print("\n=== It harakatlari ===")
+it.harakatlanish()
+it.harakatlanish()
+it.ovqatlanish()
+it.uxlash()
+
+print("\n" + "="*50 + "\n")
+
+# Mushuk yaratish
+mushuk = Mushuk("Mimi", 2, 4, "Oq")
+mushuk.ma_lumot_ko_rsatish()
+
+print("\n=== Mushuk harakatlari ===")
+mushuk.harakatlanish()
+mushuk.ovqatlanish()
+mushuk.uxlash()
+
+print("\n" + "="*50 + "\n")
+
+# Abstract class'dan to'g'ridan-to'g'ri object yaratishga urinish
+try:
+    hayvon = Hayvon("Test", 1, 1)  # Xato!
+except TypeError as e:
+    print(f"Xato: {e}")
+    print("Abstract class'dan to'g'ridan-to'g'ri object yaratib bo'lmaydi!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 12: Abstract class afzalliklari -->
+        <div class="slide">
+            <h2><span class="emoji">✅</span> Abstract class'ning afzalliklari</h2>
+            
+            <div class="grid-layout">
+                <div class="abstract-box">
+                    <h3><span class="emoji">📋</span> Standartlashtirish</h3>
+                    <p>Barcha child class'lar bir xil method'larni implementatsiya qiladi</p>
+                </div>
+                
+                <div class="abstract-box">
+                    <h3><span class="emoji">🔒</span> Majburiy implementatsiya</h3>
+                    <p>Abstract method'lar child class'da implementatsiya qilinishi kerak</p>
+                </div>
+                
+                <div class="abstract-box">
+                    <h3><span class="emoji">🏗️</span> Kod tuzilishi</h3>
+                    <p>Kod yaxshi tashkil etiladi va tushunarli bo'ladi</p>
+                </div>
+                
+                <div class="abstract-box">
+                    <h3><span class="emoji">🔄</span> Qayta ishlatish</h3>
+                    <p>Umumiy funksionallikni qayta ishlatish</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Abstract class qoidalari -->
+        <div class="slide">
+            <h2><span class="emoji">📝</span> Abstract class qoidalari</h2>
+            
+            <div class="task-box">
+                <div class="task-title">1. ABC import qilish</div>
+                <p>Abstract class yaratish uchun <code>from abc import ABC, abstractmethod</code> import qilish kerak</p>
+            </div>
+            
+            <div class="task-box">
+                <div class="task-title">2. ABC dan meros olish</div>
+                <p>Abstract class <code>ABC</code> dan meros olishi kerak</p>
+            </div>
+            
+            <div class="task-box">
+                <div class="task-title">3. @abstractmethod decorator</div>
+                <p>Abstract method'lar <code>@abstractmethod</code> decorator bilan belgilanadi</p>
+            </div>
+            
+            <div class="task-box">
+                <div class="task-title">4. Child class'da implementatsiya</div>
+                <p>Barcha abstract method'lar child class'da implementatsiya qilinishi kerak</p>
+            </div>
+            
+            <div class="task-box">
+                <div class="task-title">5. Object yaratish taqiqlangan</div>
+                <p>Abstract class'dan to'g'ridan-to'g'ri object yaratib bo'lmaydi</p>
+            </div>
+        </div>
+
+        <!-- Slide 14: Xulosa -->
+        <div class="slide">
+            <h1><span class="emoji">🎉</span> Xulosa</h1>
+            
+            <div style="text-align: center;">
+                <h2 style="color: #48bb78;">Bugun nimalarni o'rgandik?</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
+                    <div class="example-box">
+                        <h3><span class="emoji">🏗️</span> Abstract Classes</h3>
+                        <p>To'liq implementatsiya qilinmagan class'lar</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">📦</span> ABC moduli</h3>
+                        <p>Abstract class'lar yaratish uchun</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🏷️</span> @abstractmethod</h3>
+                        <p>Abstract method'lar belgilash</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🔧</span> Abstract properties</h3>
+                        <p>Abstract property'lar yaratish</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🐾</span> Hayvonlar loyihasi</h3>
+                        <p>Amaliy misol bilan o'rganish</p>
+                    </div>
+                </div>
+
+                <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">
+                    Keyingi dars: Advanced OOP Concepts mavzusini o'rganamiz
+                </p>
+
+                <p style="margin-top: 20px; color: #666;">
+                    Savollaringiz bo'lsa, yozib qoldiring! <span class="emoji">😊</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">⬅️ Oldingi</button>
+            <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Button states
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python OOP: Encapsulation (Kapsulatsiya)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+
+        .highlight {
+            background: #fed7d7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c53030;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .task-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .task-title {
+            color: #856404;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .time-badge {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .encapsulation-box {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .security-box {
+            background: #fed7d7;
+            border: 2px solid #e53e3e;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">15</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1><span class="emoji">📚</span> Python OOP - 5-dars</h1>
+            <h2 style="text-align: center; color: #764ba2;">Encapsulation (Kapsulatsiya)</h2>
+            <div style="text-align: center; margin-top: 40px;">
+                <h3>Ma'lumotlarni himoya qilish</h3>
+                <p style="font-size: 1.2em; margin-top: 30px; color: #666;">
+                    Assalomu alaykum, yosh dasturchilar! <span class="emoji">😊</span><br>
+                    Bugun biz OOP'ning muhim prinsiplaridan biri - Encapsulation'ni o'rganamiz
+                </p>
+                <div class="time-badge">120 daqiqa</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Dars rejasi -->
+        <div class="slide">
+            <h2><span class="emoji">📋</span> Dars rejasi</h2>
+            <ul style="font-size: 1.1em;">
+                <li>1. Encapsulation nima? <span class="time-badge">20 min</span></li>
+                <li>2. Private va Public attributes <span class="time-badge">25 min</span></li>
+                <li>3. Getter va Setter metodlar <span class="time-badge">25 min</span></li>
+                <li>4. Property decorator <span class="time-badge">20 min</span></li>
+                <li>5. Amaliy loyiha: Bank hisob <span class="time-badge">20 min</span></li>
+                <li>6. Xulosa va uy vazifasi <span class="time-badge">10 min</span></li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Encapsulation nima? -->
+        <div class="slide">
+            <h2><span class="emoji">🤔</span> Encapsulation nima?</h2>
+            
+            <p style="margin-bottom: 20px;">Encapsulation - bu class'ning ichki ma'lumotlarini tashqi dunyodan yashirish va faqat ruxsat etilgan usullar orqali ularga kirish imkonini berish.</p>
+            
+            <div class="encapsulation-box">
+                <p><span class="emoji">💡</span> <strong>Real hayotdan misol:</strong></p>
+                <p>Agar sizda bank hisobingiz bo'lsa, siz balansingizni to'g'ridan-to'g'ri o'zgartira olmaysiz. Siz faqat bank orqali pul qo'shish yoki olish mumkin. Bank sizning balansingizni himoya qiladi va faqat ruxsat etilgan operatsiyalarni amalga oshiradi.</p>
+            </div>
+            
+            <div class="code-block">
+<pre>class BankHisob:
+    def __init__(self, ism, dastlabki_summa=0):
+        self.ism = ism
+        self.__balans = dastlabki_summa  # Private attribute
+        self.__parol = "1234"  # Private attribute
+    
+    def pul_qo_shish(self, miqdor, parol):
+        if parol == self.__parol:
+            self.__balans += miqdor
+            print(f"{miqdor} so'm qo'shildi. Yangi balans: {self.__balans}")
+        else:
+            print("Noto'g'ri parol!")
+    
+    def pul_olish(self, miqdor, parol):
+        if parol == self.__parol:
+            if self.__balans >= miqdor:
+                self.__balans -= miqdor
+                print(f"{miqdor} so'm olindi. Yangi balans: {self.__balans}")
+            else:
+                print("Yetarli mablag' yo'q!")
+        else:
+            print("Noto'g'ri parol!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 4: Encapsulation afzalliklari -->
+        <div class="slide">
+            <h2><span class="emoji">✅</span> Encapsulation'ning afzalliklari</h2>
+            
+            <div class="grid-layout">
+                <div class="security-box">
+                    <h3><span class="emoji">🔒</span> Xavfsizlik</h3>
+                    <p>Ma'lumotlarni himoya qilish</p>
+                </div>
+                
+                <div class="security-box">
+                    <h3><span class="emoji">🛡️</span> Kodni himoya qilish</h3>
+                    <p>Noto'g'ri foydalanishdan himoya qilish</p>
+                </div>
+                
+                <div class="security-box">
+                    <h3><span class="emoji">🔄</span> Moslashuvchanlik</h3>
+                    <p>Ichki tuzilishni o'zgartirish imkonini berish</p>
+                </div>
+                
+                <div class="security-box">
+                    <h3><span class="emoji">📋</span> Tartibli kod</h3>
+                    <p>Ma'lumotlar va metodlarni tartibli saqlash</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Private va Public attributes -->
+        <div class="slide">
+            <h2><span class="emoji">🔐</span> Private va Public attributes</h2>
+            
+            <div class="grid-layout">
+                <div>
+                    <h3>Public attributes</h3>
+                    <div class="code-block">
+<pre>class Talaba:
+    def __init__(self, ism, yosh, kurs):
+        # Public attributes
+        self.ism = ism
+        self.yosh = yosh
+        self.kurs = kurs
+        
+        # Private attributes
+        self.__ball = 0
+        self.__parol = "talaba123"
+        self.__max_ball = 100</pre>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>Private attributes</h3>
+                    <div class="code-block">
+<pre>    # Public methods
+    def ma_lumot_ko_rsatish(self):
+        print(f"=== {self.ism} ma'lumotlari ===")
+        print(f"Yosh: {self.yosh}")
+        print(f"Kurs: {self.kurs}")
+        print(f"Ball: {self.__ball}")
+    
+    def ball_qo_shish(self, miqdor, parol):
+        if parol == self.__parol:
+            if self.__ball + miqdor <= self.__max_ball:
+                self.__ball += miqdor
+                print(f"{miqdor} ball qo'shildi. Jami: {self.__ball}")</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Getter va Setter metodlar -->
+        <div class="slide">
+            <h2><span class="emoji">🔧</span> Getter va Setter metodlar</h2>
+            
+            <p style="margin-bottom: 20px;"><strong>Getter</strong> - private attribute'ni o'qish uchun<br><strong>Setter</strong> - private attribute'ni o'zgartirish uchun</p>
+            
+            <div class="code-block">
+<pre>class Mashina:
+    def __init__(self, marka, model, yil):
+        self.marka = marka
+        self.model = model
+        self.yil = yil
+        self.__tezlik = 0
+        self.__yoqilg_i = 50
+        self.__yoniq = False
+    
+    # Getter metodlar
+    def get_tezlik(self):
+        return self.__tezlik
+    
+    def get_yoqilg_i(self):
+        return self.__yoqilg_i
+    
+    def get_yoniq(self):
+        return self.__yoniq
+    
+    # Setter metodlar
+    def set_tezlik(self, yangi_tezlik):
+        if 0 <= yangi_tezlik <= 200:
+            self.__tezlik = yangi_tezlik
+            print(f"Tezlik {yangi_tezlik} km/h ga o'zgartirildi")
+        else:
+            print("Tezlik 0-200 km/h orasida bo'lishi kerak!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 7: Setter metodlar -->
+        <div class="slide">
+            <h2><span class="emoji">⚙️</span> Setter metodlar</h2>
+            
+            <div class="code-block">
+<pre>    def set_yoqilg_i(self, yangi_yoqilg_i):
+        if 0 <= yangi_yoqilg_i <= 100:
+            self.__yoqilg_i = yangi_yoqilg_i
+            print(f"Yoqilg'i {yangi_yoqilg_i}% ga o'zgartirildi")
+        else:
+            print("Yoqilg'i 0-100% orasida bo'lishi kerak!")
+    
+    def set_yoniq(self, holat):
+        if isinstance(holat, bool):
+            self.__yoniq = holat
+            if holat:
+                print("Mashina yoqildi!")
+            else:
+                print("Mashina o'chirildi!")
+        else:
+            print("Holat True yoki False bo'lishi kerak!")
+    
+    # Boshqa metodlar
+    def harakatlanish(self):
+        if self.__yoniq and self.__yoqilg_i > 0:
+            self.__tezlik = min(self.__tezlik + 10, 120)
+            self.__yoqilg_i -= 1
+            print(f"Mashina harakatlanmoqda. Tezlik: {self.__tezlik} km/h")
+        else:
+            print("Mashina yoqilmagan yoki yoqilg'i yo'q!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 8: Property decorator -->
+        <div class="slide">
+            <h2><span class="emoji">🏷️</span> Property decorator</h2>
+            
+            <p style="margin-bottom: 20px;"><strong>Property decorator</strong> - getter va setter'ni oddiy attribute kabi ishlatish imkonini beradi.</p>
+            
+            <div class="code-block">
+<pre>class Talaba:
+    def __init__(self, ism, yosh):
+        self.ism = ism
+        self._yosh = yosh  # Protected attribute
+        self.__ball = 0    # Private attribute
+    
+    @property
+    def yosh(self):
+        return self._yosh
+    
+    @yosh.setter
+    def yosh(self, yangi_yosh):
+        if 16 <= yangi_yosh <= 25:
+            self._yosh = yangi_yosh
+            print(f"Yosh {yangi_yosh} ga o'zgartirildi")
+        else:
+            print("Yosh 16-25 orasida bo'lishi kerak!")
+    
+    @property
+    def ball(self):
+        return self.__ball
+    
+    @ball.setter
+    def ball(self, yangi_ball):
+        if 0 <= yangi_ball <= 100:
+            self.__ball = yangi_ball
+            print(f"Ball {yangi_ball} ga o'zgartirildi")
+        else:
+            print("Ball 0-100 orasida bo'lishi kerak!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 9: Property decorator ishlatish -->
+        <div class="slide">
+            <h2><span class="emoji">💻</span> Property decorator ishlatish</h2>
+            
+            <div class="code-block">
+<pre>    @property
+    def baho(self):
+        if self.__ball >= 90:
+            return "A'lo"
+        elif self.__ball >= 80:
+            return "Yaxshi"
+        elif self.__ball >= 70:
+            return "Qoniqarli"
+        else:
+            return "Qoniqarsiz"
+    
+    def ma_lumot_ko_rsatish(self):
+        print(f"=== {self.ism} ma'lumotlari ===")
+        print(f"Yosh: {self.yosh}")
+        print(f"Ball: {self.ball}")
+        print(f"Baho: {self.baho}")
+
+# Test qilish
+talaba = Talaba("Ali", 18)
+talaba.ma_lumot_ko_rsatish()
+
+# Property'lar oddiy attribute kabi ishlatiladi
+talaba.yosh = 19  # Setter ishlaydi
+talaba.ball = 85  # Setter ishlaydi
+
+print(f"Yosh: {talaba.yosh}")  # Getter ishlaydi
+print(f"Ball: {talaba.ball}")  # Getter ishlaydi
+print(f"Baho: {talaba.baho}")  # Getter ishlaydi</pre>
+            </div>
+        </div>
+
+        <!-- Slide 10: Amaliy loyiha: Bank hisob -->
+        <div class="slide">
+            <h2><span class="emoji">🏦</span> Amaliy loyiha: Bank hisob</h2>
+            
+            <div class="code-block">
+<pre>class BankHisob:
+    def __init__(self, ism, dastlabki_summa=0):
+        self.ism = ism
+        self._balans = dastlabki_summa
+        self._parol = "1234"
+        self._max_kunlik_chiqim = 1000000
+        self._kunlik_chiqim = 0
+        self._harakatlar = []
+    
+    @property
+    def balans(self):
+        return self._balans
+    
+    @balans.setter
+    def balans(self, yangi_balans):
+        if yangi_balans >= 0:
+            self._balans = yangi_balans
+        else:
+            print("Balans manfiy bo'lishi mumkin emas!")
+    
+    @property
+    def kunlik_chiqim(self):
+        return self._kunlik_chiqim</pre>
+            </div>
+        </div>
+
+        <!-- Slide 11: Bank hisob metodlari -->
+        <div class="slide">
+            <h2><span class="emoji">💰</span> Bank hisob metodlari</h2>
+            
+            <div class="code-block">
+<pre>    def parol_tekshirish(self, parol):
+        return parol == self._parol
+    
+    def pul_qo_shish(self, miqdor, parol):
+        if self.parol_tekshirish(parol):
+            if miqdor > 0:
+                self._balans += miqdor
+                self._harakatlar.append(f"+{miqdor} so'm")
+                print(f"{miqdor} so'm qo'shildi. Yangi balans: {self._balans}")
+            else:
+                print("Miqdor musbat bo'lishi kerak!")
+        else:
+            print("Noto'g'ri parol!")
+    
+    def pul_olish(self, miqdor, parol):
+        if self.parol_tekshirish(parol):
+            if miqdor > 0:
+                if self._balans >= miqdor:
+                    if self._kunlik_chiqim + miqdor <= self._max_kunlik_chiqim:
+                        self._balans -= miqdor
+                        self._kunlik_chiqim += miqdor
+                        self._harakatlar.append(f"-{miqdor} so'm")
+                        print(f"{miqdor} so'm olindi. Yangi balans: {self._balans}")
+                    else:
+                        print("Kunlik chiqim limiti oshib ketdi!")
+                else:
+                    print("Yetarli mablag' yo'q!")
+            else:
+                print("Miqdor musbat bo'lishi kerak!")
+        else:
+            print("Noto'g'ri parol!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 12: Bank hisob test -->
+        <div class="slide">
+            <h2><span class="emoji">🧪</span> Bank hisob test</h2>
+            
+            <div class="code-block">
+<pre>    def harakatlarni_ko_rsatish(self, parol):
+        if self.parol_tekshirish(parol):
+            print("=== So'nggi harakatlar ===")
+            for harakat in self._harakatlar[-5:]:
+                print(harakat)
+        else:
+            print("Noto'g'ri parol!")
+    
+    def ma_lumot_ko_rsatish(self, parol):
+        if self.parol_tekshirish(parol):
+            print(f"=== {self.ism} bank hisobi ===")
+            print(f"Balans: {self._balans} so'm")
+            print(f"Kunlik chiqim: {self._kunlik_chiqim} so'm")
+            print(f"Kunlik limit: {self._max_kunlik_chiqim} so'm")
+        else:
+            print("Noto'g'ri parol!")
+
+# Test qilish
+hisob = BankHisob("Ali", 100000)
+hisob.ma_lumot_ko_rsatish("1234")
+
+hisob.pul_qo_shish(50000, "1234")
+hisob.pul_olish(30000, "1234")
+hisob.pul_olish(20000, "1234")
+
+hisob.harakatlarni_ko_rsatish("1234")
+hisob.ma_lumot_ko_rsatish("1234")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 13: Mashq -->
+        <div class="slide">
+            <h2><span class="emoji">🎯</span> Mashq</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">📱</span> Vazifa: Telefon class</div>
+                <ul>
+                    <li><strong>Telefon</strong> class yarating</li>
+                    <li>Private attributes: __batareya, __parol, __max_chaqiruv</li>
+                    <li>Property decorator: batareya, chaqiruv_soni</li>
+                    <li>Getter/Setter metodlar: parol_tekshirish, batareya_qo'shish</li>
+                </ul>
+                <p style="margin-top: 15px; color: #856404;">
+                    <strong>Vaqt: 10 daqiqa</strong> <span class="emoji">⏰</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 14: Uyga vazifa -->
+        <div class="slide">
+            <h2><span class="emoji">🏠</span> Uyga vazifa</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">📱</span> Vazifa 1: Telefon class</div>
+                <ul>
+                    <li>Private attributes: __batareya, __parol, __max_chaqiruv</li>
+                    <li>Property decorator: batareya, chaqiruv_soni</li>
+                    <li>Getter/Setter metodlar: parol_tekshirish, batareya_qo'shish</li>
+                </ul>
+            </div>
+
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">📚</span> Vazifa 2: Kitob class</div>
+                <ul>
+                    <li>Private attributes: __sahifalar, __narx, __mavjud</li>
+                    <li>Property decorator: sahifalar, narx, mavjud</li>
+                    <li>Getter/Setter metodlar: sahifalar_tekshirish, narx_o'zgartirish</li>
+                </ul>
+            </div>
+
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🎮</span> Vazifa 3: O'yinchi class</div>
+                <ul>
+                    <li>Private attributes: __jon, __kuch, __tajriba</li>
+                    <li>Property decorator: jon, kuch, tajriba</li>
+                    <li>Getter/Setter metodlar: jon_qo'shish, kuch_oshirish</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 15: Xulosa -->
+        <div class="slide">
+            <h1><span class="emoji">🎉</span> Xulosa</h1>
+            
+            <div style="text-align: center;">
+                <h2 style="color: #48bb78;">Bugun nimalarni o'rgandik?</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
+                    <div class="example-box">
+                        <h3><span class="emoji">🔐</span> Encapsulation</h3>
+                        <p>Ma'lumotlarni himoya qilish</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🔒</span> Private attributes</h3>
+                        <p>__ bilan boshlanadi, faqat class ichidan kirish</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🔧</span> Getter/Setter</h3>
+                        <p>Ma'lumotlarni xavfsiz boshqarish</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🏷️</span> Property decorator</h3>
+                        <p>Getter/setter'ni oddiy attribute kabi ishlatish</p>
+                    </div>
+                </div>
+
+                <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">
+                    Keyingi dars: Special Methods (Magic Methods) mavzusini o'rganamiz
+                </p>
+
+                <p style="margin-top: 20px; color: #666;">
+                    Savollaringiz bo'lsa, yozib qoldiring! <span class="emoji">😊</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">⬅️ Oldingi</button>
+            <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Button states
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python OOP: Special Methods (Magic Methods)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+
+        .highlight {
+            background: #fed7d7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c53030;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .task-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .task-title {
+            color: #856404;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .time-badge {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .magic-box {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .operator-box {
+            background: #fef5e7;
+            border: 2px solid #f6ad55;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">16</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1><span class="emoji">📚</span> Python OOP - 6-dars</h1>
+            <h2 style="text-align: center; color: #764ba2;">Special Methods (Magic Methods)</h2>
+            <div style="text-align: center; margin-top: 40px;">
+                <h3>__init__, __str__, __len__ va boshqalar</h3>
+                <p style="font-size: 1.2em; margin-top: 30px; color: #666;">
+                    Assalomu alaykum, yosh dasturchilar! <span class="emoji">😊</span><br>
+                    Bugun biz Python'ning juda qiziqarli va kuchli xususiyati - Special Methods'ni o'rganamiz
+                </p>
+                <div class="time-badge">120 daqiqa</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Dars rejasi -->
+        <div class="slide">
+            <h2><span class="emoji">📋</span> Dars rejasi</h2>
+            <ul style="font-size: 1.1em;">
+                <li>1. Special Methods nima? <span class="time-badge">20 min</span></li>
+                <li>2. __init__, __str__, __repr__ <span class="time-badge">25 min</span></li>
+                <li>3. __len__, __bool__, __eq__ <span class="time-badge">20 min</span></li>
+                <li>4. Arifmetik operatorlar <span class="time-badge">20 min</span></li>
+                <li>5. Amaliy loyiha: Vektor class <span class="time-badge">25 min</span></li>
+                <li>6. Xulosa va uy vazifasi <span class="time-badge">10 min</span></li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Special Methods nima? -->
+        <div class="slide">
+            <h2><span class="emoji">🤔</span> Special Methods nima?</h2>
+            
+            <p style="margin-bottom: 20px;">Special Methods `__` (ikki pastki chiziq) bilan boshlanadi va tugaydi. Shuning uchun ularni "Magic Methods" deb ham atashadi.</p>
+            
+            <div class="magic-box">
+                <p><span class="emoji">💡</span> <strong>Real hayotdan misol:</strong></p>
+                <p>Agar sizda "Vaqt" class bo'lsa, siz uni `print()` da ko'rsatish, `len()` da uzunligini olish, `+` operator bilan qo'shish kabi ishlarni qilishni xohlaysiz. Special Methods - bu Python'ga sizning class'ingizni qanday ishlatishni o'rgatadi.</p>
+            </div>
+            
+            <div class="code-block">
+<pre>class Talaba:
+    def __init__(self, ism, yosh, kurs):
+        self.ism = ism
+        self.yosh = yosh
+        self.kurs = kurs
+        self.ball = 0
+    
+    def __str__(self):  # print() da ko'rsatish uchun
+        return f"Talaba: {self.ism}, {self.yosh} yosh, {self.kurs}-kurs"
+    
+    def __len__(self):  # len() da uzunlik uchun
+        return len(self.ism)
+    
+    def __eq__(self, boshqa):  # == operator uchun
+        return self.ism == boshqa.ism and self.yosh == boshqa.yosh</pre>
+            </div>
+        </div>
+
+        <!-- Slide 4: Special Methods afzalliklari -->
+        <div class="slide">
+            <h2><span class="emoji">✅</span> Special Methods'ning afzalliklari</h2>
+            
+            <div class="grid-layout">
+                <div class="magic-box">
+                    <h3><span class="emoji">🎯</span> Tabiiy kod</h3>
+                    <p>Python'ning o'z operator'larini ishlatish</p>
+                </div>
+                
+                <div class="magic-box">
+                    <h3><span class="emoji">📖</span> Tushunarli kod</h3>
+                    <p>Qisqa va aniq sintaksis</p>
+                </div>
+                
+                <div class="magic-box">
+                    <h3><span class="emoji">💪</span> Kuchli funksionallik</h3>
+                    <p>Murakkab operatsiyalar</p>
+                </div>
+                
+                <div class="magic-box">
+                    <h3><span class="emoji">🐍</span> Python'ning ruhi</h3>
+                    <p>"Explicit is better than implicit"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: __init__, __str__, __repr__ -->
+        <div class="slide">
+            <h2><span class="emoji">🏗️</span> __init__, __str__, __repr__</h2>
+            
+            <div class="grid-layout">
+                <div>
+                    <h3>__init__</h3>
+                    <div class="code-block">
+<pre>def __init__(self, nom, muallif, yil, sahifalar):
+    self.nom = nom
+    self.muallif = muallif
+    self.yil = yil
+    self.sahifalar = sahifalar
+    self.o_qilgan = False
+    print(f"Kitob yaratildi: {self.nom}")</pre>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>__str__</h3>
+                    <div class="code-block">
+<pre>def __str__(self):  # print() da ko'rsatish uchun
+    return f"'{self.nom}' - {self.muallif} ({self.yil})"</pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="code-block">
+<pre>def __repr__(self):  # debug uchun
+    return f"Kitob('{self.nom}', '{self.muallif}', {self.yil}, {self.sahifalar})"
+
+# Test qilish
+kitob1 = Kitob("Python", "Ali", 2023, 300)
+kitob2 = Kitob("Java", "Zilola", 2022, 250)
+
+print(kitob1)  # __str__ ishlaydi
+print(repr(kitob1))  # __repr__ ishlaydi</pre>
+            </div>
+        </div>
+
+        <!-- Slide 6: __len__, __bool__, __eq__ -->
+        <div class="slide">
+            <h2><span class="emoji">📏</span> __len__, __bool__, __eq__</h2>
+            
+            <div class="code-block">
+<pre>class Ro_yxat:
+    def __init__(self, nom):
+        self.nom = nom
+        self.elementlar = []
+    
+    def __len__(self):  # len() uchun
+        return len(self.elementlar)
+    
+    def __bool__(self):  # if, while uchun
+        return len(self.elementlar) > 0
+    
+    def __eq__(self, boshqa):  # == operator uchun
+        return self.nom == boshqa.nom and self.elementlar == boshqa.elementlar
+    
+    def element_qo_shish(self, element):
+        self.elementlar.append(element)
+        print(f"'{element}' qo'shildi!")
+    
+    def __str__(self):
+        return f"{self.nom}: {self.elementlar}"</pre>
+            </div>
+        </div>
+
+        <!-- Slide 7: __len__, __bool__, __eq__ test -->
+        <div class="slide">
+            <h2><span class="emoji">🧪</span> __len__, __bool__, __eq__ test</h2>
+            
+            <div class="code-block">
+<pre># Test qilish
+ro_yxat1 = Ro_yxat("Bozor ro'yxati")
+ro_yxat2 = Ro_yxat("Bozor ro'yxati")
+
+print(f"Ro'yxat uzunligi: {len(ro_yxat1)}")  # __len__ ishlaydi
+print(f"Ro'yxat bo'shmi: {not ro_yxat1}")  # __bool__ ishlaydi
+
+ro_yxat1.element_qo_shish("Non")
+ro_yxat1.element_qo_shish("Sut")
+ro_yxat1.element_qo_shish("Go'sht")
+
+print(f"Ro'yxat uzunligi: {len(ro_yxat1)}")  # __len__ ishlaydi
+print(f"Ro'yxat bo'shmi: {not ro_yxat1}")  # __bool__ ishlaydi
+
+ro_yxat2.element_qo_shish("Non")
+ro_yxat2.element_qo_shish("Sut")
+ro_yxat2.element_qo_shish("Go'sht")
+
+print(f"Ro'yxatlar tengmi: {ro_yxat1 == ro_yxat2}")  # __eq__ ishlaydi
+
+# if shartida ishlatish
+if ro_yxat1:
+    print("Ro'yxat bo'sh emas!")
+else:
+    print("Ro'yxat bo'sh!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 8: Arifmetik operatorlar -->
+        <div class="slide">
+            <h2><span class="emoji">➕</span> Arifmetik operatorlar</h2>
+            
+            <div class="operator-box">
+                <p><span class="emoji">💡</span> <strong>Arifmetik operatorlar:</strong></p>
+                <ul>
+                    <li><code>__add__</code> - + operator</li>
+                    <li><code>__sub__</code> - - operator</li>
+                    <li><code>__mul__</code> - * operator</li>
+                    <li><code>__truediv__</code> - / operator</li>
+                    <li><code>__floordiv__</code> - // operator</li>
+                    <li><code>__mod__</code> - % operator</li>
+                    <li><code>__pow__</code> - ** operator</li>
+                </ul>
+            </div>
+            
+            <div class="code-block">
+<pre>class Vaqt:
+    def __init__(self, soat, daqiqa):
+        self.soat = soat
+        self.daqiqa = daqiqa
+        self.__normalizatsiya()
+    
+    def __normalizatsiya(self):
+        if self.daqiqa >= 60:
+            self.soat += self.daqiqa // 60
+            self.daqiqa = self.daqiqa % 60
+        if self.soat >= 24:
+            self.soat = self.soat % 24
+    
+    def __add__(self, boshqa):  # + operator
+        yangi_soat = self.soat + boshqa.soat
+        yangi_daqiqa = self.daqiqa + boshqa.daqiqa
+        return Vaqt(yangi_soat, yangi_daqiqa)</pre>
+            </div>
+        </div>
+
+        <!-- Slide 9: Arifmetik operatorlar davomi -->
+        <div class="slide">
+            <h2><span class="emoji">➖</span> Arifmetik operatorlar davomi</h2>
+            
+            <div class="code-block">
+<pre>    def __sub__(self, boshqa):  # - operator
+        yangi_soat = self.soat - boshqa.soat
+        yangi_daqiqa = self.daqiqa - boshqa.daqiqa
+        if yangi_daqiqa < 0:
+            yangi_soat -= 1
+            yangi_daqiqa += 60
+        if yangi_soat < 0:
+            yangi_soat += 24
+        return Vaqt(yangi_soat, yangi_daqiqa)
+    
+    def __mul__(self, son):  # * operator
+        yangi_soat = self.soat * son
+        yangi_daqiqa = self.daqiqa * son
+        return Vaqt(yangi_soat, yangi_daqiqa)
+    
+    def __str__(self):
+        return f"{self.soat:02d}:{self.daqiqa:02d}"
+    
+    def __eq__(self, boshqa):
+        return self.soat == boshqa.soat and self.daqiqa == boshqa.daqiqa</pre>
+            </div>
+        </div>
+
+        <!-- Slide 10: Vaqt test qilish -->
+        <div class="slide">
+            <h2><span class="emoji">⏰</span> Vaqt test qilish</h2>
+            
+            <div class="code-block">
+<pre># Test qilish
+vaqt1 = Vaqt(10, 30)  # 10:30
+vaqt2 = Vaqt(2, 45)   # 02:45
+
+print(f"vaqt1 = {vaqt1}")
+print(f"vaqt2 = {vaqt2}")
+
+qoshilma = vaqt1 + vaqt2  # __add__ ishlaydi
+print(f"vaqt1 + vaqt2 = {qoshilma}")
+
+ayirma = vaqt1 - vaqt2  # __sub__ ishlaydi
+print(f"vaqt1 - vaqt2 = {ayirma}")
+
+ko_paytma = vaqt1 * 2  # __mul__ ishlaydi
+print(f"vaqt1 * 2 = {ko_paytma}")
+
+print(f"vaqt1 == vaqt2: {vaqt1 == vaqt2}")  # __eq__ ishlaydi</pre>
+            </div>
+        </div>
+
+        <!-- Slide 11: Amaliy loyiha: Vektor class -->
+        <div class="slide">
+            <h2><span class="emoji">📐</span> Amaliy loyiha: Vektor class</h2>
+            
+            <div class="code-block">
+<pre>class Vektor:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    
+    def __str__(self):  # print() uchun
+        return f"Vektor({self.x}, {self.y})"
+    
+    def __repr__(self):  # debug uchun
+        return f"Vektor({self.x}, {self.y})"
+    
+    def __len__(self):  # len() uchun
+        return 2  # Vektor har doim 2 o'lchamli
+    
+    def __bool__(self):  # if, while uchun
+        return self.x != 0 or self.y != 0
+    
+    def __eq__(self, boshqa):  # == operator
+        return self.x == boshqa.x and self.y == boshqa.y</pre>
+            </div>
+        </div>
+
+        <!-- Slide 12: Vektor arifmetik operatorlar -->
+        <div class="slide">
+            <h2><span class="emoji">🔢</span> Vektor arifmetik operatorlar</h2>
+            
+            <div class="code-block">
+<pre>    def __add__(self, boshqa):  # + operator
+        return Vektor(self.x + boshqa.x, self.y + boshqa.y)
+    
+    def __sub__(self, boshqa):  # - operator
+        return Vektor(self.x - boshqa.x, self.y - boshqa.y)
+    
+    def __mul__(self, son):  # * operator
+        return Vektor(self.x * son, self.y * son)
+    
+    def __truediv__(self, son):  # / operator
+        if son != 0:
+            return Vektor(self.x / son, self.y / son)
+        else:
+            raise ValueError("Nolga bo'lish mumkin emas!")
+    
+    def __floordiv__(self, son):  # // operator
+        if son != 0:
+            return Vektor(self.x // son, self.y // son)
+        else:
+            raise ValueError("Nolga bo'lish mumkin emas!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 13: Vektor qo'shimcha metodlar -->
+        <div class="slide">
+            <h2><span class="emoji">📊</span> Vektor qo'shimcha metodlar</h2>
+            
+            <div class="code-block">
+<pre>    def __mod__(self, son):  # % operator
+        if son != 0:
+            return Vektor(self.x % son, self.y % son)
+        else:
+            raise ValueError("Nolga bo'lish mumkin emas!")
+    
+    def __pow__(self, son):  # ** operator
+        return Vektor(self.x ** son, self.y ** son)
+    
+    def uzunlik(self):
+        return (self.x**2 + self.y**2)**0.5
+    
+    def burchak(self):
+        import math
+        return math.atan2(self.y, self.x) * 180 / math.pi
+    
+    def ma_lumot_ko_rsatish(self):
+        print(f"=== {self} ===")
+        print(f"X: {self.x}")
+        print(f"Y: {self.y}")
+        print(f"Uzunlik: {self.uzunlik():.2f}")
+        print(f"Burchak: {self.burchak():.2f}°")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 14: Vektor test qilish -->
+        <div class="slide">
+            <h2><span class="emoji">🧪</span> Vektor test qilish</h2>
+            
+            <div class="code-block">
+<pre># Test qilish
+v1 = Vektor(3, 4)
+v2 = Vektor(1, 2)
+
+print("=== Vektor ma'lumotlari ===")
+v1.ma_lumot_ko_rsatish()
+v2.ma_lumot_ko_rsatish()
+
+print("\n=== Arifmetik operatsiyalar ===")
+print(f"v1 = {v1}")
+print(f"v2 = {v2}")
+print(f"v1 + v2 = {v1 + v2}")
+print(f"v1 - v2 = {v1 - v2}")
+print(f"v1 * 2 = {v1 * 2}")
+print(f"v1 / 2 = {v1 / 2}")
+print(f"v1 // 2 = {v1 // 2}")
+print(f"v1 % 2 = {v1 % 2}")
+print(f"v1 ** 2 = {v1 ** 2}")
+
+print("\n=== Solishtirish ===")
+print(f"v1 == v2: {v1 == v2}")
+print(f"v1 != v2: {v1 != v2}")
+
+print("\n=== Boshqa operatsiyalar ===")
+print(f"len(v1): {len(v1)}")
+print(f"bool(v1): {bool(v1)}")
+print(f"str(v1): {str(v1)}")
+print(f"repr(v1): {repr(v1)}")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 15: Mashq -->
+        <div class="slide">
+            <h2><span class="emoji">🎯</span> Mashq</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🔢</span> Vazifa: Kompleks son class</div>
+                <ul>
+                    <li><strong>Kompleks son</strong> class yarating</li>
+                    <li>Xususiyatlar: real, imag</li>
+                    <li>Special Methods: __init__, __str__, __repr__</li>
+                    <li>Arifmetik operatorlar: +, -, *, /</li>
+                    <li>Solishtirish operatorlari: ==, !=</li>
+                </ul>
+                <p style="margin-top: 15px; color: #856404;">
+                    <strong>Vaqt: 10 daqiqa</strong> <span class="emoji">⏰</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 16: Xulosa -->
+        <div class="slide">
+            <h1><span class="emoji">🎉</span> Xulosa</h1>
+            
+            <div style="text-align: center;">
+                <h2 style="color: #48bb78;">Bugun nimalarni o'rgandik?</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
+                    <div class="example-box">
+                        <h3><span class="emoji">🏗️</span> Special Methods</h3>
+                        <p>__ bilan boshlanadi va tugaydi</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🏗️</span> __init__</h3>
+                        <p>Constructor, object yaratilganda ishlaydi</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">📖</span> __str__</h3>
+                        <p>print() da ko'rsatish uchun</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🔍</span> __repr__</h3>
+                        <p>debug va development uchun</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">➕</span> Arifmetik operatorlar</h3>
+                        <p>+, -, *, /, //, %, **</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">⚖️</span> Solishtirish operatorlari</h3>
+                        <p>==, !=, <, >, <=, >=</p>
+                    </div>
+                </div>
+
+                <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">
+                    Keyingi dars: Properties va Decorators mavzusini o'rganamiz
+                </p>
+
+                <p style="margin-top: 20px; color: #666;">
+                    Savollaringiz bo'lsa, yozib qoldiring! <span class="emoji">😊</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">⬅️ Oldingi</button>
+            <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Button states
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

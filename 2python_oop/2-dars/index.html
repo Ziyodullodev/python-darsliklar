@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python OOP: Class va Object batafsil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+
+        .highlight {
+            background: #fed7d7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c53030;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .task-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .task-title {
+            color: #856404;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .time-badge {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">14</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1><span class="emoji">📚</span> Python OOP - 2-dars</h1>
+            <h2 style="text-align: center; color: #764ba2;">Class va Object batafsil</h2>
+            <div style="text-align: center; margin-top: 40px;">
+                <h3>Instance va Class Methods</h3>
+                <p style="font-size: 1.2em; margin-top: 30px; color: #666;">
+                    Assalomu alaykum, yosh dasturchilar! <span class="emoji">😊</span><br>
+                    Bugun biz Class va Object tushunchalarini chuqurroq o'rganamiz
+                </p>
+                <div class="time-badge">120 daqiqa</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Dars rejasi -->
+        <div class="slide">
+            <h2><span class="emoji">📋</span> Dars rejasi</h2>
+            <ul style="font-size: 1.1em;">
+                <li>1. Class va Object qayta ko'rib chiqish <span class="time-badge">15 min</span></li>
+                <li>2. Instance Methods batafsil <span class="time-badge">25 min</span></li>
+                <li>3. Class Methods va Static Methods <span class="time-badge">25 min</span></li>
+                <li>4. self parametri va ishlatilishi <span class="time-badge">20 min</span></li>
+                <li>5. Amaliy loyiha: O'yinchi class <span class="time-badge">25 min</span></li>
+                <li>6. Xulosa va uy vazifasi <span class="time-badge">10 min</span></li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Class va Object qayta ko'rib chiqish -->
+        <div class="slide">
+            <h2><span class="emoji">🔄</span> Class va Object qayta ko'rib chiqish</h2>
+            
+            <div class="code-block">
+<pre>class Talaba:
+    # Class attribute - barcha talabalar uchun umumiy
+    universitet = "TATU"
+    
+    def __init__(self, ism, yosh, kurs):
+        # Instance attributes - har bir talaba uchun alohida
+        self.ism = ism
+        self.yosh = yosh
+        self.kurs = kurs
+        self.ball = 0
+    
+    def oqish(self):
+        print(f"{self.ism} o'qiyapti...")
+
+# Object yaratish
+talaba1 = Talaba("Ali", 18, 1)
+talaba2 = Talaba("Zilola", 19, 2)</pre>
+            </div>
+            
+            <div class="example-box">
+                <p><span class="emoji">💡</span> <strong>Eslatma:</strong></p>
+                <ul>
+                    <li><code>Talaba</code> - class (shablon)</li>
+                    <li><code>talaba1</code>, <code>talaba2</code> - objectlar (haqiqiy narsalar)</li>
+                    <li><code>self</code> - objectning o'zini bildiradi</li>
+                    <li><code>__init__</code> - constructor</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 4: Instance Methods batafsil -->
+        <div class="slide">
+            <h2><span class="emoji">⚙️</span> Instance Methods batafsil</h2>
+            
+            <p style="margin-bottom: 20px;">Instance method - bu object bilan ishlaydigan metod.</p>
+            
+            <div class="code-block">
+<pre>class Mashina:
+    def __init__(self, marka, model, yil):
+        self.marka = marka
+        self.model = model
+        self.yil = yil
+        self.tezlik = 0
+        self.yoniq = False
+        self.yoqlg_i = 50  # litr
+    
+    # Instance method - object bilan ishlaydi
+    def yoqish(self):
+        if self.yoqlg_i > 0:
+            self.yoniq = True
+            print(f"{self.marka} {self.model} yoqildi!")
+        else:
+            print("Yoqilg'i yo'q!")
+    
+    def harakatlanish(self):
+        if self.yoniq:
+            self.tezlik = 60
+            print(f"{self.marka} harakatlanmoqda...")
+        else:
+            print(f"{self.marka} o'chik!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 5: Class Methods va Static Methods -->
+        <div class="slide">
+            <h2><span class="emoji">🔧</span> Class Methods va Static Methods</h2>
+            
+            <div class="grid-layout">
+                <div>
+                    <h3>Class Method</h3>
+                    <div class="code-block">
+<pre>@classmethod
+def universitet_haqida(cls):
+    print(f"Bu {cls.universitet} universiteti!")
+    print(f"Jami talabalar soni: {cls.talabalar_soni}")</pre>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>Static Method</h3>
+                    <div class="code-block">
+<pre>@staticmethod
+def yosh_tekshirish(yosh):
+    if yosh >= 16:
+        return "Talaba bo'lish mumkin"
+    else:
+        return "Yosh yetarli emas"</pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <p><span class="emoji">💡</span> <strong>Muhim farqlar:</strong></p>
+                <ul>
+                    <li><strong>Instance method:</strong> <code>self</code> - object bilan ishlaydi</li>
+                    <li><strong>Class method:</strong> <code>cls</code> - class bilan ishlaydi</li>
+                    <li><strong>Static method:</strong> parametr yo'q - mustaqil ishlaydi</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 6: self parametri -->
+        <div class="slide">
+            <h2><span class="emoji">🎯</span> self parametri va ishlatilishi</h2>
+            
+            <p style="margin-bottom: 20px;"><strong>self</strong> - bu objectning o'zini bildiradi. Har bir instance method'ning birinchi parametri.</p>
+            
+            <div class="code-block">
+<pre>class O'yinchi:
+    def __init__(self, ism, daraja=1):
+        self.ism = ism
+        self.daraja = daraja
+        self.jon = 100
+        self.kuch = 10
+        self.defans = 5
+        self.tajriba = 0
+    
+    def hujum(self, dushman):
+        # self - bu o'yinchi object'ini bildiradi
+        zarar = self.kuch * 2
+        print(f"{self.ism} {dushman}ga {zarar} zarar yetkazdi!")
+        self.tajriba += 10
+        return zarar
+    
+    def himoya(self):
+        # self orqali object'ning xususiyatlariga murojaat
+        himoya_kuchi = self.defans * 1.5
+        print(f"{self.ism} himoya qildi! Himoya kuchi: {himoya_kuchi}")
+        return himoya_kuchi</pre>
+            </div>
+        </div>
+
+        <!-- Slide 7: Amaliy loyiha - O'yinchi class -->
+        <div class="slide">
+            <h2><span class="emoji">🎮</span> Amaliy loyiha: O'yinchi class</h2>
+            
+            <div class="code-block">
+<pre>class O'yinchi:
+    # Class attributes
+    o'yinchi_soni = 0
+    o'yin_nomi = "Epic Adventure"
+    
+    def __init__(self, ism, sinf="Jangchi"):
+        self.ism = ism
+        self.sinf = sinf
+        self.daraja = 1
+        self.jon = 100
+        self.kuch = 10
+        self.defans = 5
+        self.tezlik = 8
+        self.tajriba = 0
+        self.pul = 100
+        self.uskunalar = []
+        O'yinchi.o'yinchi_soni += 1
+    
+    # Instance methods
+    def hujum(self, dushman):
+        zarar = self.kuch * 2
+        print(f"{self.ism} {dushman}ga {zarar} zarar yetkazdi!")
+        self.tajriba += 10
+        return zarar
+    
+    def daraja_oshirish(self):
+        if self.tajriba >= 100:
+            self.daraja += 1
+            self.kuch += 5
+            self.defans += 3
+            self.tezlik += 2
+            self.jon += 20
+            self.tajriba = 0
+            print(f"🎉 {self.ism} {self.daraja}-darajaga ko'tarildi!")</pre>
+            </div>
+        </div>
+
+        <!-- Slide 8: Class Methods misoli -->
+        <div class="slide">
+            <h2><span class="emoji">🏗️</span> Class Methods misoli</h2>
+            
+            <div class="code-block">
+<pre>    # Class methods
+    @classmethod
+    def o'yin_haqida(cls):
+        print(f"O'yin nomi: {cls.o'yin_nomi}")
+        print(f"Jami o'yinchilar soni: {cls.o'yinchi_soni}")
+    
+    @classmethod
+    def yangi_o'yinchi(cls, ism, sinf):
+        print(f"Yangi o'yinchi qo'shildi: {ism} ({sinf})")
+        return cls(ism, sinf)
+    
+    # Static methods
+    @staticmethod
+    def zarar_hisoblash(kuch, defans):
+        return max(1, kuch - defans)
+    
+    @staticmethod
+    def daraja_tekshirish(tajriba):
+        return tajriba // 100 + 1</pre>
+            </div>
+            
+            <div class="example-box">
+                <p><span class="emoji">💡</span> <strong>Class Methods afzalliklari:</strong></p>
+                <ul>
+                    <li>Class bilan ishlaydi</li>
+                    <li><code>cls</code> parametrini oladi</li>
+                    <li>Class attribute'larga kirish mumkin</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 9: Test qilish -->
+        <div class="slide">
+            <h2><span class="emoji">🧪</span> Test qilish</h2>
+            
+            <div class="code-block">
+<pre># Test qilish
+print("=== O'yin boshlanmoqda ===")
+O'yinchi.o'yin_haqida()
+
+print("\n=== O'yinchilar yaratilmoqda ===")
+oyinchi1 = O'yinchi("Ali", "Jangchi")
+oyinchi2 = O'yinchi("Zilola", "Sehrgar")
+oyinchi3 = O'yinchi.yangi_o'yinchi("Sardor", "Kamandir")
+
+print("\n=== O'yin jarayoni ===")
+oyinchi1.ma_lumot_ko_rsatish()
+oyinchi1.hujum("Goblin")
+oyinchi1.hujum("Ork")
+oyinchi1.hujum("Dragon")
+oyinchi1.hujum("Boss")
+oyinchi1.daraja_oshirish()
+oyinchi1.uskuna_sotib_olish("Qilich", 50)
+oyinchi1.ma_lumot_ko_rsatish()</pre>
+            </div>
+        </div>
+
+        <!-- Slide 10: Mashq 1 -->
+        <div class="slide">
+            <h2><span class="emoji">🎯</span> Mashq 1: Telefon class</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">📱</span> Vazifa:</div>
+                <ul>
+                    <li><strong>Telefon</strong> class yarating</li>
+                    <li>Instance methods: yoqish(), o'chirish(), qo'ng'iroq(), xabar_yuborish(), batareya_holati()</li>
+                    <li>Class method: telefon_ma'lumotlari()</li>
+                    <li>Static method: parol_tekshirish()</li>
+                </ul>
+                <p style="margin-top: 15px; color: #856404;">
+                    <strong>Vaqt: 10 daqiqa</strong> <span class="emoji">⏰</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 11: Mashq 2 -->
+        <div class="slide">
+            <h2><span class="emoji">🎯</span> Mashq 2: Bank class</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🏦</span> Vazifa:</div>
+                <ul>
+                    <li><strong>Bank</strong> class yarating</li>
+                    <li>Instance methods: pul_qo'shish(), pul_olish(), balans_ko'rsatish()</li>
+                    <li>Class method: bank_ma'lumotlari()</li>
+                    <li>Static method: foiz_hisoblash(), parol_tekshirish()</li>
+                </ul>
+                <p style="margin-top: 15px; color: #856404;">
+                    <strong>Vaqt: 10 daqiqa</strong> <span class="emoji">⏰</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 12: Uyga vazifa -->
+        <div class="slide">
+            <h2><span class="emoji">🏠</span> Uyga vazifa</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">📚</span> Vazifa 1: Kutubxona class</div>
+                <ul>
+                    <li>Instance methods: kitob_qo'shish(), kitob_olish(), ma'lumot_ko'rsatish()</li>
+                    <li>Class method: kutubxona_statistikasi()</li>
+                    <li>Static method: kitob_tekshirish(), narx_hisoblash()</li>
+                </ul>
+            </div>
+
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🏦</span> Vazifa 2: Bank class</div>
+                <ul>
+                    <li>Instance methods: pul_qo'shish(), pul_olish(), balans_ko'rsatish()</li>
+                    <li>Class method: bank_ma'lumotlari()</li>
+                    <li>Static method: foiz_hisoblash(), parol_tekshirish()</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 13: Xulosa -->
+        <div class="slide">
+            <h1><span class="emoji">🎉</span> Xulosa</h1>
+            
+            <div style="text-align: center;">
+                <h2 style="color: #48bb78;">Bugun nimalarni o'rgandik?</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
+                    <div class="example-box">
+                        <h3><span class="emoji">⚙️</span> Instance Methods</h3>
+                        <p>Object bilan ishlaydi, <code>self</code> parametrini oladi</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🏗️</span> Class Methods</h3>
+                        <p>Class bilan ishlaydi, <code>@classmethod</code> dekoratori</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🔧</span> Static Methods</h3>
+                        <p>Mustaqil ishlaydi, <code>@staticmethod</code> dekoratori</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🎯</span> self parametri</h3>
+                        <p>Objectning o'zini bildiradi, avtomatik uzatiladi</p>
+                    </div>
+                </div>
+
+                <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">
+                    Keyingi dars: Inheritance (Meros) mavzusini o'rganamiz
+                </p>
+
+                <p style="margin-top: 20px; color: #666;">
+                    Savollaringiz bo'lsa, yozib qoldiring! <span class="emoji">😊</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 14: Muhim eslatma -->
+        <div class="slide">
+            <h1><span class="emoji">💡</span> Muhim eslatma</h1>
+            
+            <div style="text-align: center;">
+                <div class="example-box" style="background: #e6fffa; border-color: #38b2ac;">
+                    <h2 style="color: #2c7a7b;">Class va Object tushunchalari OOP'ning asosi</h2>
+                    <p style="font-size: 1.2em; margin-top: 20px;">
+                        Ularni yaxshi o'rganing va professional dasturchi bo'ling! <span class="emoji">🚀</span>
+                    </p>
+                </div>
+                
+                <div style="margin-top: 40px;">
+                    <h3 style="color: #667eea;">Dars tugadi!</h3>
+                    <p style="font-size: 1.1em; color: #666; margin-top: 20px;">
+                        Keyingi darsda Inheritance (Meros) haqida o'rganamiz
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">⬅️ Oldingi</button>
+            <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Button states
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
