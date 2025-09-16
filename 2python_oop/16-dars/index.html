@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python OOP: Real-world Modeling</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+
+        .highlight {
+            background: #fed7d7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c53030;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .task-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .task-title {
+            color: #856404;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .time-badge {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .project-box {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .class-diagram {
+            background: #fef5e7;
+            border: 2px solid #f6ad55;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../main-style.css">
+</head>
+<body>
+    <a href="https://python.ziyodev.uz" class="exit-link">⬅️ Bosh sahifaga</a>
+
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">12</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1><span class="emoji">📚</span> Python OOP - 16-dars</h1>
+            <h2 style="text-align: center; color: #764ba2;">OOP Amaliyot</h2>
+            <div style="text-align: center; margin-top: 40px;">
+                <h3>Real-world modeling - Onlayn do'kon tizimi</h3>
+                <p style="font-size: 1.2em; margin-top: 30px; color: #666;">
+                    Assalomu alaykum, yosh dasturchilar! <span class="emoji">😊</span><br>
+                    Bugun biz OOP bilimlarimizni amalda sinab ko'ramiz
+                </p>
+                <div class="time-badge">120 daqiqa</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Dars rejasi -->
+        <div class="slide">
+            <h2><span class="emoji">📋</span> Dars rejasi</h2>
+            <ul style="font-size: 1.1em;">
+                <li>1. Kirish va loyiha talablari <span class="time-badge">20 min</span></li>
+                <li>2. Onlayn do'kon tizimini tuzish (1-qism) <span class="time-badge">25 min</span></li>
+                <li>3. Onlayn do'kon tizimini tuzish (2-qism) <span class="time-badge">20 min</span></li>
+                <li>4. Amaliy mashqlar <span class="time-badge">25 min</span></li>
+                <li>5. Xulosa va uy vazifasi <span class="time-badge">20 min</span></li>
+                <li>6. Qayta aloqa va savollar <span class="time-badge">10 min</span></li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Loyiha talablari -->
+        <div class="slide">
+            <h2><span class="emoji">🎯</span> Loyiha talablari</h2>
+            
+            <div class="project-box">
+                <h3><span class="emoji">🛒</span> Onlayn do'kon tizimi</h3>
+                <p>Bizning onlayn do'kon tizimi quyidagi funksionallikka ega bo'ladi:</p>
+                <ul>
+                    <li><strong>Mahsulot</strong> sinfi - mahsulotning nomi, narxi va miqdorini saqlaydi</li>
+                    <li><strong>Mijoz</strong> sinfi - mijozning ma'lumotlari va savatchasini boshqaradi</li>
+                    <li><strong>Do'kon</strong> sinfi - mahsulotlar ro'yxatini va sotuv jarayonini boshqaradi</li>
+                    <li><strong>Obyektlar o'zaro munosabatlar</strong> - mijoz mahsulotni savatchaga qo'shadi</li>
+                </ul>
+            </div>
+            
+            <div class="class-diagram">
+                <h3><span class="emoji">📊</span> Loyiha tuzilmasi:</h3>
+                <p><strong>Mahsulot</strong> ←→ <strong>Do'kon</strong></p>
+                <p><strong>Mijoz</strong> ←→ <strong>Do'kon</strong></p>
+                <p><strong>Mijoz</strong> ←→ <strong>Mahsulot</strong> (savatcha orqali)</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: Mahsulot sinfi -->
+        <div class="slide">
+            <h2><span class="emoji">📦</span> Mahsulot sinfi</h2>
+            
+            <p style="margin-bottom: 20px;">Birinchi sinf - <strong>Mahsulot</strong> sinfini yaratamiz:</p>
+            
+            <div class="code-block">
+<pre>class Mahsulot:
+    def __init__(self, nomi, narxi, miqdor):
+        self.nomi = nomi
+        self.narxi = narxi
+        self.miqdor = miqdor
+    
+    def malumot(self):
+        return f"Mahsulot: {self.nomi}, Narx: {self.narxi} so'm, Miqdor: {self.miqdor}"
+    
+    def narxni_ozgartir(self, yangi_narx):
+        if yangi_narx > 0:
+            self.narxi = yangi_narx
+            return f"{self.nomi} narxi {yangi_narx} so'mga o'zgartirildi"
+        else:
+            return "Noto'g'ri narx!"
+    
+    def miqdorni_ozgartir(self, yangi_miqdor):
+        if yangi_miqdor >= 0:
+            self.miqdor = yangi_miqdor
+            return f"{self.nomi} miqdori {yangi_miqdor}ga o'zgartirildi"
+        else:
+            return "Noto'g'ri miqdor!"
+
+# Test qilish
+telefon = Mahsulot("iPhone 15", 15000000, 5)
+print(telefon.malumot())
+print(telefon.narxni_ozgartir(16000000))
+print(telefon.miqdorni_ozgartir(3))</pre>
+            </div>
+        </div>
+
+        <!-- Slide 5: Mijoz sinfi -->
+        <div class="slide">
+            <h2><span class="emoji">👤</span> Mijoz sinfi</h2>
+            
+            <p style="margin-bottom: 20px;">Ikkinchi sinf - <strong>Mijoz</strong> sinfini yaratamiz:</p>
+            
+            <div class="code-block">
+<pre>class Mijoz:
+    def __init__(self, ism, telefon, manzil):
+        self.ism = ism
+        self.telefon = telefon
+        self.manzil = manzil
+        self.savatcha = []  # Savatcha ro'yxati
+        self.jami_summa = 0
+    
+    def malumot(self):
+        return f"Mijoz: {self.ism}, Telefon: {self.telefon}, Manzil: {self.manzil}"
+    
+    def savatchaga_qoshish(self, mahsulot, miqdor):
+        if mahsulot.miqdor >= miqdor:
+            # Savatchaga qo'shish
+            self.savatcha.append({
+                'mahsulot': mahsulot,
+                'miqdor': miqdor,
+                'summa': mahsulot.narxi * miqdor
+            })
+            self.jami_summa += mahsulot.narxi * miqdor
+            return f"{mahsulot.nomi} savatchaga qo'shildi ({miqdor} dona)"
+        else:
+            return f"Yetarli mahsulot yo'q! Mavjud: {mahsulot.miqdor}"
+    
+    def savatchani_korsatish(self):
+        if not self.savatcha:
+            return "Savatcha bo'sh"
+        
+        natija = "Savatcha:\n"
+        for item in self.savatcha:
+            natija += f"- {item['mahsulot'].nomi}: {item['miqdor']} dona, {item['summa']} so'm\n"
+        natija += f"Jami: {self.jami_summa} so'm"
+        return natija
+
+# Test qilish
+mijoz = Mijoz("Ali", "+998901234567", "Toshkent")
+print(mijoz.malumot())</pre>
+            </div>
+        </div>
+
+        <!-- Slide 6: Do'kon sinfi -->
+        <div class="slide">
+            <h2><span class="emoji">🏪</span> Do'kon sinfi</h2>
+            
+            <p style="margin-bottom: 20px;">Uchinchi sinf - <strong>Do'kon</strong> sinfini yaratamiz:</p>
+            
+            <div class="code-block">
+<pre>class Dokon:
+    def __init__(self, nomi, manzil):
+        self.nomi = nomi
+        self.manzil = manzil
+        self.mahsulotlar = []  # Mahsulotlar ro'yxati
+        self.sotuvlar = []     # Sotuvlar tarixi
+    
+    def mahsulot_qoshish(self, mahsulot):
+        self.mahsulotlar.append(mahsulot)
+        return f"{mahsulot.nomi} do'konga qo'shildi"
+    
+    def mahsulotlar_royxati(self):
+        if not self.mahsulotlar:
+            return "Do'konda mahsulot yo'q"
+        
+        natija = f"{self.nomi} mahsulotlari:\n"
+        for mahsulot in self.mahsulotlar:
+            natija += f"- {mahsulot.malumot()}\n"
+        return natija
+    
+    def mahsulot_topish(self, nomi):
+        for mahsulot in self.mahsulotlar:
+            if mahsulot.nomi.lower() == nomi.lower():
+                return mahsulot
+        return None
+    
+    def sotuv_amalga_oshirish(self, mijoz):
+        if not mijoz.savatcha:
+            return "Savatcha bo'sh!"
+        
+        # Sotuvni amalga oshirish
+        for item in mijoz.savatcha:
+            mahsulot = item['mahsulot']
+            miqdor = item['miqdor']
+            mahsulot.miqdor -= miqdor
+        
+        # Sotuvni tarixga qo'shish
+        self.sotuvlar.append({
+            'mijoz': mijoz.ism,
+            'savatcha': mijoz.savatcha.copy(),
+            'jami_summa': mijoz.jami_summa
+        })
+        
+        natija = f"Sotuv amalga oshirildi!\n{mijoz.savatchani_korsatish()}"
+        
+        # Savatchani tozalash
+        mijoz.savatcha = []
+        mijoz.jami_summa = 0
+        
+        return natija
+
+# Test qilish
+dokon = Dokon("Tech Store", "Toshkent shahar")
+print(dokon.mahsulotlar_royxati())</pre>
+            </div>
+        </div>
+
+        <!-- Slide 7: Loyiha birlashtirish -->
+        <div class="slide">
+            <h2><span class="emoji">🔗</span> Loyiha birlashtirish</h2>
+            
+            <p style="margin-bottom: 20px;">Endi barcha sinflarni birlashtirib, to'liq tizimni yaratamiz:</p>
+            
+            <div class="code-block">
+<pre># Asosiy dastur
+def main():
+    # Do'kon yaratish
+    dokon = Dokon("Tech Store", "Toshkent shahar")
+    
+    # Mahsulotlar qo'shish
+    telefon = Mahsulot("iPhone 15", 15000000, 5)
+    noutbuk = Mahsulot("MacBook Pro", 25000000, 3)
+    planshet = Mahsulot("iPad", 8000000, 8)
+    
+    dokon.mahsulot_qoshish(telefon)
+    dokon.mahsulot_qoshish(noutbuk)
+    dokon.mahsulot_qoshish(planshet)
+    
+    # Mijoz yaratish
+    mijoz = Mijoz("Ali", "+998901234567", "Toshkent")
+    
+    # Mahsulotlarni ko'rish
+    print("=== DO'KON MAHSULOTLARI ===")
+    print(dokon.mahsulotlar_royxati())
+    
+    # Savatchaga qo'shish
+    print("\n=== SAVATCHAGA QO'SHISH ===")
+    print(mijoz.savatchaga_qoshish(telefon, 2))
+    print(mijoz.savatchaga_qoshish(planshet, 1))
+    
+    # Savatchani ko'rish
+    print("\n=== SAVATCHA ===")
+    print(mijoz.savatchani_korsatish())
+    
+    # Sotuv amalga oshirish
+    print("\n=== SOTUV ===")
+    print(dokon.sotuv_amalga_oshirish(mijoz))
+    
+    # Yangi holat
+    print("\n=== YANGI HOLAT ===")
+    print(dokon.mahsulotlar_royxati())
+
+# Dasturni ishga tushirish
+if __name__ == "__main__":
+    main()</pre>
+            </div>
+        </div>
+
+        <!-- Slide 8: Amaliy mashq 1 -->
+        <div class="slide">
+            <h2><span class="emoji">💪</span> Amaliy mashq 1</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">📚</span> Kutubxona tizimi</div>
+                <p><strong>Vazifa:</strong> Kutubxona tizimini yarating</p>
+                <ul>
+                    <li><strong>Kitob</strong> sinfi - nomi, muallifi, nashriyot, yili</li>
+                    <li><strong>O'quvchi</strong> sinfi - ismi, ID, olgan kitoblar ro'yxati</li>
+                    <li><strong>Kutubxona</strong> sinfi - kitoblar ro'yxati, berish/olish metodlari</li>
+                </ul>
+                <p style="margin-top: 15px; color: #856404;">
+                    <strong>Vaqt: 15 daqiqa</strong> <span class="emoji">⏰</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Amaliy mashq 2 -->
+        <div class="slide">
+            <h2><span class="emoji">💪</span> Amaliy mashq 2</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🏥</span> Shifoxona tizimi</div>
+                <p><strong>Vazifa:</strong> Shifoxona tizimini yarating</p>
+                <ul>
+                    <li><strong>Bemor</strong> sinfi - ismi, yoshi, kasalligi</li>
+                    <li><strong>Doktor</strong> sinfi - ismi, mutaxassisligi, bemorlar ro'yxati</li>
+                    <li><strong>Shifoxona</strong> sinfi - doktorlar va bemorlar ro'yxati</li>
+                </ul>
+                <p style="margin-top: 15px; color: #856404;">
+                    <strong>Vaqt: 15 daqiqa</strong> <span class="emoji">⏰</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 10: Uy vazifasi -->
+        <div class="slide">
+            <h2><span class="emoji">🏠</span> Uy vazifasi</h2>
+            
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🎓</span> Vazifa 1: Universitet tizimi</div>
+                <ul>
+                    <li><strong>Talaba</strong> sinfi - ismi, kursi, fanlar ro'yxati</li>
+                    <li><strong>O'qituvchi</strong> sinfi - ismi, mutaxassisligi, o'qitadigan fanlar</li>
+                    <li><strong>Universitet</strong> sinfi - talabalar va o'qituvchilar ro'yxati</li>
+                </ul>
+            </div>
+
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🏦</span> Vazifa 2: Bank tizimi</div>
+                <ul>
+                    <li><strong>Hisob</strong> sinfi - raqami, egasi, balansi</li>
+                    <li><strong>Mijoz</strong> sinfi - ismi, hisoblari ro'yxati</li>
+                    <li><strong>Bank</strong> sinfi - mijozlar va hisoblar ro'yxati</li>
+                </ul>
+            </div>
+
+            <div class="task-box">
+                <div class="task-title"><span class="emoji">🚗</span> Vazifa 3: Avtosalondagi tizim</div>
+                <ul>
+                    <li><strong>Mashina</strong> sinfi - modeli, rangi, narxi</li>
+                    <li><strong>Xaridor</strong> sinfi - ismi, tanlagan mashinalar</li>
+                    <li><strong>Avtosalondagi</strong> sinfi - mashinalar ro'yxati</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 11: Xulosa -->
+        <div class="slide">
+            <h1><span class="emoji">🎉</span> Xulosa</h1>
+            
+            <div style="text-align: center;">
+                <h2 style="color: #48bb78;">Bugun nimalarni o'rgandik?</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
+                    <div class="example-box">
+                        <h3><span class="emoji">🏗️</span> Real-world modeling</h3>
+                        <p>Haqiqiy dunyodagi tizimlarni modellashtirish</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">🔗</span> Obyektlar munosabatlari</h3>
+                        <p>Sinflar o'rtasidagi bog'lanishlar</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">📦</span> Mahsulot sinfi</h3>
+                        <p>Mahsulot ma'lumotlarini boshqarish</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3><span class="emoji">👤</span> Mijoz sinfi</h3>
+                        <p>Mijoz va savatcha boshqaruvi</p>
+                    </div>
+                </div>
+
+                <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">
+                    Keyingi dars: super() funksiyasi bilan ishlash
+                </p>
+
+                <p style="margin-top: 20px; color: #666;">
+                    Savollaringiz bo'lsa, yozib qoldiring! <span class="emoji">😊</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 12: Qayta ko'rib chiqish -->
+        <div class="slide">
+            <h2><span class="emoji">🔄</span> Qayta ko'rib chiqish</h2>
+            
+            <div class="example-box">
+                <h3><span class="emoji">❓</span> Savollar:</h3>
+                <ul>
+                    <li>Real-world modeling nima?</li>
+                    <li>Obyektlar o'rtasida qanday munosabatlar bo'lishi mumkin?</li>
+                    <li>Savatcha qanday ishlaydi?</li>
+                    <li>Sotuv jarayoni qanday amalga oshiriladi?</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <p><span class="emoji">💡</span> <strong>Muhim eslatma:</strong></p>
+                <p>OOP yordamida murakkab tizimlarni soddalashtirish va tartibga solish mumkin. Har bir sinf o'z vazifasini bajaradi va boshqa sinflar bilan hamkorlik qiladi!</p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">⬅️ Oldingi</button>
+            <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Button states
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
+
