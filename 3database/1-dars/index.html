@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma'lumotlar Bazalari - SQL va NoSQL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            min-height: 600px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.8em;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #fff, #e3f2fd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            color: #64b5f6;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        h3 {
+            font-size: 1.8em;
+            margin: 20px 0 15px 0;
+            color: #90caf9;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .highlight {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #64b5f6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(100, 181, 246, 0.8);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(100, 181, 246, 1);
+            transform: scale(1.05);
+        }
+
+        .nav-btn:disabled {
+            background: rgba(255, 255, 255, 0.3);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .comparison-table th {
+            background: rgba(100, 181, 246, 0.3);
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .diagram {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .diagram-box {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #64b5f6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            min-width: 150px;
+        }
+
+        .arrow {
+            font-size: 2em;
+            color: #64b5f6;
+            margin: 0 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">18</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>Ma'lumotlar Bazalari</h1>
+            <h2 style="text-align: center; margin: 50px 0;">SQL va NoSQL</h2>
+            <h3 style="text-align: center; margin: 30px 0;">PostgreSQL asosida</h3>
+            <div style="text-align: center; margin-top: 80px;">
+                <p style="font-size: 1.5em;">1-dars: Kirish va asoslar</p>
+                <p style="font-size: 1.2em; margin-top: 30px;">Tayyorlagan: Claude</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Mundarija -->
+        <div class="slide">
+            <h2>Mundarija</h2>
+            <ol style="font-size: 1.3em; line-height: 2;">
+                <li>Ma'lumotlar bazasi nima?</li>
+                <li>Ma'lumotlar bazasining turlari</li>
+                <li>SQL va NoSQL farqi</li>
+                <li>PostgreSQL haqida umumiy ma'lumot</li>
+                <li>PostgreSQL ni o'rnatish</li>
+                <li>Asosiy SQL buyruqlari</li>
+                <li>Ma'lumotlar turlari</li>
+                <li>Jadvallar bilan ishlash</li>
+                <li>CRUD operatsiyalari</li>
+                <li>Amaliy misollar</li>
+            </ol>
+        </div>
+
+        <!-- Slide 3: Ma'lumotlar bazasi nima? -->
+        <div class="slide">
+            <h2>Ma'lumotlar bazasi nima?</h2>
+            <p><span class="highlight">Ma'lumotlar bazasi</span> - bu ma'lumotlarni tizimli ravishda saqlash, boshqarish va olish uchun mo'ljallangan tizim.</p>
+            
+            <h3>Asosiy xususiyatlari:</h3>
+            <ul>
+                <li><strong>Ma'lumotlarni tashkillash</strong> - strukturalashtirilgan formatda saqlash</li>
+                <li><strong>Xavfsizlik</strong> - ruxsatsiz kirishdan himoya</li>
+                <li><strong>Izchillik</strong> - ma'lumotlarning to'g'riligi</li>
+                <li><strong>Bir vaqtda ishlash</strong> - ko'p foydalanuvchi</li>
+                <li><strong>Zaxiralash</strong> - ma'lumotlarni yo'qotmaslik</li>
+            </ul>
+
+            <div class="diagram">
+                <div class="diagram-box">Foydalanuvchi</div>
+                <span class="arrow">→</span>
+                <div class="diagram-box">DBMS</div>
+                <span class="arrow">→</span>
+                <div class="diagram-box">Ma'lumotlar Bazasi</div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Ma'lumotlar bazasining turlari -->
+        <div class="slide">
+            <h2>Ma'lumotlar Bazasining Turlari</h2>
+            
+            <h3>1. Relatsion bazalar (SQL)</h3>
+            <ul>
+                <li>Jadvallar shaklida tuzilgan</li>
+                <li>SQL tilidan foydalanadi</li>
+                <li>ACID xususiyatlariga ega</li>
+                <li>Misollar: PostgreSQL, MySQL, Oracle, SQL Server</li>
+            </ul>
+
+            <h3>2. NoSQL bazalar</h3>
+            <ul>
+                <li><strong>Hujjat bazalar:</strong> MongoDB, CouchDB</li>
+                <li><strong>Kalit-qiymat:</strong> Redis, DynamoDB</li>
+                <li><strong>Ustunli:</strong> Cassandra, HBase</li>
+                <li><strong>Graf:</strong> Neo4j, ArangoDB</li>
+            </ul>
+
+            <h3>3. NewSQL</h3>
+            <ul>
+                <li>SQL va NoSQL afzalliklarini birlashtiradi</li>
+                <li>Misollar: CockroachDB, VoltDB</li>
+            </ul>
+        </div>
+
+        <!-- Slide 5: SQL vs NoSQL -->
+        <div class="slide">
+            <h2>SQL vs NoSQL Taqqoslash</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Xususiyat</th>
+                        <th>SQL</th>
+                        <th>NoSQL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Struktura</strong></td>
+                        <td>Jadvallar, satrlar, ustunlar</td>
+                        <td>Hujjat, kalit-qiymat, graf</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Schema</strong></td>
+                        <td>Qattiq schema</td>
+                        <td>Moslashuvchan schema</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Masshtablash</strong></td>
+                        <td>Vertikal</td>
+                        <td>Gorizontal</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ACID</strong></td>
+                        <td>To'liq qo'llab-quvvatlaydi</td>
+                        <td>Cheklangan qo'llab-quvvatlash</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Til</strong></td>
+                        <td>SQL</td>
+                        <td>Turli API lar</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ishlatish</strong></td>
+                        <td>Murakkab so'rovlar</td>
+                        <td>Katta hajm, tez ishlov berish</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 6: PostgreSQL haqida -->
+        <div class="slide">
+            <h2>PostgreSQL haqida</h2>
+            
+            <p><span class="highlight">PostgreSQL</span> - eng kuchli ochiq manbali relatsion ma'lumotlar bazasi tizimi.</p>
+
+            <h3>Tarix:</h3>
+            <ul>
+                <li>1986 yilda Berkeley universitetida yaratilgan</li>
+                <li>1996 yilda PostgreSQL nomi berilgan</li>
+                <li>30+ yillik rivojlanish tarixi</li>
+            </ul>
+
+            <h3>Afzalliklari:</h3>
+            <ul>
+                <li>📊 <strong>ACID</strong> - to'liq tranzaksiya qo'llab-quvvatlash</li>
+                <li>🔒 <strong>Xavfsizlik</strong> - kuchli autentifikatsiya</li>
+                <li>🚀 <strong>Tezlik</strong> - yuqori ish faoliyati</li>
+                <li>🔧 <strong>Kengaytiriluvchanlik</strong> - o'z funksiyalarini yaratish</li>
+                <li>🌐 <strong>Standartlar</strong> - SQL standartlarini qo'llab-quvvatlash</li>
+                <li>💰 <strong>Bepul</strong> - ochiq manba</li>
+            </ul>
+        </div>
+
+        <!-- Slide 7: PostgreSQL o'rnatish -->
+        <div class="slide">
+            <h2>PostgreSQL ni O'rnatish</h2>
+
+            <h3>Windows uchun:</h3>
+            <ol>
+                <li>postgresql.org saytidan yuklab oling</li>
+                <li>O'rnatish faylini ishga tushiring</li>
+                <li>Parolni o'rnating</li>
+                <li>Portni tanlang (standart: 5432)</li>
+            </ol>
+
+            <h3>Ubuntu/Linux uchun:</h3>
+            <div class="code-block">
+sudo apt update<br>
+sudo apt install postgresql postgresql-contrib<br>
+sudo systemctl start postgresql<br>
+sudo systemctl enable postgresql
+            </div>
+
+            <h3>macOS uchun:</h3>
+            <div class="code-block">
+# Homebrew orqali<br>
+brew install postgresql<br>
+brew services start postgresql
+            </div>
+
+            <h3>Ulanish:</h3>
+            <div class="code-block">
+psql -U postgres -h localhost
+            </div>
+        </div>
+
+        <!-- Slide 8: SQL asoslari -->
+        <div class="slide">
+            <h2>SQL Asoslari</h2>
+
+            <p><span class="highlight">SQL</span> (Structured Query Language) - ma'lumotlar bazasi bilan ishlash uchun standart til.</p>
+
+            <h3>SQL buyruqlari turlari:</h3>
+            <ul>
+                <li><strong>DDL</strong> (Data Definition Language): CREATE, ALTER, DROP</li>
+                <li><strong>DML</strong> (Data Manipulation Language): INSERT, UPDATE, DELETE</li>
+                <li><strong>DQL</strong> (Data Query Language): SELECT</li>
+                <li><strong>DCL</strong> (Data Control Language): GRANT, REVOKE</li>
+            </ul>
+
+            <h3>Asosiy sintaksis qoidalari:</h3>
+            <ul>
+                <li>Buyruqlar nuqta-vergul (;) bilan tugaydi</li>
+                <li>Katta-kichik harflar muhim emas</li>
+                <li>Izohlar: -- yoki /* */</li>
+                <li>Satrlar bitta qo'shtirnoq bilan o'raladi</li>
+            </ul>
+        </div>
+
+        <!-- Slide 9: Ma'lumotlar turlari -->
+        <div class="slide">
+            <h2>PostgreSQL Ma'lumotlar Turlari</h2>
+
+            <h3>Asosiy turlar:</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Tur</th>
+                        <th>Ta'rif</th>
+                        <th>Misol</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>INTEGER</strong></td>
+                        <td>Butun sonlar</td>
+                        <td>123, -456</td>
+                    </tr>
+                    <tr>
+                        <td><strong>VARCHAR(n)</strong></td>
+                        <td>O'zgaruvchan matn</td>
+                        <td>'Salom dunyo'</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TEXT</strong></td>
+                        <td>Uzun matn</td>
+                        <td>'Uzun ma'lumotnoma...'</td>
+                    </tr>
+                    <tr>
+                        <td><strong>BOOLEAN</strong></td>
+                        <td>Mantiqiy</td>
+                        <td>TRUE, FALSE</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DATE</strong></td>
+                        <td>Sana</td>
+                        <td>'2024-01-15'</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TIMESTAMP</strong></td>
+                        <td>Sana va vaqt</td>
+                        <td>'2024-01-15 14:30:00'</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DECIMAL</strong></td>
+                        <td>O'nlik sonlar</td>
+                        <td>123.45</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 10: Jadval yaratish -->
+        <div class="slide">
+            <h2>Jadval Yaratish (CREATE TABLE)</h2>
+
+            <h3>Asosiy sintaksis:</h3>
+            <div class="code-block">
+CREATE TABLE jadval_nomi (<br>
+&nbsp;&nbsp;ustun1 tur1 cheklovlar,<br>
+&nbsp;&nbsp;ustun2 tur2 cheklovlar,<br>
+&nbsp;&nbsp;...<br>
+);
+            </div>
+
+            <h3>Misol - Talabalar jadvali:</h3>
+            <div class="code-block">
+CREATE TABLE talabalar (<br>
+&nbsp;&nbsp;id SERIAL PRIMARY KEY,<br>
+&nbsp;&nbsp;ism VARCHAR(50) NOT NULL,<br>
+&nbsp;&nbsp;familiya VARCHAR(50) NOT NULL,<br>
+&nbsp;&nbsp;yosh INTEGER CHECK (yosh > 0),<br>
+&nbsp;&nbsp;email VARCHAR(100) UNIQUE,<br>
+&nbsp;&nbsp;ro'yxat_sanasi DATE DEFAULT CURRENT_DATE<br>
+);
+            </div>
+
+            <h3>Cheklovlar (Constraints):</h3>
+            <ul>
+                <li><strong>PRIMARY KEY</strong> - asosiy kalit</li>
+                <li><strong>NOT NULL</strong> - bo'sh bo'lmasligi kerak</li>
+                <li><strong>UNIQUE</strong> - noyob qiymat</li>
+                <li><strong>CHECK</strong> - shart tekshirish</li>
+                <li><strong>DEFAULT</strong> - standart qiymat</li>
+            </ul>
+        </div>
+
+        <!-- Slide 11: Ma'lumot qo'shish -->
+        <div class="slide">
+            <h2>Ma'lumot Qo'shish (INSERT)</h2>
+
+            <h3>Asosiy sintaksis:</h3>
+            <div class="code-block">
+INSERT INTO jadval_nomi (ustun1, ustun2, ...)<br>
+VALUES (qiymat1, qiymat2, ...);
+            </div>
+
+            <h3>Bitta yozuv qo'shish:</h3>
+            <div class="code-block">
+INSERT INTO talabalar (ism, familiya, yosh, email)<br>
+VALUES ('Ali', 'Valiyev', 20, 'ali@example.com');
+            </div>
+
+            <h3>Bir nechta yozuv qo'shish:</h3>
+            <div class="code-block">
+INSERT INTO talabalar (ism, familiya, yosh, email)<br>
+VALUES <br>
+&nbsp;&nbsp;('Olim', 'Karimov', 22, 'olim@example.com'),<br>
+&nbsp;&nbsp;('Dilnoza', 'Umarova', 19, 'dilnoza@example.com'),<br>
+&nbsp;&nbsp;('Sardor', 'Toshev', 21, 'sardor@example.com');
+            </div>
+
+            <h3>Barcha ustunlarga qiymat:</h3>
+            <div class="code-block">
+INSERT INTO talabalar<br>
+VALUES (5, 'Nargiza', 'Sultanova', 20, 'nargiza@example.com', '2024-01-15');
+            </div>
+        </div>
+
+        <!-- Slide 12: Ma'lumotlarni o'qish -->
+        <div class="slide">
+            <h2>Ma'lumotlarni O'qish (SELECT)</h2>
+
+            <h3>Barcha ma'lumotlar:</h3>
+            <div class="code-block">
+SELECT * FROM talabalar;
+            </div>
+
+            <h3>Aniq ustunlar:</h3>
+            <div class="code-block">
+SELECT ism, familiya, yosh FROM talabalar;
+            </div>
+
+            <h3>Shart bilan (WHERE):</h3>
+            <div class="code-block">
+SELECT * FROM talabalar<br>
+WHERE yosh > 20;
+            </div>
+
+            <h3>Saralash (ORDER BY):</h3>
+            <div class="code-block">
+-- O'sish tartibida<br>
+SELECT * FROM talabalar<br>
+ORDER BY yosh ASC;<br><br>
+-- Kamayish tartibida<br>
+SELECT * FROM talabalar<br>
+ORDER BY familiya DESC;
+            </div>
+
+            <h3>Cheklash (LIMIT):</h3>
+            <div class="code-block">
+SELECT * FROM talabalar<br>
+ORDER BY yosh<br>
+LIMIT 5;
+            </div>
+        </div>
+
+        <!-- Slide 13: Ma'lumotlarni yangilash -->
+        <div class="slide">
+            <h2>Ma'lumotlarni Yangilash (UPDATE)</h2>
+
+            <h3>Asosiy sintaksis:</h3>
+            <div class="code-block">
+UPDATE jadval_nomi<br>
+SET ustun1 = qiymat1, ustun2 = qiymat2<br>
+WHERE shart;
+            </div>
+
+            <h3>Bitta ustunni yangilash:</h3>
+            <div class="code-block">
+UPDATE talabalar<br>
+SET email = 'ali.valiyev@newmail.com'<br>
+WHERE id = 1;
+            </div>
+
+            <h3>Bir nechta ustunni yangilash:</h3>
+            <div class="code-block">
+UPDATE talabalar<br>
+SET ism = 'Ali Akbar',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;yosh = 21<br>
+WHERE id = 1;
+            </div>
+
+            <h3>Shartli yangilash:</h3>
+            <div class="code-block">
+UPDATE talabalar<br>
+SET yosh = yosh + 1<br>
+WHERE ro'yxat_sanasi < '2024-01-01';
+            </div>
+
+            <p><span style="color: #ff6b6b;">⚠️ Diqqat:</span> WHERE sharti bo'lmasa, barcha yozuvlar yangilanadi!</p>
+        </div>
+
+        <!-- Slide 14: Ma'lumotlarni o'chirish -->
+        <div class="slide">
+            <h2>Ma'lumotlarni O'chirish (DELETE)</h2>
+
+            <h3>Asosiy sintaksis:</h3>
+            <div class="code-block">
+DELETE FROM jadval_nomi<br>
+WHERE shart;
+            </div>
+
+            <h3>Aniq yozuvni o'chirish:</h3>
+            <div class="code-block">
+DELETE FROM talabalar<br>
+WHERE id = 5;
+            </div>
+
+            <h3>Shartli o'chirish:</h3>
+            <div class="code-block">
+-- 18 yoshdan kichiklar<br>
+DELETE FROM talabalar<br>
+WHERE yosh < 18;<br><br>
+-- Email bo'sh bo'lganlar<br>
+DELETE FROM talabalar<br>
+WHERE email IS NULL;
+            </div>
+
+            <h3>Barcha ma'lumotlarni o'chirish:</h3>
+            <div class="code-block">
+-- Barcha yozuvlar (jadval qoladi)<br>
+DELETE FROM talabalar;<br><br>
+-- Tezroq variant<br>
+TRUNCATE TABLE talabalar;
+            </div>
+
+            <p><span style="color: #ff6b6b;">⚠️ Diqqat:</span> WHERE sharti bo'lmasa, barcha yozuvlar o'chiriladi!</p>
+        </div>
+
+        <!-- Slide 15: Filtrlash va izlash -->
+        <div class="slide">
+            <h2>Filtrlash va Izlash</h2>
+
+            <h3>WHERE operatorlari:</h3>
+            <div class="code-block">
+-- Tenglik<br>
+SELECT * FROM talabalar WHERE yosh = 20;<br><br>
+-- Tengsizlik<br>
+SELECT * FROM talabalar WHERE yosh != 20;<br>
+SELECT * FROM talabalar WHERE yosh <> 20;<br><br>
+-- Taqqoslash<br>
+SELECT * FROM talabalar WHERE yosh > 18;<br>
+SELECT * FROM talabalar WHERE yosh <= 25;
+            </div>
+
+            <h3>LIKE operatori (matn izlash):</h3>
+            <div class="code-block">
+-- 'A' harfi bilan boshlanadigan<br>
+SELECT * FROM talabalar WHERE ism LIKE 'A%';<br><br>
+-- 'ov' bilan tugaydigan<br>
+SELECT * FROM talabalar WHERE familiya LIKE '%ov';<br><br>
+-- O'rtasida 'li' bo'lgan<br>
+SELECT * FROM talabalar WHERE ism LIKE '%li%';
+            </div>
+
+            <h3>IN operatori:</h3>
+            <div class="code-block">
+SELECT * FROM talabalar<br>
+WHERE yosh IN (19, 20, 21);
+            </div>
+
+            <h3>BETWEEN operatori:</h3>
+            <div class="code-block">
+SELECT * FROM talabalar<br>
+WHERE yosh BETWEEN 18 AND 25;
+            </div>
+        </div>
+
+        <!-- Slide 16: Mantiqiy operatorlar -->
+        <div class="slide">
+            <h2>Mantiqiy Operatorlar</h2>
+
+            <h3>AND operatori:</h3>
+            <div class="code-block">
+SELECT * FROM talabalar<br>
+WHERE yosh > 18 AND yosh < 25;
+            </div>
+
+            <h3>OR operatori:</h3>
+            <div class="code-block">
+SELECT * FROM talabalar<br>
+WHERE ism = 'Ali' OR familiya = 'Karimov';
+            </div>
+
+            <h3>NOT operatori:</h3>
+            <div class="code-block">
+SELECT * FROM talabalar<br>
+WHERE NOT yosh = 20;<br><br>
+-- Yoki<br>
+SELECT * FROM talabalar<br>
+WHERE yosh NOT IN (18, 19, 20);
+            </div>
+
+            <h3>Murakkab shartlar:</h3>
+            <div class="code-block">
+SELECT * FROM talabalar<br>
+WHERE (yosh > 18 AND yosh < 25)<br>
+&nbsp;&nbsp;AND (ism LIKE 'A%' OR familiya LIKE '%ov');
+            </div>
+
+            <h3>NULL qiymatlar:</h3>
+            <div class="code-block">
+-- Email bo'sh bo'lgan<br>
+SELECT * FROM talabalar WHERE email IS NULL;<br><br>
+-- Email bo'sh bo'lmagan<br>
+SELECT * FROM talabalar WHERE email IS NOT NULL;
+            </div>
+        </div>
+
+        <!-- Slide 17: Amaliy misol -->
+        <div class="slide">
+            <h2>Amaliy Misol - Universitet Tizimi</h2>
+
+            <div class="code-block">
+-- 1. Kafedra jadvali<br>
+CREATE TABLE kafedralar (<br>
+&nbsp;&nbsp;id SERIAL PRIMARY KEY,<br>
+&nbsp;&nbsp;nomi VARCHAR(100) NOT NULL,<br>
+&nbsp;&nbsp;mudiri VARCHAR(100)<br>
+);<br><br>
+-- 2. Ma'lumot qo'shish<br>
+INSERT INTO kafedralar (nomi, mudiri)<br>
+VALUES <br>
+&nbsp;&nbsp;('Informatika', 'Prof. Karimov'),<br>
+&nbsp;&nbsp;('Matematika', 'Prof. Umarova'),<br>
+&nbsp;&nbsp;('Fizika', 'Prof. Toshev');<br><br>
+-- 3. Talabalar jadvali (kafedra bilan bog'langan)<br>
+CREATE TABLE talabalar (<br>
+&nbsp;&nbsp;id SERIAL PRIMARY KEY,<br>
+&nbsp;&nbsp;ism VARCHAR(50) NOT NULL,<br>
+&nbsp;&nbsp;familiya VARCHAR(50) NOT NULL,<br>
+&nbsp;&nbsp;yosh INTEGER CHECK (yosh > 0),<br>
+&nbsp;&nbsp;kafedra_id INTEGER REFERENCES kafedralar(id),<br>
+&nbsp;&nbsp;stipendiya DECIMAL(10,2) DEFAULT 0,<br>
+&nbsp;&nbsp;ro'yxat_sanasi DATE DEFAULT CURRENT_DATE<br>
+);<br><br>
+-- 4. Talabalar ma'lumotini qo'shish<br>
+INSERT INTO talabalar (ism, familiya, yosh, kafedra_id, stipendiya)<br>
+VALUES<br>
+&nbsp;&nbsp;('Ali', 'Valiyev', 20, 1, 500000),<br>
+&nbsp;&nbsp;('Dilnoza', 'Karimova', 19, 2, 450000),<br>
+&nbsp;&nbsp;('Sardor', 'Umarov', 21, 1, 550000);<br><br>
+-- 5. Ma'lumotlarni o'qish<br>
+SELECT t.ism, t.familiya, k.nomi as kafedra<br>
+FROM talabalar t<br>
+JOIN kafedralar k ON t.kafedra_id = k.id;<br><br>
+-- 6. Statistika<br>
+SELECT k.nomi, COUNT(t.id) as talabalar_soni<br>
+FROM kafedralar k<br>
+LEFT JOIN talabalar t ON k.id = t.kafedra_id<br>
+GROUP BY k.id, k.nomi;
+            </div>
+        </div>
+
+        <!-- Slide 18: Xulosa -->
+        <div class="slide">
+            <h2>Xulosa</h2>
+            
+            <h3>Bugun o'rganilgan mavzular:</h3>
+            <ul>
+                <li>✅ Ma'lumotlar bazasi tushunchasi</li>
+                <li>✅ SQL va NoSQL farqi</li>
+                <li>✅ PostgreSQL o'rnatish</li>
+                <li>✅ Asosiy SQL buyruqlari</li>
+                <li>✅ CRUD operatsiyalari</li>
+                <li>✅ Amaliy misollar</li>
+            </ul>
+
+            <h3>Keyingi darslar:</h3>
+            <ul>
+                <li>🔗 <strong>JOIN</strong> - jadvallarni birlashtirish</li>
+                <li>📊 <strong>Aggregate</strong> - hisoblash funksiyalari</li>
+                <li>🔍 <strong>Index</strong> - tez qidirish</li>
+                <li>🔒 <strong>Xavfsizlik</strong> - foydalanuvchi huquqlari</li>
+                <li>💾 <strong>Backup</strong> - zaxira nusxa</li>
+            </ul>
+
+            <div style="text-align: center; margin-top: 50px;">
+                <p style="font-size: 1.3em; color: #64b5f6;">
+                    <strong>Rahmat! Dars tugadi.</strong>
+                </p>
+                <p style="font-size: 1.1em; margin-top: 20px;">
+                    Savollar bo'lsa, so'rang! 🤔
+                </p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Orqaga</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Keyingi ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            document.getElementById('currentSlide').textContent = index + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newIndex = currentSlideIndex + direction;
+            if (newIndex >= 0 && newIndex < totalSlides) {
+                currentSlideIndex = newIndex;
+                showSlide(currentSlideIndex);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
