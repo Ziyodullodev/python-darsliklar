@@ -1,15 +1,17 @@
 const questions = [
     {
         question: "Python'da list (ro'yxat) yaratish uchun qaysi qavslardan foydalaniladi?",
+        code: "# List yaratish usullari\nfruits = ['olma', 'anor', 'uzum']  # [] kvadrat qavslar\nnumbers = [1, 2, 3, 4, 5]\nempty_list = []  # bo'sh list\nmixed = [1, 'salom', 3.14, True]",
         options: ["()", "{}", "[]", "<>"],
         correct: 2,
-        explanation: "Listlar [] kvadrat qavslar yordamida yaratiladi."
+        explanation: "Listlar [] kvadrat qavslar yordamida yaratiladi. () - tuple, {} - dictionary, <> - Python'da ishlatilmaydi."
     },
     {
         question: "Listdagi elementlarga indeks yordamida qanday murojaat qilinadi?",
+        code: "# List elementlariga murojaat\nfruits = ['olma', 'anor', 'uzum']\nprint(fruits[0])  # olma\nprint(fruits[1])  # anor\nprint(fruits[2])  # uzum\nprint(fruits[-1]) # uzum (oxirgi element)",
         options: ["my_list(0)", "my_list[0]", "my_list{0}", "my_list<0>"],
         correct: 1,
-        explanation: "List elementlariga indeks yordamida `[]` kvadrat qavslar orqali murojaat qilinadi. Indekslar 0 dan boshlanadi."
+        explanation: "List elementlariga indeks yordamida `[]` kvadrat qavslar orqali murojaat qilinadi. Indekslar 0 dan boshlanadi. Manfiy indekslar oxiridan hisoblanadi."
     },
     {
         question: "Bo'sh list yaratishning to'g'ri usuli qaysi?",
@@ -88,5 +90,19 @@ const questions = [
         options: ["Ha", "Yo'q", "Faqat raqamlardan iborat bo'lsa", "Faqat matnlardan iborat bo'lsa"],
         correct: 0,
         explanation: "Python listlari o'zgaruvchan (mutable)dir, ya'ni yaratilgandan so'ng ularning elementlarini o'zgartirish, qo'shish yoki o'chirish mumkin."
+    },
+    {
+        question: "Quyidagi kod natijasi nima bo'ladi?",
+        code: "# List metodlari kombinatsiyasi\nnumbers = [1, 2, 3]\nnumbers.append(4)\nnumbers.insert(0, 0)\nprint(numbers)",
+        options: ["[0, 1, 2, 3, 4]", "[1, 2, 3, 4, 0]", "[0, 1, 2, 3]", "[1, 2, 3, 4]"],
+        correct: 0,
+        explanation: "append(4) oxiriga 4 qo'shadi: [1, 2, 3, 4]. insert(0, 0) 0-indeksga 0 qo'shadi: [0, 1, 2, 3, 4]."
+    },
+    {
+        question: "Quyidagi kod natijasi nima bo'ladi?",
+        code: "# List slicing va metodlar\nfruits = ['olma', 'anor', 'uzum', 'banan']\nprint(fruits[1:3])\nprint(len(fruits))",
+        options: ["['anor', 'uzum'] va 4", "['olma', 'anor'] va 3", "['uzum', 'banan'] va 4", "Xato"],
+        correct: 0,
+        explanation: "fruits[1:3] 1-indeksdan 3-indeksgacha (3 kirmaydi): ['anor', 'uzum']. len(fruits) list uzunligi: 4."
     }
 ];

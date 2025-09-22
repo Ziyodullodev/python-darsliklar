@@ -1,12 +1,14 @@
 const questions = [
     {
         "question": "Quyidagi kod natijasi nima bo'ladi?\n\nx = 10\nif x > 5:\n    print(\"Salom\")",
+        "code": "# If shart operatori\nx = 10\nif x > 5:\n    print(\"Salom\")  # Bu bajariladi\n\n# Boshqa misol\ny = 3\nif y > 5:\n    print(\"Bu bajarilmaydi\")",
         "options": ["Xato", "Hech narsa", "Salom", "x > 5"],
         "correct": 2,
-        "explanation": "x ning qiymati (10) 5 dan katta bo'lgani uchun 'if' sharti bajariladi va \"Salom\" yozuvi konsolga chiqariladi."
+        "explanation": "x ning qiymati (10) 5 dan katta bo'lgani uchun 'if' sharti bajariladi va \"Salom\" yozuvi konsolga chiqariladi. Python'da if sharti True bo'lsa, uning ichidagi kod bajariladi."
     },
     {
         "question": "Quyidagi kod natijasi nima bo'ladi?\n\ny = 3\nif y == 5:\n    print(\"To'g'ri\")\nelse:\n    print(\"Noto'g'ri\")",
+        "code": "# If-else shart operatori\ny = 3\nif y == 5:\n    print(\"To'g'ri\")  # Bu bajarilmaydi\nelse:\n    print(\"Noto'g'ri\")  # Bu bajariladi\n\n# Boshqa misol\nz = 5\nif z == 5:\n    print(\"To'g'ri\")  # Bu bajariladi\nelse:\n    print(\"Noto'g'ri\")",
         "options": ["To'g'ri", "Noto'g'ri", "Xato", "y == 5"],
         "correct": 1,
         "explanation": "y ning qiymati 5 ga teng emas, shuning uchun 'if' sharti bajarilmaydi va 'else' bloki ishga tushib, \"Noto'g'ri\" degan yozuv chiqadi."
