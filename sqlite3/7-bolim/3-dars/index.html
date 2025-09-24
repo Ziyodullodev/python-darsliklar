@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Blog Project - To'liq CMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>📝 Blog Project - To'liq CMS</h1>
+
+    <div class="lesson-content">
+      <h2>Blog CMS loyihasi</h2>
+      <p>Bu darsda SQLite3 ishlatgan holda to'liq Blog CMS (Content Management System) loyihasini yaratamiz. Bu loyiha eng murakkab va professional darajadagi loyiha bo'ladi.</p>
+
+      <h2>1. Loyiha struktura</h2>
+      <div class="code-block">
+        <pre><code>blog_cms/
+├── app.py              # Asosiy Flask app
+├── database.py         # Ma'lumotlar bazasi funksiyalari
+├── models.py           # Data modellar
+├── auth.py             # Autentifikatsiya
+├── templates/          # HTML template-lar
+│   ├── base.html
+│   ├── index.html
+│   ├── post_detail.html
+│   ├── admin/
+│   │   ├── dashboard.html
+│   │   ├── posts.html
+│   │   ├── users.html
+│   │   └── settings.html
+│   └── auth/
+│       ├── login.html
+│       └── register.html
+├── static/            # CSS va JS fayllar
+│   ├── css/
+│   │   ├── style.css
+│   │   └── admin.css
+│   └── js/
+│       ├── main.js
+│       └── admin.js
+├── uploads/           # Yuklangan fayllar
+├── requirements.txt   # Dependencies
+└── blog.db           # SQLite ma'lumotlar bazasi</code></pre>
+      </div>
+
+      <h2>2. Ma'lumotlar bazasi dizayni</h2>
+      <div class="code-block">
+        <pre><code># database.py
+import sqlite3
+from datetime import datetime
+import hashlib
+import secrets
+
+class BlogDatabase:
+    def __init__(self, db_path='blog.db'):
+        self.db_path = db_path
+        self.init_database()
+    
+    def init_database(self):
+        """Ma'lumotlar bazasini ishga tushirish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Users jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                salt TEXT NOT NULL,
+                first_name TEXT,
+                last_name TEXT,
+                bio TEXT,
+                avatar_url TEXT,
+                role TEXT DEFAULT 'author',
+                is_active BOOLEAN DEFAULT 1,
+                email_verified BOOLEAN DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                last_login DATETIME
+            )
+            ''')
+            
+            # Categories jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS categories (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT UNIQUE NOT NULL,
+                slug TEXT UNIQUE NOT NULL,
+                description TEXT,
+                color TEXT DEFAULT '#007bff',
+                is_active BOOLEAN DEFAULT 1,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+            
+            # Tags jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS tags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT UNIQUE NOT NULL,
+                slug TEXT UNIQUE NOT NULL,
+                description TEXT,
+                color TEXT DEFAULT '#6c757d',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+            
+            # Posts jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS posts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                slug TEXT UNIQUE NOT NULL,
+                content TEXT NOT NULL,
+                excerpt TEXT,
+                author_id INTEGER,
+                category_id INTEGER,
+                status TEXT DEFAULT 'draft',
+                is_featured BOOLEAN DEFAULT 0,
+                view_count INTEGER DEFAULT 0,
+                like_count INTEGER DEFAULT 0,
+                comment_count INTEGER DEFAULT 0,
+                published_at DATETIME,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+            )
+            ''')
+            
+            # Post tags
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS post_tags (
+                post_id INTEGER,
+                tag_id INTEGER,
+                PRIMARY KEY (post_id, tag_id),
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+                FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+            )
+            ''')
+            
+            # Comments jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS comments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                post_id INTEGER,
+                author_id INTEGER,
+                parent_id INTEGER,
+                content TEXT NOT NULL,
+                author_name TEXT,
+                author_email TEXT,
+                author_website TEXT,
+                is_approved BOOLEAN DEFAULT 0,
+                is_spam BOOLEAN DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+                FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
+            )
+            ''')
+            
+            # Media jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS media (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                filename TEXT NOT NULL,
+                original_filename TEXT NOT NULL,
+                file_path TEXT NOT NULL,
+                file_size INTEGER,
+                mime_type TEXT,
+                alt_text TEXT,
+                caption TEXT,
+                uploaded_by INTEGER,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (uploaded_by) REFERENCES users(id) ON DELETE CASCADE
+            )
+            ''')
+            
+            # Post media
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS post_media (
+                post_id INTEGER,
+                media_id INTEGER,
+                is_featured BOOLEAN DEFAULT 0,
+                PRIMARY KEY (post_id, media_id),
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+                FOREIGN KEY (media_id) REFERENCES media(id) ON DELETE CASCADE
+            )
+            ''')
+            
+            # Settings jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS settings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                key TEXT UNIQUE NOT NULL,
+                value TEXT,
+                description TEXT,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+            
+            # User sessions
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS user_sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                session_token TEXT UNIQUE NOT NULL,
+                expires_at DATETIME NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+            ''')
+            
+            # Activity log
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS activity_log (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                action TEXT NOT NULL,
+                details TEXT,
+                ip_address TEXT,
+                user_agent TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+            ''')
+            
+            # Foreign Key yoqish
+            cursor.execute('PRAGMA foreign_keys = ON')
+            
+            # Default admin user yaratish
+            cursor.execute('''
+            INSERT OR IGNORE INTO users (username, email, password_hash, salt, role, is_active) 
+            VALUES ('admin', 'admin@example.com', ?, ?, 'admin', 1)
+            ''', (self._hash_password('admin123')[0], self._hash_password('admin123')[1]))
+            
+            # Default categories qo'shish
+            cursor.execute('''
+            INSERT OR IGNORE INTO categories (name, slug, description, color) VALUES 
+            ('Technology', 'technology', 'Texnologiya yangiliklari', '#007bff'),
+            ('Programming', 'programming', 'Dasturlash haqida', '#28a745'),
+            ('Lifestyle', 'lifestyle', 'Hayot tarzi', '#ffc107'),
+            ('News', 'news', 'Yangiliklar', '#dc3545')
+            ''')
+            
+            # Default settings
+            cursor.execute('''
+            INSERT OR IGNORE INTO settings (key, value, description) VALUES 
+            ('site_title', 'My Blog', 'Sayt nomi'),
+            ('site_description', 'A simple blog powered by SQLite', 'Sayt tavsifi'),
+            ('posts_per_page', '10', 'Sahifada ko''rsatiladigan postlar soni'),
+            ('allow_comments', '1', 'Izohlarga ruxsat berish'),
+            ('require_approval', '1', 'Izohlarni tasdiqlash talab qilish')
+            ''')
+            
+            conn.commit()
+    
+    def _hash_password(self, password, salt=None):
+        """Parolni hash qilish"""
+        if salt is None:
+            salt = secrets.token_hex(32)
+        
+        password_bytes = password.encode()
+        salt_bytes = salt.encode()
+        hash_obj = hashlib.pbkdf2_hmac('sha256', password_bytes, salt_bytes, 100000)
+        return hash_obj.hex(), salt
+    
+    def verify_password(self, password, password_hash, salt):
+        """Parolni tekshirish"""
+        computed_hash, _ = self._hash_password(password, salt)
+        return computed_hash == password_hash
+    
+    def create_user(self, username, email, password, first_name=None, last_name=None, role='author'):
+        """Yangi foydalanuvchi yaratish"""
+        password_hash, salt = self._hash_password(password)
+        
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            INSERT INTO users (username, email, password_hash, salt, first_name, last_name, role) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (username, email, password_hash, salt, first_name, last_name, role))
+            conn.commit()
+            return cursor.lastrowid
+    
+    def authenticate_user(self, username_or_email, password):
+        """Foydalanuvchini autentifikatsiya qilish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            SELECT id, username, email, password_hash, salt, role, is_active, first_name, last_name
+            FROM users 
+            WHERE (username = ? OR email = ?) AND is_active = 1
+            ''', (username_or_email, username_or_email))
+            
+            user = cursor.fetchone()
+            
+            if user and self.verify_password(password, user[3], user[4]):
+                # Login vaqtini yangilash
+                cursor.execute('''
+                UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?
+                ''', (user[0],))
+                conn.commit()
+                
+                return {
+                    'id': user[0],
+                    'username': user[1],
+                    'email': user[2],
+                    'role': user[5],
+                    'first_name': user[7],
+                    'last_name': user[8]
+                }
+            return None
+    
+    def create_post(self, title, content, author_id, category_id=None, status='draft', 
+                   excerpt=None, is_featured=False, tag_ids=None):
+        """Yangi post yaratish"""
+        # Slug yaratish
+        slug = self._create_slug(title)
+        
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Post yaratish
+            cursor.execute('''
+            INSERT INTO posts (title, slug, content, author_id, category_id, status, 
+                             excerpt, is_featured, published_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (title, slug, content, author_id, category_id, status, excerpt, 
+                 is_featured, datetime.now() if status == 'published' else None))
+            
+            post_id = cursor.lastrowid
+            
+            # Tags qo'shish
+            if tag_ids:
+                for tag_id in tag_ids:
+                    cursor.execute('''
+                    INSERT INTO post_tags (post_id, tag_id) VALUES (?, ?)
+                    ''', (post_id, tag_id))
+            
+            conn.commit()
+            return post_id
+    
+    def get_posts(self, status='published', category_id=None, tag_id=None, 
+                 author_id=None, limit=None, offset=0, search=None):
+        """Postlarni olish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            query = '''
+            SELECT p.id, p.title, p.slug, p.content, p.excerpt, p.status, 
+                   p.is_featured, p.view_count, p.like_count, p.comment_count,
+                   p.published_at, p.created_at, p.updated_at,
+                   u.username, u.first_name, u.last_name,
+                   c.name as category_name, c.slug as category_slug,
+                   GROUP_CONCAT(t.name) as tags
+            FROM posts p
+            INNER JOIN users u ON p.author_id = u.id
+            LEFT JOIN categories c ON p.category_id = c.id
+            LEFT JOIN post_tags pt ON p.id = pt.post_id
+            LEFT JOIN tags t ON pt.tag_id = t.id
+            WHERE 1=1
+            '''
+            
+            params = []
+            
+            if status:
+                query += ' AND p.status = ?'
+                params.append(status)
+            
+            if category_id:
+                query += ' AND p.category_id = ?'
+                params.append(category_id)
+            
+            if tag_id:
+                query += ' AND p.id IN (SELECT post_id FROM post_tags WHERE tag_id = ?)'
+                params.append(tag_id)
+            
+            if author_id:
+                query += ' AND p.author_id = ?'
+                params.append(author_id)
+            
+            if search:
+                query += ''' AND (p.title LIKE ? OR p.content LIKE ? OR p.excerpt LIKE ?)'''
+                search_param = f'%{search}%'
+                params.extend([search_param] * 3)
+            
+            query += ' GROUP BY p.id ORDER BY p.created_at DESC'
+            
+            if limit:
+                query += ' LIMIT ? OFFSET ?'
+                params.extend([limit, offset])
+            
+            cursor.execute(query, params)
+            return cursor.fetchall()
+    
+    def get_post_by_slug(self, slug):
+        """Slug bo'yicha post olish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Post ma'lumotlari
+            cursor.execute('''
+            SELECT p.*, u.username, u.first_name, u.last_name, u.avatar_url,
+                   c.name as category_name, c.slug as category_slug
+            FROM posts p
+            INNER JOIN users u ON p.author_id = u.id
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.slug = ?
+            ''', (slug,))
+            
+            post = cursor.fetchone()
+            
+            if not post:
+                return None
+            
+            # View count oshirish
+            cursor.execute('''
+            UPDATE posts SET view_count = view_count + 1 WHERE id = ?
+            ''', (post[0],))
+            
+            # Tags olish
+            cursor.execute('''
+            SELECT t.name, t.slug, t.color
+            FROM tags t
+            INNER JOIN post_tags pt ON t.id = pt.tag_id
+            WHERE pt.post_id = ?
+            ''', (post[0],))
+            
+            tags = cursor.fetchall()
+            
+            # Comments olish
+            cursor.execute('''
+            SELECT c.*, u.username, u.first_name, u.last_name, u.avatar_url
+            FROM comments c
+            LEFT JOIN users u ON c.author_id = u.id
+            WHERE c.post_id = ? AND c.is_approved = 1 AND c.is_spam = 0
+            ORDER BY c.created_at ASC
+            ''', (post[0],))
+            
+            comments = cursor.fetchall()
+            
+            conn.commit()
+            
+            return {
+                'post': post,
+                'tags': tags,
+                'comments': comments
+            }
+    
+    def add_comment(self, post_id, content, author_id=None, author_name=None, 
+                   author_email=None, author_website=None, parent_id=None):
+        """Izoh qo'shish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Izoh yaratish
+            cursor.execute('''
+            INSERT INTO comments (post_id, author_id, parent_id, content, 
+                               author_name, author_email, author_website, is_approved) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (post_id, author_id, parent_id, content, author_name, 
+                 author_email, author_website, 1 if author_id else 0))
+            
+            comment_id = cursor.lastrowid
+            
+            # Comment count yangilash
+            cursor.execute('''
+            UPDATE posts SET comment_count = comment_count + 1 WHERE id = ?
+            ''', (post_id,))
+            
+            conn.commit()
+            return comment_id
+    
+    def get_categories(self):
+        """Barcha categories olish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM categories WHERE is_active = 1 ORDER BY name')
+            return cursor.fetchall()
+    
+    def get_tags(self):
+        """Barcha tags olish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM tags ORDER BY name')
+            return cursor.fetchall()
+    
+    def get_blog_statistics(self):
+        """Blog statistikasi"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Umumiy statistika
+            cursor.execute('''
+            SELECT 
+                (SELECT COUNT(*) FROM posts WHERE status = 'published') as published_posts,
+                (SELECT COUNT(*) FROM posts WHERE status = 'draft') as draft_posts,
+                (SELECT COUNT(*) FROM comments WHERE is_approved = 1) as approved_comments,
+                (SELECT COUNT(*) FROM comments WHERE is_approved = 0) as pending_comments,
+                (SELECT COUNT(*) FROM users WHERE is_active = 1) as active_users,
+                (SELECT SUM(view_count) FROM posts) as total_views
+            ''')
+            
+            stats = cursor.fetchone()
+            
+            # Eng ko'p ko'rilgan postlar
+            cursor.execute('''
+            SELECT title, view_count FROM posts 
+            WHERE status = 'published' 
+            ORDER BY view_count DESC LIMIT 5
+            ''')
+            
+            popular_posts = cursor.fetchall()
+            
+            # Kategoriyalar bo'yicha statistika
+            cursor.execute('''
+            SELECT c.name, COUNT(p.id) as post_count
+            FROM categories c
+            LEFT JOIN posts p ON c.id = p.category_id AND p.status = 'published'
+            GROUP BY c.id, c.name
+            ORDER BY post_count DESC
+            ''')
+            
+            category_stats = cursor.fetchall()
+            
+            return {
+                'published_posts': stats[0],
+                'draft_posts': stats[1],
+                'approved_comments': stats[2],
+                'pending_comments': stats[3],
+                'active_users': stats[4],
+                'total_views': stats[5],
+                'popular_posts': popular_posts,
+                'category_stats': category_stats
+            }
+    
+    def _create_slug(self, title):
+        """Slug yaratish"""
+        import re
+        slug = title.lower()
+        slug = re.sub(r'[^a-z0-9\s-]', '', slug)
+        slug = re.sub(r'\s+', '-', slug)
+        slug = slug.strip('-')
+        return slug</code></pre>
+      </div>
+
+      <h2>3. Flask App</h2>
+      <div class="code-block">
+        <pre><code># app.py
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
+from database import BlogDatabase
+from datetime import datetime
+import os
+
+app = Flask(__name__)
+app.secret_key = 'your-secret-key-here'
+
+# Database instance
+db = BlogDatabase()
+
+# Auth decorator
+def login_required(f):
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    decorated_function.__name__ = f.__name__
+    return decorated_function
+
+def admin_required(f):
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session or session.get('role') != 'admin':
+            flash('Admin ruxsati kerak!', 'error')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    decorated_function.__name__ = f.__name__
+    return decorated_function
+
+@app.route('/')
+def index():
+    """Asosiy sahifa"""
+    page = request.args.get('page', 1, type=int)
+    category_id = request.args.get('category_id')
+    tag_id = request.args.get('tag_id')
+    search = request.args.get('search')
+    
+    posts_per_page = 10
+    offset = (page - 1) * posts_per_page
+    
+    # Postlarni olish
+    posts = db.get_posts(
+        status='published',
+        category_id=category_id,
+        tag_id=tag_id,
+        search=search,
+        limit=posts_per_page,
+        offset=offset
+    )
+    
+    # Categories va tags olish
+    categories = db.get_categories()
+    tags = db.get_tags()
+    
+    # Statistika
+    stats = db.get_blog_statistics()
+    
+    return render_template('index.html', 
+                         posts=posts, 
+                         categories=categories, 
+                         tags=tags,
+                         stats=stats,
+                         current_page=page,
+                         current_filters={
+                             'category_id': category_id,
+                             'tag_id': tag_id,
+                             'search': search
+                         })
+
+@app.route('/post/<slug>')
+def post_detail(slug):
+    """Post tafsilotlari"""
+    post_data = db.get_post_by_slug(slug)
+    
+    if not post_data:
+        flash('Post topilmadi!', 'error')
+        return redirect(url_for('index'))
+    
+    return render_template('post_detail.html', **post_data)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Kirish"""
+    if request.method == 'POST':
+        username_or_email = request.form['username_or_email']
+        password = request.form['password']
+        
+        user = db.authenticate_user(username_or_email, password)
+        
+        if user:
+            session['user_id'] = user['id']
+            session['username'] = user['username']
+            session['role'] = user['role']
+            flash('Muvaffaqiyatli kirdingiz!', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Noto''g''ri foydalanuvchi nomi yoki parol!', 'error')
+    
+    return render_template('auth/login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    """Ro''yxatdan o''tish"""
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        
+        try:
+            user_id = db.create_user(username, email, password, first_name, last_name)
+            flash('Muvaffaqiyatli ro''yxatdan o''tdingiz!', 'success')
+            return redirect(url_for('login'))
+        except sqlite3.IntegrityError:
+            flash('Foydalanuvchi nomi yoki email allaqachon mavjud!', 'error')
+    
+    return render_template('auth/register.html')
+
+@app.route('/logout')
+def logout():
+    """Chiqish"""
+    session.clear()
+    flash('Muvaffaqiyatli chiqdingiz!', 'success')
+    return redirect(url_for('index'))
+
+@app.route('/admin')
+@admin_required
+def admin_dashboard():
+    """Admin dashboard"""
+    stats = db.get_blog_statistics()
+    return render_template('admin/dashboard.html', stats=stats)
+
+@app.route('/admin/posts')
+@admin_required
+def admin_posts():
+    """Admin - Postlar"""
+    posts = db.get_posts(limit=50)
+    return render_template('admin/posts.html', posts=posts)
+
+@app.route('/admin/users')
+@admin_required
+def admin_users():
+    """Admin - Foydalanuvchilar"""
+    # Foydalanuvchilar ro'yxati
+    with sqlite3.connect(db.db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+        SELECT id, username, email, first_name, last_name, role, is_active, created_at
+        FROM users ORDER BY created_at DESC
+        ''')
+        users = cursor.fetchall()
+    
+    return render_template('admin/users.html', users=users)
+
+@app.route('/add_comment/<int:post_id>', methods=['POST'])
+def add_comment(post_id):
+    """Izoh qo'shish"""
+    content = request.form['content']
+    author_name = request.form.get('author_name')
+    author_email = request.form.get('author_email')
+    author_website = request.form.get('author_website')
+    
+    # Izoh qo'shish
+    comment_id = db.add_comment(
+        post_id=post_id,
+        content=content,
+        author_id=session.get('user_id'),
+        author_name=author_name,
+        author_email=author_email,
+        author_website=author_website
+    )
+    
+    if comment_id:
+        flash('Izoh muvaffaqiyatli qo''shildi!', 'success')
+    else:
+        flash('Izoh qo''shilmadi!', 'error')
+    
+    return redirect(url_for('post_detail', slug=request.form.get('post_slug')))
+
+@app.route('/api/posts')
+def api_posts():
+    """API - Postlar"""
+    status = request.args.get('status', 'published')
+    limit = request.args.get('limit', 10, type=int)
+    
+    posts = db.get_posts(status=status, limit=limit)
+    
+    # JSON formatga o'tkazish
+    posts_data = []
+    for post in posts:
+        posts_data.append({
+            'id': post[0],
+            'title': post[1],
+            'slug': post[2],
+            'excerpt': post[4],
+            'status': post[5],
+            'view_count': post[7],
+            'like_count': post[8],
+            'comment_count': post[9],
+            'published_at': post[10],
+            'author': post[13],
+            'category': post[16],
+            'tags': post[18] if post[18] else ''
+        })
+    
+    return jsonify(posts_data)
+
+@app.route('/api/statistics')
+def api_statistics():
+    """API - Statistika"""
+    stats = db.get_blog_statistics()
+    return jsonify(stats)
+
+if __name__ == '__main__':
+    app.run(debug=True)</code></pre>
+      </div>
+
+      <h2>4. Loyiha xususiyatlari</h2>
+      <ul>
+        <li>✅ <strong>To'liq CMS:</strong> Content Management System</li>
+        <li>✅ <strong>User Management:</strong> Foydalanuvchi boshqaruvi</li>
+        <li>✅ <strong>Post Management:</strong> Post yaratish va boshqarish</li>
+        <li>✅ <strong>Categories va Tags:</strong> Kontent guruhlash</li>
+        <li>✅ <strong>Comments System:</strong> Izohlar tizimi</li>
+        <li>✅ <strong>Media Management:</strong> Fayl boshqaruvi</li>
+        <li>✅ <strong>Admin Panel:</strong> Boshqaruv paneli</li>
+        <li>✅ <strong>Search va Filter:</strong> Qidiruv va filtr</li>
+        <li>✅ <strong>Statistics:</strong> Detal statistikalar</li>
+        <li>✅ <strong>API:</strong> JSON formatda ma'lumotlar</li>
+      </ul>
+
+      <h2>5. Loyihani ishga tushirish</h2>
+      <div class="code-block">
+        <pre><code># requirements.txt
+Flask==2.3.3
+Werkzeug==2.3.7
+Pillow==10.0.0
+
+# Loyihani ishga tushirish
+pip install -r requirements.txt
+python app.py
+
+# Brauzerda ochish
+# http://localhost:5000
+
+# Admin panel
+# http://localhost:5000/admin
+# Username: admin
+# Password: admin123</code></pre>
+      </div>
+
+      <h2>6. Loyiha imkoniyatlari</h2>
+      <ul>
+        <li>✅ <strong>Professional daraja:</strong> Real-world loyiha</li>
+        <li>✅ <strong>Scalable:</strong> Kengaytirish imkoniyati</li>
+        <li>✅ <strong>Secure:</strong> Xavfsizlik choralari</li>
+        <li>✅ <strong>Performance:</strong> Tez ishlash</li>
+        <li>✅ <strong>Maintainable:</strong> Oson boshqarish</li>
+        <li>✅ <strong>Extensible:</strong> Qo'shimcha funksiyalar</li>
+      </ul>
+
+      <div class="next-lesson">
+        <a href="../../index.html">← SQLite3 darslari ro'yxatiga qaytish</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

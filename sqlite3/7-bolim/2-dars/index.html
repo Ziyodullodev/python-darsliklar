@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Contacts Manager - Murakkab loyiha</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>📞 Contacts Manager - Murakkab loyiha</h1>
+
+    <div class="lesson-content">
+      <h2>Contacts Manager loyihasi</h2>
+      <p>Bu darsda SQLite3 ishlatgan holda to'liq Contacts Manager loyihasini yaratamiz. Bu loyiha murakkab ma'lumotlar bazasi dizayni va ilg'or SQLite3 texnikalarini qo'llaydi.</p>
+
+      <h2>1. Loyiha struktura</h2>
+      <div class="code-block">
+        <pre><code>contacts_manager/
+├── app.py              # Asosiy Flask app
+├── database.py         # Ma'lumotlar bazasi funksiyalari
+├── models.py           # Data modellar
+├── templates/          # HTML template-lar
+│   ├── base.html
+│   ├── index.html
+│   ├── contact_detail.html
+│   ├── add_contact.html
+│   └── edit_contact.html
+├── static/            # CSS va JS fayllar
+│   ├── style.css
+│   └── script.js
+├── requirements.txt   # Dependencies
+└── contacts.db       # SQLite ma'lumotlar bazasi</code></pre>
+      </div>
+
+      <h2>2. Ma'lumotlar bazasi dizayni</h2>
+      <div class="code-block">
+        <pre><code># database.py
+import sqlite3
+from datetime import datetime
+import json
+
+class ContactsDatabase:
+    def __init__(self, db_path='contacts.db'):
+        self.db_path = db_path
+        self.init_database()
+    
+    def init_database(self):
+        """Ma'lumotlar bazasini ishga tushirish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Contacts jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS contacts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                first_name TEXT NOT NULL,
+                last_name TEXT NOT NULL,
+                email TEXT UNIQUE,
+                phone TEXT,
+                company TEXT,
+                job_title TEXT,
+                notes TEXT,
+                avatar_url TEXT,
+                is_favorite BOOLEAN DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+            
+            # Contact groups jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS contact_groups (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT UNIQUE NOT NULL,
+                description TEXT,
+                color TEXT DEFAULT '#007bff',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+            
+            # Contact group memberships
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS contact_group_memberships (
+                contact_id INTEGER,
+                group_id INTEGER,
+                PRIMARY KEY (contact_id, group_id),
+                FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE CASCADE,
+                FOREIGN KEY (group_id) REFERENCES contact_groups(id) ON DELETE CASCADE
+            )
+            ''')
+            
+            # Contact addresses
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS contact_addresses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contact_id INTEGER,
+                address_type TEXT DEFAULT 'home',
+                street TEXT,
+                city TEXT,
+                state TEXT,
+                postal_code TEXT,
+                country TEXT,
+                is_primary BOOLEAN DEFAULT 0,
+                FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE CASCADE
+            )
+            ''')
+            
+            # Contact social media
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS contact_social_media (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contact_id INTEGER,
+                platform TEXT NOT NULL,
+                username TEXT NOT NULL,
+                url TEXT,
+                is_primary BOOLEAN DEFAULT 0,
+                FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE CASCADE
+            )
+            ''')
+            
+            # Contact tags
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS contact_tags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT UNIQUE NOT NULL,
+                color TEXT DEFAULT '#6c757d',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+            
+            # Contact tag assignments
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS contact_tag_assignments (
+                contact_id INTEGER,
+                tag_id INTEGER,
+                PRIMARY KEY (contact_id, tag_id),
+                FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE CASCADE,
+                FOREIGN KEY (tag_id) REFERENCES contact_tags(id) ON DELETE CASCADE
+            )
+            ''')
+            
+            # Contact interactions
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS contact_interactions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contact_id INTEGER,
+                interaction_type TEXT NOT NULL,
+                subject TEXT,
+                notes TEXT,
+                interaction_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE CASCADE
+            )
+            ''')
+            
+            # Foreign Key yoqish
+            cursor.execute('PRAGMA foreign_keys = ON')
+            
+            # Default groups qo'shish
+            cursor.execute('''
+            INSERT OR IGNORE INTO contact_groups (name, description, color) VALUES 
+            ('Family', 'Oilaviy a''zolar', '#28a745'),
+            ('Friends', 'Do''stlar', '#007bff'),
+            ('Work', 'Ish do''stlari', '#ffc107'),
+            ('Business', 'Biznes sheriklari', '#dc3545')
+            ''')
+            
+            # Default tags qo'shish
+            cursor.execute('''
+            INSERT OR IGNORE INTO contact_tags (name, color) VALUES 
+            ('VIP', '#dc3545'),
+            ('Client', '#28a745'),
+            ('Supplier', '#007bff'),
+            ('Colleague', '#6c757d')
+            ''')
+            
+            conn.commit()
+    
+    def create_contact(self, first_name, last_name, email=None, phone=None, 
+                      company=None, job_title=None, notes=None, avatar_url=None,
+                      group_ids=None, tag_ids=None, addresses=None, social_media=None):
+        """Yangi contact yaratish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+            INSERT INTO contacts (first_name, last_name, email, phone, company, 
+                               job_title, notes, avatar_url) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (first_name, last_name, email, phone, company, job_title, notes, avatar_url))
+            
+            contact_id = cursor.lastrowid
+            
+            # Groups qo'shish
+            if group_ids:
+                for group_id in group_ids:
+                    cursor.execute('''
+                    INSERT INTO contact_group_memberships (contact_id, group_id) 
+                    VALUES (?, ?)
+                    ''', (contact_id, group_id))
+            
+            # Tags qo'shish
+            if tag_ids:
+                for tag_id in tag_ids:
+                    cursor.execute('''
+                    INSERT INTO contact_tag_assignments (contact_id, tag_id) 
+                    VALUES (?, ?)
+                    ''', (contact_id, tag_id))
+            
+            # Addresses qo'shish
+            if addresses:
+                for address in addresses:
+                    cursor.execute('''
+                    INSERT INTO contact_addresses (contact_id, address_type, street, 
+                                                city, state, postal_code, country, is_primary) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    ''', (contact_id, address.get('type', 'home'), address.get('street'),
+                         address.get('city'), address.get('state'), address.get('postal_code'),
+                         address.get('country'), address.get('is_primary', 0)))
+            
+            # Social media qo'shish
+            if social_media:
+                for social in social_media:
+                    cursor.execute('''
+                    INSERT INTO contact_social_media (contact_id, platform, username, url, is_primary) 
+                    VALUES (?, ?, ?, ?, ?)
+                    ''', (contact_id, social.get('platform'), social.get('username'),
+                         social.get('url'), social.get('is_primary', 0)))
+            
+            conn.commit()
+            return contact_id
+    
+    def get_all_contacts(self, search=None, group_id=None, tag_id=None, is_favorite=None):
+        """Barcha contactlarni olish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            query = '''
+            SELECT c.id, c.first_name, c.last_name, c.email, c.phone, c.company, 
+                   c.job_title, c.is_favorite, c.created_at, c.updated_at,
+                   GROUP_CONCAT(DISTINCT cg.name) as groups,
+                   GROUP_CONCAT(DISTINCT ct.name) as tags
+            FROM contacts c
+            LEFT JOIN contact_group_memberships cgm ON c.id = cgm.contact_id
+            LEFT JOIN contact_groups cg ON cgm.group_id = cg.id
+            LEFT JOIN contact_tag_assignments cta ON c.id = cta.contact_id
+            LEFT JOIN contact_tags ct ON cta.tag_id = ct.id
+            WHERE 1=1
+            '''
+            
+            params = []
+            
+            if search:
+                query += ''' AND (c.first_name LIKE ? OR c.last_name LIKE ? 
+                                OR c.email LIKE ? OR c.phone LIKE ? 
+                                OR c.company LIKE ?)'''
+                search_param = f'%{search}%'
+                params.extend([search_param] * 5)
+            
+            if group_id:
+                query += ' AND c.id IN (SELECT contact_id FROM contact_group_memberships WHERE group_id = ?)'
+                params.append(group_id)
+            
+            if tag_id:
+                query += ' AND c.id IN (SELECT contact_id FROM contact_tag_assignments WHERE tag_id = ?)'
+                params.append(tag_id)
+            
+            if is_favorite is not None:
+                query += ' AND c.is_favorite = ?'
+                params.append(is_favorite)
+            
+            query += ' GROUP BY c.id ORDER BY c.first_name, c.last_name'
+            
+            cursor.execute(query, params)
+            return cursor.fetchall()
+    
+    def get_contact_by_id(self, contact_id):
+        """Contact ma'lumotlarini olish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Asosiy ma'lumotlar
+            cursor.execute('''
+            SELECT * FROM contacts WHERE id = ?
+            ''', (contact_id,))
+            
+            contact = cursor.fetchone()
+            
+            if not contact:
+                return None
+            
+            # Groups
+            cursor.execute('''
+            SELECT cg.id, cg.name, cg.color
+            FROM contact_groups cg
+            INNER JOIN contact_group_memberships cgm ON cg.id = cgm.group_id
+            WHERE cgm.contact_id = ?
+            ''', (contact_id,))
+            groups = cursor.fetchall()
+            
+            # Tags
+            cursor.execute('''
+            SELECT ct.id, ct.name, ct.color
+            FROM contact_tags ct
+            INNER JOIN contact_tag_assignments cta ON ct.id = cta.tag_id
+            WHERE cta.contact_id = ?
+            ''', (contact_id,))
+            tags = cursor.fetchall()
+            
+            # Addresses
+            cursor.execute('''
+            SELECT * FROM contact_addresses WHERE contact_id = ? ORDER BY is_primary DESC
+            ''', (contact_id,))
+            addresses = cursor.fetchall()
+            
+            # Social media
+            cursor.execute('''
+            SELECT * FROM contact_social_media WHERE contact_id = ? ORDER BY is_primary DESC
+            ''', (contact_id,))
+            social_media = cursor.fetchall()
+            
+            # Interactions
+            cursor.execute('''
+            SELECT * FROM contact_interactions WHERE contact_id = ? 
+            ORDER BY interaction_date DESC LIMIT 10
+            ''', (contact_id,))
+            interactions = cursor.fetchall()
+            
+            return {
+                'contact': contact,
+                'groups': groups,
+                'tags': tags,
+                'addresses': addresses,
+                'social_media': social_media,
+                'interactions': interactions
+            }
+    
+    def update_contact(self, contact_id, **kwargs):
+        """Contact ma'lumotlarini yangilash"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Asosiy ma'lumotlarni yangilash
+            updates = []
+            params = []
+            
+            for field in ['first_name', 'last_name', 'email', 'phone', 'company', 
+                         'job_title', 'notes', 'avatar_url', 'is_favorite']:
+                if field in kwargs:
+                    updates.append(f'{field} = ?')
+                    params.append(kwargs[field])
+            
+            if updates:
+                updates.append('updated_at = CURRENT_TIMESTAMP')
+                params.append(contact_id)
+                
+                query = f"UPDATE contacts SET {', '.join(updates)} WHERE id = ?"
+                cursor.execute(query, params)
+            
+            # Groups yangilash
+            if 'group_ids' in kwargs:
+                cursor.execute('DELETE FROM contact_group_memberships WHERE contact_id = ?', (contact_id,))
+                
+                for group_id in kwargs['group_ids']:
+                    cursor.execute('''
+                    INSERT INTO contact_group_memberships (contact_id, group_id) 
+                    VALUES (?, ?)
+                    ''', (contact_id, group_id))
+            
+            # Tags yangilash
+            if 'tag_ids' in kwargs:
+                cursor.execute('DELETE FROM contact_tag_assignments WHERE contact_id = ?', (contact_id,))
+                
+                for tag_id in kwargs['tag_ids']:
+                    cursor.execute('''
+                    INSERT INTO contact_tag_assignments (contact_id, tag_id) 
+                    VALUES (?, ?)
+                    ''', (contact_id, tag_id))
+            
+            conn.commit()
+            return cursor.rowcount > 0
+    
+    def delete_contact(self, contact_id):
+        """Contact o'chirish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('DELETE FROM contacts WHERE id = ?', (contact_id,))
+            conn.commit()
+            return cursor.rowcount > 0
+    
+    def add_interaction(self, contact_id, interaction_type, subject=None, notes=None):
+        """Contact bilan aloqa qo'shish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            INSERT INTO contact_interactions (contact_id, interaction_type, subject, notes) 
+            VALUES (?, ?, ?, ?)
+            ''', (contact_id, interaction_type, subject, notes))
+            conn.commit()
+            return cursor.lastrowid
+    
+    def get_groups(self):
+        """Barcha groups olish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM contact_groups ORDER BY name')
+            return cursor.fetchall()
+    
+    def get_tags(self):
+        """Barcha tags olish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM contact_tags ORDER BY name')
+            return cursor.fetchall()
+    
+    def get_contact_statistics(self):
+        """Contact statistikasi"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Umumiy statistika
+            cursor.execute('''
+            SELECT 
+                COUNT(*) as total_contacts,
+                SUM(CASE WHEN is_favorite = 1 THEN 1 ELSE 0 END) as favorite_contacts,
+                COUNT(DISTINCT company) as unique_companies
+            FROM contacts
+            ''')
+            
+            stats = cursor.fetchone()
+            
+            # Groups bo'yicha statistika
+            cursor.execute('''
+            SELECT cg.name, COUNT(cgm.contact_id) as count
+            FROM contact_groups cg
+            LEFT JOIN contact_group_memberships cgm ON cg.id = cgm.group_id
+            GROUP BY cg.id, cg.name
+            ORDER BY count DESC
+            ''')
+            
+            group_stats = cursor.fetchall()
+            
+            # Tags bo'yicha statistika
+            cursor.execute('''
+            SELECT ct.name, COUNT(cta.contact_id) as count
+            FROM contact_tags ct
+            LEFT JOIN contact_tag_assignments cta ON ct.id = cta.tag_id
+            GROUP BY ct.id, ct.name
+            ORDER BY count DESC
+            ''')
+            
+            tag_stats = cursor.fetchall()
+            
+            return {
+                'total': stats[0],
+                'favorites': stats[1],
+                'companies': stats[2],
+                'group_stats': group_stats,
+                'tag_stats': tag_stats
+            }</code></pre>
+      </div>
+
+      <h2>3. Flask App</h2>
+      <div class="code-block">
+        <pre><code># app.py
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from database import ContactsDatabase
+from datetime import datetime
+
+app = Flask(__name__)
+app.secret_key = 'your-secret-key-here'
+
+# Database instance
+db = ContactsDatabase()
+
+@app.route('/')
+def index():
+    """Asosiy sahifa"""
+    # Filter parametrlari
+    search = request.args.get('search')
+    group_id = request.args.get('group_id')
+    tag_id = request.args.get('tag_id')
+    is_favorite = request.args.get('is_favorite')
+    
+    # Contactlarni olish
+    contacts = db.get_all_contacts(
+        search=search, 
+        group_id=group_id, 
+        tag_id=tag_id, 
+        is_favorite=is_favorite
+    )
+    
+    # Groups va tags olish
+    groups = db.get_groups()
+    tags = db.get_tags()
+    
+    # Statistika
+    stats = db.get_contact_statistics()
+    
+    return render_template('index.html', 
+                         contacts=contacts, 
+                         groups=groups, 
+                         tags=tags,
+                         stats=stats,
+                         current_filters={
+                             'search': search,
+                             'group_id': group_id,
+                             'tag_id': tag_id,
+                             'is_favorite': is_favorite
+                         })
+
+@app.route('/contact/<int:contact_id>')
+def contact_detail(contact_id):
+    """Contact tafsilotlari"""
+    contact_data = db.get_contact_by_id(contact_id)
+    
+    if not contact_data:
+        flash('Contact topilmadi!', 'error')
+        return redirect(url_for('index'))
+    
+    return render_template('contact_detail.html', **contact_data)
+
+@app.route('/add', methods=['GET', 'POST'])
+def add_contact():
+    """Yangi contact qo'shish"""
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        company = request.form.get('company')
+        job_title = request.form.get('job_title')
+        notes = request.form.get('notes')
+        avatar_url = request.form.get('avatar_url')
+        is_favorite = 'is_favorite' in request.form
+        
+        group_ids = request.form.getlist('groups')
+        tag_ids = request.form.getlist('tags')
+        
+        # Group va tag IDs ni integer ga o'tkazish
+        group_ids = [int(gid) for gid in group_ids if gid]
+        tag_ids = [int(tid) for tid in tag_ids if tid]
+        
+        # Contact yaratish
+        contact_id = db.create_contact(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            phone=phone,
+            company=company,
+            job_title=job_title,
+            notes=notes,
+            avatar_url=avatar_url,
+            group_ids=group_ids,
+            tag_ids=tag_ids
+        )
+        
+        flash('Contact muvaffaqiyatli yaratildi!', 'success')
+        return redirect(url_for('contact_detail', contact_id=contact_id))
+    
+    # Groups va tags olish
+    groups = db.get_groups()
+    tags = db.get_tags()
+    
+    return render_template('add_contact.html', groups=groups, tags=tags)
+
+@app.route('/edit/<int:contact_id>', methods=['GET', 'POST'])
+def edit_contact(contact_id):
+    """Contact tahrirlash"""
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        company = request.form.get('company')
+        job_title = request.form.get('job_title')
+        notes = request.form.get('notes')
+        avatar_url = request.form.get('avatar_url')
+        is_favorite = 'is_favorite' in request.form
+        
+        group_ids = request.form.getlist('groups')
+        tag_ids = request.form.getlist('tags')
+        
+        # Group va tag IDs ni integer ga o'tkazish
+        group_ids = [int(gid) for gid in group_ids if gid]
+        tag_ids = [int(tid) for tid in tag_ids if tid]
+        
+        # Contact yangilash
+        success = db.update_contact(
+            contact_id=contact_id,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            phone=phone,
+            company=company,
+            job_title=job_title,
+            notes=notes,
+            avatar_url=avatar_url,
+            is_favorite=is_favorite,
+            group_ids=group_ids,
+            tag_ids=tag_ids
+        )
+        
+        if success:
+            flash('Contact muvaffaqiyatli yangilandi!', 'success')
+        else:
+            flash('Contact yangilanmadi!', 'error')
+        
+        return redirect(url_for('contact_detail', contact_id=contact_id))
+    
+    # Contact ma'lumotlarini olish
+    contact_data = db.get_contact_by_id(contact_id)
+    if not contact_data:
+        flash('Contact topilmadi!', 'error')
+        return redirect(url_for('index'))
+    
+    # Groups va tags olish
+    groups = db.get_groups()
+    tags = db.get_tags()
+    
+    return render_template('edit_contact.html', 
+                         contact_data=contact_data,
+                         groups=groups, 
+                         tags=tags)
+
+@app.route('/delete/<int:contact_id>')
+def delete_contact(contact_id):
+    """Contact o'chirish"""
+    success = db.delete_contact(contact_id)
+    
+    if success:
+        flash('Contact muvaffaqiyatli o''chirildi!', 'success')
+    else:
+        flash('Contact o''chirilmadi!', 'error')
+    
+    return redirect(url_for('index'))
+
+@app.route('/favorite/<int:contact_id>')
+def toggle_favorite(contact_id):
+    """Favorite holatini o'zgartirish"""
+    contact_data = db.get_contact_by_id(contact_id)
+    
+    if contact_data:
+        current_favorite = contact_data['contact'][7]  # is_favorite ustuni
+        new_favorite = not current_favorite
+        
+        success = db.update_contact(contact_id, is_favorite=new_favorite)
+        
+        if success:
+            flash('Favorite holati o''zgartirildi!', 'success')
+        else:
+            flash('Favorite holati o''zgartirilmadi!', 'error')
+    
+    return redirect(url_for('contact_detail', contact_id=contact_id))
+
+@app.route('/add_interaction/<int:contact_id>', methods=['POST'])
+def add_interaction(contact_id):
+    """Contact bilan aloqa qo'shish"""
+    interaction_type = request.form['interaction_type']
+    subject = request.form.get('subject')
+    notes = request.form.get('notes')
+    
+    interaction_id = db.add_interaction(
+        contact_id=contact_id,
+        interaction_type=interaction_type,
+        subject=subject,
+        notes=notes
+    )
+    
+    if interaction_id:
+        flash('Aloqa muvaffaqiyatli qo''shildi!', 'success')
+    else:
+        flash('Aloqa qo''shilmadi!', 'error')
+    
+    return redirect(url_for('contact_detail', contact_id=contact_id))
+
+@app.route('/api/contacts')
+def api_contacts():
+    """API - Contactlar"""
+    search = request.args.get('search')
+    group_id = request.args.get('group_id')
+    tag_id = request.args.get('tag_id')
+    is_favorite = request.args.get('is_favorite')
+    
+    contacts = db.get_all_contacts(
+        search=search, 
+        group_id=group_id, 
+        tag_id=tag_id, 
+        is_favorite=is_favorite
+    )
+    
+    # JSON formatga o'tkazish
+    contacts_data = []
+    for contact in contacts:
+        contacts_data.append({
+            'id': contact[0],
+            'first_name': contact[1],
+            'last_name': contact[2],
+            'email': contact[3],
+            'phone': contact[4],
+            'company': contact[5],
+            'job_title': contact[6],
+            'is_favorite': bool(contact[7]),
+            'created_at': contact[8],
+            'updated_at': contact[9],
+            'groups': contact[10] if contact[10] else '',
+            'tags': contact[11] if contact[11] else ''
+        })
+    
+    return jsonify(contacts_data)
+
+@app.route('/api/statistics')
+def api_statistics():
+    """API - Statistika"""
+    stats = db.get_contact_statistics()
+    return jsonify(stats)
+
+if __name__ == '__main__':
+    app.run(debug=True)</code></pre>
+      </div>
+
+      <h2>4. Loyiha xususiyatlari</h2>
+      <ul>
+        <li>✅ <strong>Murakkab ma'lumotlar bazasi:</strong> Ko'p jadvallar bilan</li>
+        <li>✅ <strong>Groups va Tags:</strong> Contactlarni guruhlash</li>
+        <li>✅ <strong>Addresses va Social Media:</strong> Qo'shimcha ma'lumotlar</li>
+        <li>✅ <strong>Interactions:</strong> Contact bilan aloqa tarixi</li>
+        <li>✅ <strong>Search va Filter:</strong> Keng qidiruv imkoniyatlari</li>
+        <li>✅ <strong>Favorites:</strong> Sevimli contactlar</li>
+        <li>✅ <strong>Statistics:</strong> Detal statistikalar</li>
+        <li>✅ <strong>API:</strong> JSON formatda ma'lumotlar</li>
+      </ul>
+
+      <div class="next-lesson">
+        <a href="../3-dars/">Keyingi dars: Blog Project - To'liq CMS →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

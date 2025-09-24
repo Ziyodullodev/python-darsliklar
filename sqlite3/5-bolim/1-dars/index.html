@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>CLI bilan ishlash - Terminal orqali test</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>💻 CLI bilan ishlash - Terminal orqali test</h1>
+
+    <div class="lesson-content">
+      <h2>SQLite CLI nima?</h2>
+      <p>SQLite CLI - bu SQLite ma'lumotlar bazasi bilan ishlash uchun command-line interface. U terminal orqali SQLite ma'lumotlar bazasini boshqarish imkonini beradi.</p>
+
+      <h2>1. SQLite CLI ni ishga tushirish</h2>
+      <div class="code-block">
+        <pre><code># SQLite CLI ni ishga tushirish
+sqlite3
+
+# Ma'lumotlar bazasini ochish
+sqlite3 mydatabase.db
+
+# Xotira bazasini ochish
+sqlite3 :memory:
+
+# SQL fayldan ishga tushirish
+sqlite3 mydatabase.db < script.sql</code></pre>
+      </div>
+
+      <h2>2. Asosiy CLI buyruqlari</h2>
+      <div class="code-block">
+        <pre><code># Yordam
+.help
+
+# Ma'lumotlar bazasini ochish
+.open mydatabase.db
+
+# Jadvallarni ko'rish
+.tables
+
+# Jadval strukturasi
+.schema
+.schema table_name
+
+# Ma'lumotlar bazalari
+.databases
+
+# Chiqish
+.quit
+.exit</code></pre>
+      </div>
+
+      <h2>3. CLI sozlamalari</h2>
+      <div class="code-block">
+        <pre><code># Sarlavhalarni yoqish
+.headers on
+
+# Jadval formatida ko'rsatish
+.mode table
+
+# CSV formatida
+.mode csv
+
+# JSON formatida
+.mode json
+
+# List formatida
+.mode list
+
+# Hozirgi sozlamalar
+.show
+
+# Natijani faylga saqlash
+.output results.txt
+SELECT * FROM users;
+.output stdout</code></pre>
+      </div>
+
+      <h2>4. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code># Kutubxona tizimi yaratish
+sqlite3 library.db
+
+# Sozlamalarni o'rnatish
+.headers on
+.mode table
+
+# Jadvallar yaratish
+CREATE TABLE authors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    birth_year INTEGER,
+    nationality TEXT
+);
+
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author_id INTEGER,
+    isbn TEXT UNIQUE,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    FOREIGN KEY (author_id) REFERENCES authors(id)
+);
+
+CREATE TABLE book_loans (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id INTEGER,
+    borrower_name TEXT,
+    loan_date DATE DEFAULT CURRENT_DATE,
+    return_date DATE,
+    is_returned BOOLEAN DEFAULT 0,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+# Ma'lumotlar qo'shish
+INSERT INTO authors (name, birth_year, nationality) VALUES 
+('Alisher Navoiy', 1441, 'O''zbek'),
+('Abdulla Avloniy', 1878, 'O''zbek'),
+('Chingiz Aytmatov', 1928, 'Qirg''iz'),
+('Leo Tolstoy', 1828, 'Rus');
+
+INSERT INTO books (title, author_id, isbn, publication_year, pages, price) VALUES 
+('Xamsa', 1, '978-1234567890', 1495, 500, 25.50),
+('Turkiy guliston', 1, '978-1234567891', 1499, 300, 20.00),
+('O''zbek tili grammatikasi', 2, '978-1234567892', 1920, 200, 15.75),
+('Jamilia', 3, '978-1234567893', 1958, 150, 12.00),
+('War and Peace', 4, '978-1234567894', 1869, 1200, 35.00);
+
+INSERT INTO book_loans (book_id, borrower_name, loan_date, return_date, is_returned) VALUES 
+(1, 'Ali Valiyev', '2023-01-15', '2023-02-15', 1),
+(2, 'Malika Karimova', '2023-02-01', NULL, 0),
+(3, 'Bobur Toshmatov', '2023-01-20', '2023-02-20', 1),
+(1, 'Zarina Qodirova', '2023-03-01', NULL, 0),
+(4, 'Ahmad Karimov', '2023-02-15', '2023-03-15', 1);</code></pre>
+      </div>
+
+      <h2>5. CLI so'rovlar</h2>
+      <div class="code-block">
+        <pre><code># Jadvallarni ko'rish
+.tables
+
+# Strukturalarni ko'rish
+.schema
+
+# Ma'lumotlarni ko'rish
+SELECT * FROM authors;
+SELECT * FROM books;
+SELECT * FROM book_loans;
+
+# Murakkab so'rovlar
+SELECT 
+    a.name as author,
+    b.title as book,
+    b.publication_year,
+    b.price
+FROM authors a
+INNER JOIN books b ON a.id = b.author_id
+ORDER BY a.name, b.title;
+
+# Statistika
+SELECT 
+    a.name as author,
+    COUNT(b.id) as book_count,
+    AVG(b.price) as avg_price
+FROM authors a
+LEFT JOIN books b ON a.id = b.author_id
+GROUP BY a.id, a.name;
+
+# Faol ijaralar
+SELECT 
+    b.title as book_title,
+    a.name as author,
+    bl.borrower_name,
+    bl.loan_date
+FROM book_loans bl
+INNER JOIN books b ON bl.book_id = b.id
+INNER JOIN authors a ON b.author_id = a.id
+WHERE bl.is_returned = 0;</code></pre>
+      </div>
+
+      <h2>6. CLI fayllar bilan ishlash</h2>
+      <div class="code-block">
+        <pre><code># SQL fayldan import
+.read script.sql
+
+# Natijani faylga saqlash
+.output results.txt
+SELECT * FROM authors;
+.output stdout
+
+# CSV formatida eksport
+.mode csv
+.output authors.csv
+SELECT * FROM authors;
+.output stdout
+
+# JSON formatida eksport
+.mode json
+.output books.json
+SELECT * FROM books;
+.output stdout</code></pre>
+      </div>
+
+      <h2>7. CLI script yaratish</h2>
+      <div class="code-block">
+        <pre><code># script.sql fayli yaratish
+cat > script.sql << 'EOF'
+-- Kutubxona tizimi script
+.headers on
+.mode table
+
+-- Jadvallar yaratish
+CREATE TABLE IF NOT EXISTS authors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    birth_year INTEGER,
+    nationality TEXT
+);
+
+CREATE TABLE IF NOT EXISTS books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author_id INTEGER,
+    isbn TEXT UNIQUE,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    FOREIGN KEY (author_id) REFERENCES authors(id)
+);
+
+-- Ma'lumotlar qo'shish
+INSERT OR IGNORE INTO authors (name, birth_year, nationality) VALUES 
+('Alisher Navoiy', 1441, 'O''zbek'),
+('Abdulla Avloniy', 1878, 'O''zbek'),
+('Chingiz Aytmatov', 1928, 'Qirg''iz');
+
+INSERT OR IGNORE INTO books (title, author_id, isbn, publication_year, pages, price) VALUES 
+('Xamsa', 1, '978-1234567890', 1495, 500, 25.50),
+('Turkiy guliston', 1, '978-1234567891', 1499, 300, 20.00),
+('O''zbek tili grammatikasi', 2, '978-1234567892', 1920, 200, 15.75);
+
+-- So'rovlar
+SELECT 'Authors:' as info;
+SELECT * FROM authors;
+
+SELECT 'Books:' as info;
+SELECT * FROM books;
+
+SELECT 'Author Statistics:' as info;
+SELECT 
+    a.name as author,
+    COUNT(b.id) as book_count,
+    AVG(b.price) as avg_price
+FROM authors a
+LEFT JOIN books b ON a.id = b.author_id
+GROUP BY a.id, a.name;
+EOF
+
+# Script ni ishga tushirish
+sqlite3 library.db < script.sql</code></pre>
+      </div>
+
+      <h2>8. CLI monitoring</h2>
+      <div class="code-block">
+        <pre><code># Ma'lumotlar bazasi hajmi
+SELECT page_count * page_size as size FROM pragma_page_count(), pragma_page_size();
+
+# Ma'lumotlar bazasi versiyasi
+PRAGMA user_version;
+
+# Foreign key constraint-lar
+PRAGMA foreign_keys;
+
+# Ma'lumotlar bazasi ma'lumotlari
+.databases
+
+# Indekslar
+.indices
+
+# Triggerlar
+SELECT name, sql FROM sqlite_master WHERE type = 'trigger';
+
+# Viewlar
+SELECT name, sql FROM sqlite_master WHERE type = 'view';</code></pre>
+      </div>
+
+      <h2>9. CLI xatolari</h2>
+      <div class="code-block">
+        <pre><code># Xato: Mavjud bo'lmagan jadval
+SELECT * FROM wrong_table;
+-- Xato: no such table: wrong_table
+
+# Xato: Mavjud bo'lmagan ustun
+SELECT wrong_column FROM authors;
+-- Xato: no such column: wrong_column
+
+# Xato: Sintaks xatosi
+SELECT * FROM authors WHERE name = 'Ali';
+-- Bu ishlaydi
+
+SELECT * FROM authors WHERE name = 'Ali' AND;
+-- Xato: incomplete SQL
+
+# Xato: Constraint xatosi
+INSERT INTO authors (name) VALUES (NULL);
+-- Xato: NOT NULL constraint failed: authors.name</code></pre>
+      </div>
+
+      <h2>10. CLI afzalliklari</h2>
+      <ul>
+        <li>✅ <strong>Tez va oson:</strong> Server talab qilmaydi</li>
+        <li>✅ <strong>Keng funksionallik:</strong> Barcha SQLite funksiyalari</li>
+        <li>✅ <strong>Script qo'llab-quvvatlash:</strong> Avtomatlashtirish</li>
+        <li>✅ <strong>Import/Export:</strong> Ma'lumotlarni almashish</li>
+        <li>✅ <strong>Cross-platform:</strong> Barcha OS larda ishlaydi</li>
+      </ul>
+
+      <h2>11. CLI cheklovlari</h2>
+      <ul>
+        <li>❌ <strong>GUI yo'q:</strong> Visual interface yo'q</li>
+        <li>❌ <strong>Syntax highlighting yo'q:</strong> Kod ranglanishi yo'q</li>
+        <li>❌ <strong>Auto-completion cheklangan:</strong> Yordam cheklangan</li>
+        <li>❌ <strong>Query builder yo'q:</strong> Visual query builder yo'q</li>
+      </ul>
+
+      <h2>12. Real-world misollar</h2>
+      <div class="code-block">
+        <pre><code># E-commerce tizimi
+sqlite3 ecommerce.db
+
+# Sozlamalar
+.headers on
+.mode table
+
+# Jadvallar yaratish
+CREATE TABLE customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    phone TEXT,
+    registration_date DATE DEFAULT CURRENT_DATE
+);
+
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    price REAL NOT NULL,
+    stock_quantity INTEGER DEFAULT 0,
+    category TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER,
+    order_date DATE DEFAULT CURRENT_DATE,
+    total_amount REAL,
+    status TEXT DEFAULT 'pending',
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+CREATE TABLE order_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER,
+    product_id INTEGER,
+    quantity INTEGER,
+    price REAL,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+# Ma'lumotlar qo'shish
+INSERT INTO customers (name, email, phone) VALUES 
+('Ali Valiyev', 'ali@example.com', '+998901234567'),
+('Malika Karimova', 'malika@example.com', '+998901234568'),
+('Bobur Toshmatov', 'bobur@example.com', '+998901234569');
+
+INSERT INTO products (name, price, stock_quantity, category) VALUES 
+('Laptop', 1000.00, 10, 'Electronics'),
+('Phone', 500.00, 25, 'Electronics'),
+('Book', 20.00, 100, 'Education'),
+('T-shirt', 30.00, 50, 'Clothing');
+
+INSERT INTO orders (customer_id, total_amount, status) VALUES 
+(1, 150.00, 'completed'),
+(2, 200.00, 'completed'),
+(1, 100.00, 'pending'),
+(3, 300.00, 'completed');
+
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES 
+(1, 1, 1, 150.00),
+(2, 2, 1, 200.00),
+(3, 3, 2, 50.00),
+(4, 1, 1, 300.00);
+
+# So'rovlar
+SELECT 'Customer Statistics:' as info;
+SELECT 
+    c.name as customer,
+    COUNT(o.id) as order_count,
+    SUM(o.total_amount) as total_spent,
+    AVG(o.total_amount) as avg_order_value
+FROM customers c
+LEFT JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id, c.name;
+
+SELECT 'Product Statistics:' as info;
+SELECT 
+    p.name as product,
+    p.category,
+    p.price,
+    p.stock_quantity,
+    COUNT(oi.id) as order_count,
+    SUM(oi.quantity) as total_sold
+FROM products p
+LEFT JOIN order_items oi ON p.id = oi.product_id
+GROUP BY p.id, p.name, p.category, p.price, p.stock_quantity;
+
+SELECT 'Sales Report:' as info;
+SELECT 
+    strftime('%Y-%m', o.order_date) as month,
+    COUNT(*) as order_count,
+    SUM(o.total_amount) as total_revenue,
+    AVG(o.total_amount) as avg_order_value
+FROM orders o
+WHERE o.status = 'completed'
+GROUP BY strftime('%Y-%m', o.order_date)
+ORDER BY month;</code></pre>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../2-dars/">Keyingi dars: Python bilan ulash - sqlite3 moduli →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>CREATE TABLE - Jadval yaratish</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>🏗️ CREATE TABLE - Jadval yaratish</h1>
+
+    <div class="lesson-content">
+      <h2>CREATE TABLE sintaksisi</h2>
+      <div class="code-block">
+        <pre><code>CREATE TABLE table_name (
+    column1 datatype constraints,
+    column2 datatype constraints,
+    column3 datatype constraints,
+    ...
+);</code></pre>
+      </div>
+
+      <h2>Asosiy ma'lumot turlari</h2>
+
+      <h3>1. TEXT - Matn ma'lumotlari</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE users (
+    name TEXT,
+    email TEXT,
+    description TEXT
+);</code></pre>
+      </div>
+
+      <h3>2. INTEGER - Butun sonlar</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE products (
+    id INTEGER,
+    price INTEGER,
+    quantity INTEGER
+);</code></pre>
+      </div>
+
+      <h3>3. REAL - O'nlik sonlar</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE sales (
+    amount REAL,
+    tax_rate REAL,
+    discount REAL
+);</code></pre>
+      </div>
+
+      <h3>4. BLOB - Binary ma'lumotlar</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE files (
+    id INTEGER,
+    file_data BLOB,
+    file_name TEXT
+);</code></pre>
+      </div>
+
+      <h3>5. NULL - Bo'sh qiymat</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE contacts (
+    phone TEXT,
+    address TEXT  -- NULL bo'lishi mumkin
+);</code></pre>
+      </div>
+
+      <h2>Constraint-lar (Cheklovlar)</h2>
+
+      <h3>1. PRIMARY KEY - Asosiy kalit</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    name TEXT
+);
+
+-- Yoki AUTOINCREMENT bilan
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT
+);</code></pre>
+      </div>
+
+      <h3>2. NOT NULL - Bo'sh bo'lmasligi</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL
+);</code></pre>
+      </div>
+
+      <h3>3. UNIQUE - Takrorlanmasligi</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    email TEXT UNIQUE,
+    username TEXT UNIQUE
+);</code></pre>
+      </div>
+
+      <h3>4. DEFAULT - Standart qiymat</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE products (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    price REAL DEFAULT 0.0,
+    is_active BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+      </div>
+
+      <h3>5. CHECK - Shart tekshirish</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE students (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    age INTEGER CHECK (age >= 0 AND age <= 120),
+    grade TEXT CHECK (grade IN ('A', 'B', 'C', 'D', 'F'))
+);</code></pre>
+      </div>
+
+      <h2>Amaliy misollar</h2>
+
+      <h3>1. Oddiy jadval</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    pages INTEGER,
+    price REAL
+);</code></pre>
+      </div>
+
+      <h3>2. Murakkab jadval</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE employees (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    phone TEXT,
+    salary REAL CHECK (salary > 0),
+    department TEXT DEFAULT 'General',
+    hire_date DATE DEFAULT CURRENT_DATE,
+    is_active BOOLEAN DEFAULT 1
+);</code></pre>
+      </div>
+
+      <h3>3. Bog'langan jadvallar</h3>
+      <div class="code-block">
+        <pre><code>-- Kategoriyalar jadvali
+CREATE TABLE categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    description TEXT
+);
+
+-- Mahsulotlar jadvali
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    price REAL NOT NULL CHECK (price > 0),
+    category_id INTEGER,
+    stock_quantity INTEGER DEFAULT 0 CHECK (stock_quantity >= 0),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);</code></pre>
+      </div>
+
+      <h2>Jadvalni o'zgartirish</h2>
+
+      <h3>Ustun qo'shish</h3>
+      <div class="code-block">
+        <pre><code>-- Yangi ustun qo'shish
+ALTER TABLE users ADD COLUMN phone TEXT;
+
+-- Ustun qo'shish DEFAULT qiymat bilan
+ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'active';</code></pre>
+      </div>
+
+      <h3>Jadval nomini o'zgartirish</h3>
+      <div class="code-block">
+        <pre><code>-- Jadval nomini o'zgartirish
+ALTER TABLE users RENAME TO customers;</code></pre>
+      </div>
+
+      <h3>Ustun nomini o'zgartirish</h3>
+      <div class="code-block">
+        <pre><code>-- Ustun nomini o'zgartirish
+ALTER TABLE users RENAME COLUMN email TO email_address;</code></pre>
+      </div>
+
+      <h2>Jadvalni o'chirish</h2>
+      <div class="code-block">
+        <pre><code>-- Jadvalni o'chirish
+DROP TABLE users;
+
+-- Agar mavjud bo'lsa o'chirish
+DROP TABLE IF EXISTS users;</code></pre>
+      </div>
+
+      <h2>Jadval haqida ma'lumot</h2>
+
+      <h3>Jadval strukturasi</h3>
+      <div class="code-block">
+        <pre><code>-- Jadval strukturasi
+.schema users
+
+-- Barcha jadvallar strukturasi
+.schema</code></pre>
+      </div>
+
+      <h3>Jadvallar ro'yxati</h3>
+      <div class="code-block">
+        <pre><code>-- Barcha jadvallar
+.tables
+
+-- Belgili pattern bo'yicha
+.tables user*
+.tables *log*</code></pre>
+      </div>
+
+      <h2>Eng yaxshi amaliyotlar</h2>
+
+      <ul>
+        <li>✅ <strong>Jadval nomi:</strong> Aniq va tushunarli nom tanlang</li>
+        <li>✅ <strong>Ustun nomlari:</strong> snake_case ishlatish</li>
+        <li>✅ <strong>Primary Key:</strong> Har doim PRIMARY KEY qo'shing</li>
+        <li>✅ <strong>NOT NULL:</strong> Majburiy maydonlar uchun</li>
+        <li>✅ <strong>DEFAULT:</strong> Standart qiymatlar belgilang</li>
+        <li>✅ <strong>CHECK:</strong> Ma'lumotlar to'g'riligini tekshiring</li>
+        <li>✅ <strong>Foreign Keys:</strong> Bog'lanishlarni belgilang</li>
+      </ul>
+
+      <h2>Xatolar va ularni hal qilish</h2>
+
+      <h3>Keng tarqalgan xatolar</h3>
+      <div class="code-block">
+        <pre><code>-- Xato: Jadval allaqachon mavjud
+CREATE TABLE users (id INTEGER);
+-- Xato: table users already exists
+
+-- To'g'ri: IF NOT EXISTS ishlatish
+CREATE TABLE IF NOT EXISTS users (id INTEGER);
+
+-- Xato: Noto'g'ri ma'lumot turi
+CREATE TABLE test (id TEXT PRIMARY KEY);
+-- Bu ishlaydi, lekin INTEGER yaxshiroq
+
+-- Xato: Constraint xatosi
+CREATE TABLE test (age INTEGER CHECK (age > 0));
+INSERT INTO test VALUES (-5);  -- Xato: CHECK constraint failed</code></pre>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../2-dars/">Keyingi dars: INSERT INTO - Ma'lumot qo'shish →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Views - Saqlangan so'rovlar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>👁️ Views - Saqlangan so'rovlar</h1>
+
+    <div class="lesson-content">
+      <h2>View nima?</h2>
+      <p>View - bu murakkab so'rovlarni saqlash va keyinchalik oddiy jadval kabi ishlatish uchun yaratiladigan virtual jadval. U asosiy jadvallardan ma'lumotlarni olish uchun saqlangan so'rov hisoblanadi.</p>
+
+      <h2>1. View yaratish</h2>
+      <div class="code-block">
+        <pre><code>-- Oddiy view yaratish
+CREATE VIEW view_name AS
+SELECT column1, column2, ...
+FROM table1
+WHERE condition;
+
+-- Murakkab view yaratish
+CREATE VIEW customer_orders AS
+SELECT 
+    c.name as customer_name,
+    c.email,
+    o.order_date,
+    o.total_amount,
+    o.status
+FROM customers c
+INNER JOIN orders o ON c.id = o.customer_id;</code></pre>
+      </div>
+
+      <h2>2. View turlari</h2>
+
+      <h3>Simple View</h3>
+      <div class="code-block">
+        <pre><code>-- Oddiy view
+CREATE VIEW active_users AS
+SELECT id, name, email
+FROM users
+WHERE is_active = 1;
+
+-- View ishlatish
+SELECT * FROM active_users;
+SELECT * FROM active_users WHERE name LIKE 'A%';</code></pre>
+      </div>
+
+      <h3>Complex View</h3>
+      <div class="code-block">
+        <pre><code>-- Murakkab view
+CREATE VIEW user_statistics AS
+SELECT 
+    u.id,
+    u.name,
+    u.email,
+    COUNT(o.id) as order_count,
+    SUM(o.total_amount) as total_spent,
+    AVG(o.total_amount) as avg_order_value,
+    MAX(o.order_date) as last_order_date
+FROM users u
+LEFT JOIN orders o ON u.id = o.customer_id
+GROUP BY u.id, u.name, u.email;</code></pre>
+      </div>
+
+      <h2>3. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code>-- Kutubxona tizimi
+CREATE TABLE authors (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    birth_year INTEGER,
+    nationality TEXT
+);
+
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    author_id INTEGER,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    category TEXT,
+    FOREIGN KEY (author_id) REFERENCES authors(id)
+);
+
+CREATE TABLE book_loans (
+    id INTEGER PRIMARY KEY,
+    book_id INTEGER,
+    borrower_name TEXT,
+    loan_date DATE,
+    return_date DATE,
+    is_returned BOOLEAN DEFAULT 0,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+-- Ma'lumotlar
+INSERT INTO authors (name, birth_year, nationality) VALUES 
+('Alisher Navoiy', 1441, 'O''zbek'),
+('Abdulla Avloniy', 1878, 'O''zbek'),
+('Chingiz Aytmatov', 1928, 'Qirg''iz'),
+('Leo Tolstoy', 1828, 'Rus');
+
+INSERT INTO books (title, author_id, publication_year, pages, price, category) VALUES 
+('Xamsa', 1, 1495, 500, 25.50, 'Poetry'),
+('Turkiy guliston', 1, 1499, 300, 20.00, 'Poetry'),
+('O''zbek tili grammatikasi', 2, 1920, 200, 15.75, 'Grammar'),
+('Jamilia', 3, 1958, 150, 12.00, 'Fiction'),
+('War and Peace', 4, 1869, 1200, 35.00, 'Fiction');
+
+INSERT INTO book_loans (book_id, borrower_name, loan_date, return_date, is_returned) VALUES 
+(1, 'Ali Valiyev', '2023-01-15', '2023-02-15', 1),
+(2, 'Malika Karimova', '2023-02-01', NULL, 0),
+(3, 'Bobur Toshmatov', '2023-01-20', '2023-02-20', 1),
+(1, 'Zarina Qodirova', '2023-03-01', NULL, 0),
+(4, 'Ahmad Karimov', '2023-02-15', '2023-03-15', 1);</code></pre>
+      </div>
+
+      <h2>4. View misollari</h2>
+      <div class="code-block">
+        <pre><code>-- 1. Kitoblar va mualliflar
+CREATE VIEW book_details AS
+SELECT 
+    b.id,
+    b.title,
+    a.name as author,
+    b.publication_year,
+    b.pages,
+    b.price,
+    b.category
+FROM books b
+INNER JOIN authors a ON b.author_id = a.id;
+
+-- 2. Faol kitoblar (hali qaytarilmagan)
+CREATE VIEW active_loans AS
+SELECT 
+    bl.id as loan_id,
+    b.title as book_title,
+    a.name as author,
+    bl.borrower_name,
+    bl.loan_date,
+    bl.return_date,
+    bl.is_returned
+FROM book_loans bl
+INNER JOIN books b ON bl.book_id = b.id
+INNER JOIN authors a ON b.author_id = a.id
+WHERE bl.is_returned = 0;
+
+-- 3. Kitob statistikasi
+CREATE VIEW book_statistics AS
+SELECT 
+    b.id,
+    b.title,
+    a.name as author,
+    b.price,
+    COUNT(bl.id) as loan_count,
+    COUNT(CASE WHEN bl.is_returned = 0 THEN 1 END) as active_loans
+FROM books b
+INNER JOIN authors a ON b.author_id = a.id
+LEFT JOIN book_loans bl ON b.id = bl.book_id
+GROUP BY b.id, b.title, a.name, b.price;
+
+-- 4. Muallif statistikasi
+CREATE VIEW author_statistics AS
+SELECT 
+    a.id,
+    a.name,
+    a.nationality,
+    COUNT(b.id) as book_count,
+    AVG(b.price) as avg_price,
+    SUM(b.pages) as total_pages
+FROM authors a
+LEFT JOIN books b ON a.id = b.author_id
+GROUP BY a.id, a.name, a.nationality;</code></pre>
+      </div>
+
+      <h2>5. View ishlatish</h2>
+      <div class="code-block">
+        <pre><code>-- View dan ma'lumot olish
+SELECT * FROM book_details;
+SELECT * FROM book_details WHERE author = 'Alisher Navoiy';
+SELECT * FROM book_details WHERE price > 20;
+
+-- View dan ma'lumot qidirish
+SELECT * FROM active_loans WHERE borrower_name = 'Ali Valiyev';
+SELECT * FROM book_statistics WHERE loan_count > 1;
+
+-- View dan ma'lumot yangilash (cheklangan)
+-- Faqat ba'zi viewlarda UPDATE ishlaydi
+UPDATE book_details SET price = 30.00 WHERE id = 1;
+
+-- View dan ma'lumot o'chirish (cheklangan)
+-- Faqat ba'zi viewlarda DELETE ishlaydi
+DELETE FROM book_details WHERE id = 1;</code></pre>
+      </div>
+
+      <h2>6. Murakkab view misollar</h2>
+      <div class="code-block">
+        <pre><code>-- E-commerce tizimi
+CREATE TABLE customers (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    phone TEXT,
+    registration_date DATE
+);
+
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY,
+    customer_id INTEGER,
+    order_date DATE,
+    total_amount REAL,
+    status TEXT,
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+CREATE TABLE order_items (
+    id INTEGER PRIMARY KEY,
+    order_id INTEGER,
+    product_name TEXT,
+    quantity INTEGER,
+    price REAL,
+    FOREIGN KEY (order_id) REFERENCES orders(id)
+);
+
+-- Ma'lumotlar
+INSERT INTO customers (name, email, phone, registration_date) VALUES 
+('Ali Valiyev', 'ali@example.com', '+998901234567', '2023-01-01'),
+('Malika Karimova', 'malika@example.com', '+998901234568', '2023-01-15'),
+('Bobur Toshmatov', 'bobur@example.com', '+998901234569', '2023-02-01');
+
+INSERT INTO orders (customer_id, order_date, total_amount, status) VALUES 
+(1, '2023-01-15', 150.00, 'completed'),
+(2, '2023-01-16', 200.00, 'completed'),
+(1, '2023-01-17', 100.00, 'pending'),
+(3, '2023-01-18', 300.00, 'completed');
+
+INSERT INTO order_items (order_id, product_name, quantity, price) VALUES 
+(1, 'Laptop', 1, 150.00),
+(2, 'Phone', 1, 200.00),
+(3, 'Book', 2, 50.00),
+(4, 'Tablet', 1, 300.00);
+
+-- Murakkab view misollari
+-- 1. Mijozlar va ularning buyurtmalari
+CREATE VIEW customer_orders AS
+SELECT 
+    c.id as customer_id,
+    c.name as customer_name,
+    c.email,
+    c.phone,
+    o.id as order_id,
+    o.order_date,
+    o.total_amount,
+    o.status
+FROM customers c
+LEFT JOIN orders o ON c.id = o.customer_id;
+
+-- 2. Buyurtma tafsilotlari
+CREATE VIEW order_details AS
+SELECT 
+    o.id as order_id,
+    c.name as customer_name,
+    o.order_date,
+    o.total_amount,
+    o.status,
+    oi.product_name,
+    oi.quantity,
+    oi.price,
+    oi.quantity * oi.price as line_total
+FROM orders o
+INNER JOIN customers c ON o.customer_id = c.id
+INNER JOIN order_items oi ON o.id = oi.order_id;
+
+-- 3. Mijoz statistikasi
+CREATE VIEW customer_statistics AS
+SELECT 
+    c.id,
+    c.name,
+    c.email,
+    COUNT(o.id) as order_count,
+    SUM(o.total_amount) as total_spent,
+    AVG(o.total_amount) as avg_order_value,
+    MAX(o.order_date) as last_order_date,
+    MIN(o.order_date) as first_order_date
+FROM customers c
+LEFT JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id, c.name, c.email;
+
+-- 4. Mahsulot statistikasi
+CREATE VIEW product_statistics AS
+SELECT 
+    oi.product_name,
+    COUNT(DISTINCT oi.order_id) as order_count,
+    SUM(oi.quantity) as total_quantity,
+    SUM(oi.quantity * oi.price) as total_revenue,
+    AVG(oi.price) as avg_price,
+    MIN(oi.price) as min_price,
+    MAX(oi.price) as max_price
+FROM order_items oi
+GROUP BY oi.product_name;</code></pre>
+      </div>
+
+      <h2>7. View boshqaruvi</h2>
+      <div class="code-block">
+        <pre><code>-- Viewlarni ko'rish
+SELECT name, sql FROM sqlite_master WHERE type = 'view';
+
+-- View o'chirish
+DROP VIEW view_name;
+
+-- View yangilash
+DROP VIEW IF EXISTS customer_orders;
+CREATE VIEW customer_orders AS
+SELECT 
+    c.id as customer_id,
+    c.name as customer_name,
+    c.email,
+    o.id as order_id,
+    o.order_date,
+    o.total_amount
+FROM customers c
+LEFT JOIN orders o ON c.id = o.customer_id;
+
+-- View ma'lumotlari
+.schema view_name</code></pre>
+      </div>
+
+      <h2>8. View afzalliklari</h2>
+      <ul>
+        <li>✅ <strong>Soddalik:</strong> Murakkab so'rovlarni oddiy qilish</li>
+        <li>✅ <strong>Qayta ishlatish:</strong> Bir nechta joyda ishlatish</li>
+        <li>✅ <strong>Xavfsizlik:</strong> Ma'lumotlarni cheklash</li>
+        <li>✅ <strong>Performance:</strong> So'rovlarni optimizatsiya qilish</li>
+        <li>✅ <strong>Maintenance:</strong> O'zgartirishlarni osonlashtirish</li>
+      </ul>
+
+      <h2>9. View cheklovlari</h2>
+      <ul>
+        <li>❌ <strong>UPDATE cheklovlari:</strong> Ba'zi viewlarda UPDATE ishlamaydi</li>
+        <li>❌ <strong>DELETE cheklovlari:</strong> Ba'zi viewlarda DELETE ishlamaydi</li>
+        <li>❌ <strong>INSERT cheklovlari:</strong> Ba'zi viewlarda INSERT ishlamaydi</li>
+        <li>❌ <strong>Performance:</strong> Murakkab viewlar sekin bo'lishi mumkin</li>
+      </ul>
+
+      <h2>10. Performance optimizatsiya</h2>
+      <div class="code-block">
+        <pre><code>-- Index yaratish view uchun
+CREATE INDEX idx_books_author_id ON books(author_id);
+CREATE INDEX idx_orders_customer_id ON orders(customer_id);
+CREATE INDEX idx_order_items_order_id ON order_items(order_id);
+
+-- Performance test
+EXPLAIN QUERY PLAN
+SELECT * FROM customer_orders WHERE customer_name = 'Ali Valiyev';
+
+-- View performance monitoring
+SELECT 
+    name,
+    sql,
+    (SELECT COUNT(*) FROM sqlite_master WHERE type = 'view') as total_views
+FROM sqlite_master 
+WHERE type = 'view';</code></pre>
+      </div>
+
+      <h2>11. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Oddiy viewlar:</strong> Murakkab viewlardan saqlanish</li>
+        <li>✅ <strong>Index ishlatish:</strong> View performance uchun</li>
+        <li>✅ <strong>Documentation:</strong> Viewlarni hujjatlashtirish</li>
+        <li>✅ <strong>Testing:</strong> Viewlarni sinash</li>
+        <li>✅ <strong>Naming:</strong> Aniq nomlar tanlash</li>
+        <li>✅ <strong>Maintenance:</strong> Viewlarni yangilash</li>
+      </ul>
+
+      <h2>12. Real-world misollar</h2>
+      <div class="code-block">
+        <pre><code>-- Blog tizimi
+CREATE VIEW published_posts AS
+SELECT 
+    p.id,
+    p.title,
+    p.content,
+    u.username as author,
+    c.name as category,
+    p.created_at,
+    p.view_count
+FROM posts p
+INNER JOIN users u ON p.author_id = u.id
+INNER JOIN post_categories pc ON p.id = pc.post_id
+INNER JOIN categories c ON pc.category_id = c.id
+WHERE p.is_published = 1;
+
+-- E-commerce analytics
+CREATE VIEW sales_summary AS
+SELECT 
+    strftime('%Y-%m', o.order_date) as month,
+    COUNT(*) as order_count,
+    COUNT(DISTINCT o.customer_id) as unique_customers,
+    SUM(o.total_amount) as total_revenue,
+    AVG(o.total_amount) as avg_order_value
+FROM orders o
+WHERE o.status = 'completed'
+GROUP BY strftime('%Y-%m', o.order_date)
+ORDER BY month;
+
+-- Inventory management
+CREATE VIEW low_stock_products AS
+SELECT 
+    p.id,
+    p.name,
+    p.price,
+    s.quantity,
+    s.min_level,
+    (s.quantity - s.min_level) as stock_difference
+FROM products p
+INNER JOIN stock s ON p.id = s.product_id
+WHERE s.quantity <= s.min_level;</code></pre>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../5-dars/">Keyingi dars: Transactions - BEGIN, COMMIT, ROLLBACK →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

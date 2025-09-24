@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Security - Parol himoyasi va fayl darajasida himoya</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+  <style>
+    .presentation-slide {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      margin: 2rem 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .presentation-slide h3 {
+      color: #fff;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    
+    .code-example {
+      background: rgba(255,255,255,0.1);
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+      backdrop-filter: blur(10px);
+    }
+    
+    .code-example h4 {
+      color: #fff;
+      margin: 1rem 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    
+    .code-example .code-block {
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 0.5rem 0;
+    }
+    
+    .code-example .code-block pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+    
+    .result-table {
+      background: rgba(255,255,255,0.95);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+    }
+    
+    .result-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .result-table th {
+      background: #4a5568;
+      color: white;
+      padding: 0.75rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    
+    .result-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e2e8f0;
+      color: #2d3748;
+    }
+    
+    .result-table tr:hover {
+      background: #f7fafc;
+    }
+    
+    .security-level {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .security-card {
+      background: rgba(255,255,255,0.95);
+      color: #2d3748;
+      padding: 1.5rem;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .security-card h4 {
+      color: #4a5568;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    
+    .security-card .level {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 1rem 0;
+    }
+    
+    .low-security { color: #e53e3e; }
+    .medium-security { color: #f6ad55; }
+    .high-security { color: #38a169; }
+    
+    .encryption-demo {
+      background: linear-gradient(135deg, #74b9ff, #0984e3);
+      color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      margin: 2rem 0;
+    }
+    
+    .encryption-step {
+      background: rgba(255,255,255,0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 0.5rem 0;
+      border-left: 4px solid #00b894;
+    }
+    
+    .security-tip {
+      background: linear-gradient(135deg, #fd79a8, #e84393);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+      border-left: 5px solid #e84393;
+    }
+    
+    .security-tip h4 {
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    
+    .file-permissions {
+      background: rgba(255,255,255,0.95);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+    
+    .permission-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .permission-code {
+      font-family: monospace;
+      background: #f7fafc;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      color: #2d3748;
+    }
+    
+    .permission-desc {
+      color: #4a5568;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🔒 Security - Parol himoyasi va fayl darajasida himoya</h1>
+
+    <div class="lesson-content">
+      <h2>SQLite xavfsizlik</h2>
+      <p>SQLite da xavfsizlik asosan fayl darajasida amalga oshiriladi. Ma'lumotlar bazasi faylini himoya qilish va foydalanuvchi autentifikatsiyasi muhim.</p>
+
+      <h2>1. Fayl darajasida himoya</h2>
+      
+      <div class="presentation-slide">
+        <h3>🔐 Fayl ruxsatlari</h3>
+        
+        <div class="code-example">
+          <h4>Fayl ruxsatlarini o'rnatish:</h4>
+          <div class="code-block">
+            <pre><code># Fayl ruxsatlarini o'rnatish
+chmod 600 mydatabase.db  # Faqat egasi o'qishi va yozishi mumkin
+chmod 640 mydatabase.db  # Egasi o'qishi va yozishi, guruh o'qishi mumkin
+chmod 644 mydatabase.db  # Egasi o'qishi va yozishi, boshqalar o'qishi mumkin
+
+# Fayl egasini o'zgartirish
+chown user:group mydatabase.db
+
+# Fayl ruxsatlarini tekshirish
+ls -la mydatabase.db</code></pre>
+          </div>
+          
+          <h4>Natija:</h4>
+          <div class="result-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ruxsatlar</th>
+                  <th>Egasi</th>
+                  <th>Guruh</th>
+                  <th>Hajm</th>
+                  <th>Sana</th>
+                  <th>Fayl nomi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>-rw-------</td>
+                  <td>user</td>
+                  <td>group</td>
+                  <td>8192</td>
+                  <td>Jan 15 10:30</td>
+                  <td>mydatabase.db</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="file-permissions">
+          <h4>📋 Ruxsatlar tushuntirishi:</h4>
+          <div class="permission-row">
+            <span class="permission-code">600</span>
+            <span class="permission-desc">Faqat egasi o'qishi va yozishi mumkin (eng xavfsiz)</span>
+          </div>
+          <div class="permission-row">
+            <span class="permission-code">640</span>
+            <span class="permission-desc">Egasi o'qishi va yozishi, guruh o'qishi mumkin</span>
+          </div>
+          <div class="permission-row">
+            <span class="permission-code">644</span>
+            <span class="permission-desc">Egasi o'qishi va yozishi, boshqalar o'qishi mumkin</span>
+          </div>
+        </div>
+      </div>
+
+      <h2>2. Ma'lumotlarni shifrlash</h2>
+      
+      <div class="presentation-slide">
+        <h3>🔒 Ma'lumotlarni shifrlash</h3>
+        
+        <div class="code-example">
+          <h4>Shifrlash klassi:</h4>
+          <div class="code-block">
+            <pre><code>import sqlite3
+import hashlib
+import secrets
+from cryptography.fernet import Fernet
+
+class SecureDatabase:
+    def __init__(self, db_path, password):
+        self.db_path = db_path
+        self.password = password
+        self.key = self._generate_key()
+        self.cipher = Fernet(self.key)
+    
+    def encrypt_data(self, data):
+        """Ma'lumotlarni shifrlash"""
+        if isinstance(data, str):
+            data = data.encode()
+        return self.cipher.encrypt(data)
+    
+    def decrypt_data(self, encrypted_data):
+        """Ma'lumotlarni deshifrlash"""
+        return self.cipher.decrypt(encrypted_data).decode()</code></pre>
+          </div>
+          
+          <h4>Foydalanish:</h4>
+          <div class="code-block">
+            <pre><code># Shifrlash
+secure_db = SecureDatabase('secure.db', 'my_password')
+secure_db.store_encrypted_data('users', 'sensitive_data')
+
+# Deshifrlash
+decrypted_data = secure_db.retrieve_encrypted_data('users', 1)</code></pre>
+          </div>
+        </div>
+        
+        <div class="encryption-demo">
+          <h4>🔐 Shifrlash jarayoni:</h4>
+          <div class="encryption-step">
+            <strong>1. Original ma'lumot:</strong> "sensitive_data"
+          </div>
+          <div class="encryption-step">
+            <strong>2. Shifrlangan:</strong> "gAAAAABhZ8K8X9Y2..."
+          </div>
+          <div class="encryption-step">
+            <strong>3. Deshifrlangan:</strong> "sensitive_data"
+          </div>
+        </div>
+        
+        <div class="security-tip">
+          <h4>💡 Xavfsizlik maslahati</h4>
+          <p>Production muhitida har doim random salt ishlatish va kalitni xavfsiz saqlash muhim!</p>
+        </div>
+      </div>
+
+      <h2>3. Parol himoyasi</h2>
+      <div class="code-block">
+        <pre><code># Parol hash qilish
+import hashlib
+import secrets
+import sqlite3
+
+class PasswordManager:
+    def __init__(self, db_path):
+        self.db_path = db_path
+        self.init_database()
+    
+    def init_database(self):
+        """Ma'lumotlar bazasini ishga tushirish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                salt TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+    
+    def hash_password(self, password, salt=None):
+        """Parolni hash qilish"""
+        if salt is None:
+            salt = secrets.token_hex(32)
+        
+        password_bytes = password.encode()
+        salt_bytes = salt.encode()
+        
+        # PBKDF2 ishlatish
+        hash_obj = hashlib.pbkdf2_hmac('sha256', password_bytes, salt_bytes, 100000)
+        password_hash = hash_obj.hex()
+        
+        return password_hash, salt
+    
+    def verify_password(self, password, password_hash, salt):
+        """Parolni tekshirish"""
+        computed_hash, _ = self.hash_password(password, salt)
+        return computed_hash == password_hash
+    
+    def create_user(self, username, password):
+        """Foydalanuvchi yaratish"""
+        password_hash, salt = self.hash_password(password)
+        
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            INSERT INTO users (username, password_hash, salt) 
+            VALUES (?, ?, ?)
+            ''', (username, password_hash, salt))
+            conn.commit()
+    
+    def authenticate_user(self, username, password):
+        """Foydalanuvchini autentifikatsiya qilish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            SELECT password_hash, salt FROM users WHERE username = ?
+            ''', (username,))
+            result = cursor.fetchone()
+            
+            if result:
+                password_hash, salt = result
+                return self.verify_password(password, password_hash, salt)
+            return False
+
+# Foydalanish
+password_manager = PasswordManager('secure.db')
+
+# Foydalanuvchi yaratish
+password_manager.create_user('admin', 'secure_password123')
+
+# Autentifikatsiya
+if password_manager.authenticate_user('admin', 'secure_password123'):
+    print("Login muvaffaqiyatli!")
+else:
+    print("Login xato!")</code></pre>
+      </div>
+
+      <h2>4. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code># Xavfsiz kutubxona tizimi
+import sqlite3
+import hashlib
+import secrets
+from datetime import datetime, timedelta
+
+class SecureLibrary:
+    def __init__(self, db_path):
+        self.db_path = db_path
+        self.init_database()
+    
+    def init_database(self):
+        """Ma'lumotlar bazasini ishga tushirish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Foydalanuvchilar jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                salt TEXT NOT NULL,
+                role TEXT DEFAULT 'user',
+                is_active BOOLEAN DEFAULT 1,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                last_login DATETIME
+            )
+            ''')
+            
+            # Kitoblar jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS books (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                author TEXT NOT NULL,
+                isbn TEXT UNIQUE,
+                price REAL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+            
+            # Ijara jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS loans (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                book_id INTEGER,
+                loan_date DATE DEFAULT CURRENT_DATE,
+                return_date DATE,
+                is_returned BOOLEAN DEFAULT 0,
+                FOREIGN KEY (user_id) REFERENCES users(id),
+                FOREIGN KEY (book_id) REFERENCES books(id)
+            )
+            ''')
+            
+            # Faoliyat jurnali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS activity_log (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                action TEXT,
+                details TEXT,
+                ip_address TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            )
+            ''')
+    
+    def hash_password(self, password, salt=None):
+        """Parolni hash qilish"""
+        if salt is None:
+            salt = secrets.token_hex(32)
+        
+        password_bytes = password.encode()
+        salt_bytes = salt.encode()
+        hash_obj = hashlib.pbkdf2_hmac('sha256', password_bytes, salt_bytes, 100000)
+        return hash_obj.hex(), salt
+    
+    def create_user(self, username, password, role='user'):
+        """Foydalanuvchi yaratish"""
+        password_hash, salt = self.hash_password(password)
+        
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            INSERT INTO users (username, password_hash, salt, role) 
+            VALUES (?, ?, ?, ?)
+            ''', (username, password_hash, salt, role))
+            conn.commit()
+    
+    def authenticate_user(self, username, password):
+        """Foydalanuvchini autentifikatsiya qilish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            SELECT id, password_hash, salt, role, is_active 
+            FROM users WHERE username = ?
+            ''', (username,))
+            result = cursor.fetchone()
+            
+            if result:
+                user_id, password_hash, salt, role, is_active = result
+                
+                if not is_active:
+                    return None, "Foydalanuvchi faol emas"
+                
+                if self.verify_password(password, password_hash, salt):
+                    # Login vaqtini yangilash
+                    cursor.execute('''
+                    UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?
+                    ''', (user_id,))
+                    conn.commit()
+                    
+                    return {'id': user_id, 'username': username, 'role': role}, None
+                else:
+                    return None, "Noto'g'ri parol"
+            else:
+                return None, "Foydalanuvchi topilmadi"
+    
+    def verify_password(self, password, password_hash, salt):
+        """Parolni tekshirish"""
+        computed_hash, _ = self.hash_password(password, salt)
+        return computed_hash == password_hash
+    
+    def log_activity(self, user_id, action, details, ip_address=None):
+        """Faoliyat yozish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            INSERT INTO activity_log (user_id, action, details, ip_address) 
+            VALUES (?, ?, ?, ?)
+            ''', (user_id, action, details, ip_address))
+            conn.commit()
+    
+    def add_book(self, title, author, isbn, price):
+        """Kitob qo'shish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            INSERT INTO books (title, author, isbn, price) 
+            VALUES (?, ?, ?, ?)
+            ''', (title, author, isbn, price))
+            conn.commit()
+    
+    def loan_book(self, user_id, book_id):
+        """Kitob ijaraga berish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Kitob mavjudligini tekshirish
+            cursor.execute('SELECT id FROM books WHERE id = ?', (book_id,))
+            if not cursor.fetchone():
+                return False, "Kitob topilmadi"
+            
+            # Faol ijara borligini tekshirish
+            cursor.execute('''
+            SELECT id FROM loans WHERE book_id = ? AND is_returned = 0
+            ''', (book_id,))
+            if cursor.fetchone():
+                return False, "Kitob allaqachon ijarada"
+            
+            # Ijara yaratish
+            cursor.execute('''
+            INSERT INTO loans (user_id, book_id) VALUES (?, ?)
+            ''', (user_id, book_id))
+            conn.commit()
+            
+            return True, "Kitob muvaffaqiyatli ijaraga berildi"
+    
+    def return_book(self, user_id, book_id):
+        """Kitob qaytarish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            UPDATE loans SET is_returned = 1, return_date = CURRENT_DATE 
+            WHERE user_id = ? AND book_id = ? AND is_returned = 0
+            ''', (user_id, book_id))
+            
+            if cursor.rowcount > 0:
+                conn.commit()
+                return True, "Kitob muvaffaqiyatli qaytarildi"
+            else:
+                return False, "Ijara topilmadi"
+    
+    def get_user_loans(self, user_id):
+        """Foydalanuvchi ijaralari"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            SELECT l.id, b.title, b.author, l.loan_date, l.return_date, l.is_returned
+            FROM loans l
+            INNER JOIN books b ON l.book_id = b.id
+            WHERE l.user_id = ?
+            ORDER BY l.loan_date DESC
+            ''', (user_id,))
+            return cursor.fetchall()
+    
+    def get_activity_log(self, user_id=None):
+        """Faoliyat jurnali"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            if user_id:
+                cursor.execute('''
+                SELECT u.username, al.action, al.details, al.ip_address, al.created_at
+                FROM activity_log al
+                INNER JOIN users u ON al.user_id = u.id
+                WHERE al.user_id = ?
+                ORDER BY al.created_at DESC
+                ''', (user_id,))
+            else:
+                cursor.execute('''
+                SELECT u.username, al.action, al.details, al.ip_address, al.created_at
+                FROM activity_log al
+                INNER JOIN users u ON al.user_id = u.id
+                ORDER BY al.created_at DESC
+                ''')
+            return cursor.fetchall()
+
+# Foydalanish
+if __name__ == "__main__":
+    library = SecureLibrary('secure_library.db')
+    
+    # Admin foydalanuvchi yaratish
+    library.create_user('admin', 'admin123', 'admin')
+    library.create_user('user1', 'user123', 'user')
+    
+    # Autentifikatsiya
+    user, error = library.authenticate_user('admin', 'admin123')
+    if user:
+        print(f"Login muvaffaqiyatli: {user['username']} ({user['role']})")
+        
+        # Faoliyat yozish
+        library.log_activity(user['id'], 'LOGIN', 'Foydalanuvchi tizimga kirdi', '127.0.0.1')
+        
+        # Kitob qo'shish
+        library.add_book('Python Programming', 'John Doe', '978-1234567890', 45.99)
+        library.add_book('JavaScript Guide', 'Jane Smith', '978-1234567891', 35.50)
+        
+        # Kitob ijaraga berish
+        success, message = library.loan_book(user['id'], 1)
+        print(f"Ijara: {message}")
+        
+        # Ijaralar ro'yxati
+        loans = library.get_user_loans(user['id'])
+        print("Ijaralar:")
+        for loan in loans:
+            print(f"  - {loan[1]} ({loan[2]}) - {loan[3]} - {'Qaytarilgan' if loan[5] else 'Faol'}")
+        
+        # Faoliyat jurnali
+        activities = library.get_activity_log(user['id'])
+        print("Faoliyat jurnali:")
+        for activity in activities:
+            print(f"  - {activity[0]}: {activity[1]} - {activity[2]} ({activity[4]})")
+    else:
+        print(f"Login xato: {error}")</code></pre>
+      </div>
+
+      <h2>5. Fayl himoyasi</h2>
+      <div class="code-block">
+        <pre><code># Fayl himoyasi script
+import os
+import stat
+import sqlite3
+from pathlib import Path
+
+class DatabaseSecurity:
+    def __init__(self, db_path):
+        self.db_path = db_path
+        self.secure_database()
+    
+    def secure_database(self):
+        """Ma'lumotlar bazasini xavfsiz qilish"""
+        if os.path.exists(self.db_path):
+            # Fayl ruxsatlarini o'rnatish
+            os.chmod(self.db_path, stat.S_IRUSR | stat.S_IWUSR)  # 600
+            
+            # Fayl egasini tekshirish
+            file_stat = os.stat(self.db_path)
+            print(f"Fayl egasi: {file_stat.st_uid}")
+            print(f"Fayl guruhi: {file_stat.st_gid}")
+            print(f"Fayl ruxsatlari: {oct(file_stat.st_mode)}")
+    
+    def backup_database(self, backup_path):
+        """Xavfsiz backup yaratish"""
+        if os.path.exists(self.db_path):
+            # Backup faylini yaratish
+            with open(backup_path, 'w') as backup_file:
+                with sqlite3.connect(self.db_path) as conn:
+                    for line in conn.iterdump():
+                        backup_file.write(line + '\n')
+            
+            # Backup faylini xavfsiz qilish
+            os.chmod(backup_path, stat.S_IRUSR | stat.S_IWUSR)  # 600
+            
+            print(f"Backup yaratildi: {backup_path}")
+    
+    def verify_database_integrity(self):
+        """Ma'lumotlar bazasi yaxlitligini tekshirish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("PRAGMA integrity_check")
+            result = cursor.fetchone()
+            
+            if result[0] == 'ok':
+                print("Ma'lumotlar bazasi yaxlit")
+                return True
+            else:
+                print(f"Ma'lumotlar bazasi buzilgan: {result[0]}")
+                return False
+    
+    def optimize_database(self):
+        """Ma'lumotlar bazasini optimizatsiya qilish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # VACUUM
+            cursor.execute("VACUUM")
+            
+            # ANALYZE
+            cursor.execute("ANALYZE")
+            
+            # Ma'lumotlar bazasi hajmini tekshirish
+            cursor.execute("PRAGMA page_count")
+            page_count = cursor.fetchone()[0]
+            
+            cursor.execute("PRAGMA page_size")
+            page_size = cursor.fetchone()[0]
+            
+            total_size = page_count * page_size
+            print(f"Ma'lumotlar bazasi hajmi: {total_size} bytes")
+
+# Foydalanish
+if __name__ == "__main__":
+    # Ma'lumotlar bazasini xavfsiz qilish
+    db_security = DatabaseSecurity('secure_library.db')
+    
+    # Backup yaratish
+    db_security.backup_database('secure_library_backup.sql')
+    
+    # Yaxlitlikni tekshirish
+    db_security.verify_database_integrity()
+    
+    # Optimizatsiya
+    db_security.optimize_database()</code></pre>
+      </div>
+
+      <h2>6. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Fayl ruxsatlarini o'rnatish:</strong> 600 (faqat egasi)</li>
+        <li>✅ <strong>Parolni hash qilish:</strong> PBKDF2 yoki bcrypt</li>
+        <li>✅ <strong>Salt ishlatish:</strong> Har bir parol uchun unique salt</li>
+        <li>✅ <strong>Faoliyat yozish:</strong> Barcha operatsiyalarni log qilish</li>
+        <li>✅ <strong>Backup yaratish:</strong> Muntazam backup</li>
+        <li>✅ <strong>Yaxlitlikni tekshirish:</strong> PRAGMA integrity_check</li>
+      </ul>
+
+      <div class="next-lesson">
+        <a href="../4-dars/">Keyingi dars: Foreign Keys - PRAGMA foreign_keys = ON →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

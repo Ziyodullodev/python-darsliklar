@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>JOIN operatsiyalari - INNER, LEFT, RIGHT, CROSS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>🔗 JOIN operatsiyalari - INNER, LEFT, RIGHT, CROSS</h1>
+
+    <div class="lesson-content">
+      <h2>JOIN nima?</h2>
+      <p>JOIN - bu ikki yoki undan ko'p jadvallarni bog'lash uchun ishlatiladigan SQL operatsiyasi. Ular orasidagi bog'lanish asosida ma'lumotlarni birlashtirish imkonini beradi.</p>
+
+      <h2>1. INNER JOIN</h2>
+      <div class="code-block">
+        <pre><code>-- INNER JOIN sintaksisi
+SELECT column1, column2, ...
+FROM table1
+INNER JOIN table2 ON table1.column = table2.column;
+
+-- Oddiy INNER JOIN
+SELECT u.name, u.email, p.title
+FROM users u
+INNER JOIN posts p ON u.id = p.user_id;
+
+-- INNER JOIN xususiyatlari
+-- - Faqat mos keladigan qatorlar
+-- - Ikki jadvalda ham mavjud bo'lgan ma'lumotlar
+-- - Eng keng ishlatiladigan JOIN turi</code></pre>
+      </div>
+
+      <h2>2. LEFT JOIN</h2>
+      <div class="code-block">
+        <pre><code>-- LEFT JOIN sintaksisi
+SELECT column1, column2, ...
+FROM table1
+LEFT JOIN table2 ON table1.column = table2.column;
+
+-- Oddiy LEFT JOIN
+SELECT u.name, u.email, p.title
+FROM users u
+LEFT JOIN posts p ON u.id = p.user_id;
+
+-- LEFT JOIN xususiyatlari
+-- - Chap jadvalning barcha qatorlari
+-- - O'ng jadvalda mos keladigan ma'lumot yo'q bo'lsa NULL
+-- - "Barcha foydalanuvchilar va ularning postlari" uchun</code></pre>
+      </div>
+
+      <h2>3. RIGHT JOIN</h2>
+      <div class="code-block">
+        <pre><code>-- RIGHT JOIN sintaksisi
+SELECT column1, column2, ...
+FROM table1
+RIGHT JOIN table2 ON table1.column = table2.column;
+
+-- Oddiy RIGHT JOIN
+SELECT u.name, u.email, p.title
+FROM users u
+RIGHT JOIN posts p ON u.id = p.user_id;
+
+-- RIGHT JOIN xususiyatlari
+-- - O'ng jadvalning barcha qatorlari
+-- - Chap jadvalda mos keladigan ma'lumot yo'q bo'lsa NULL
+-- - SQLite da to'g'ridan-to'g'ri qo'llab-quvvatlanmaydi</code></pre>
+      </div>
+
+      <h2>4. CROSS JOIN</h2>
+      <div class="code-block">
+        <pre><code>-- CROSS JOIN sintaksisi
+SELECT column1, column2, ...
+FROM table1
+CROSS JOIN table2;
+
+-- Oddiy CROSS JOIN
+SELECT u.name, c.name as category
+FROM users u
+CROSS JOIN categories c;
+
+-- CROSS JOIN xususiyatlari
+-- - Barcha mumkin bo'lgan kombinatsiyalar
+-- - Cartesian product
+-- - Ko'p natija beradi</code></pre>
+      </div>
+
+      <h2>5. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code>-- Kutubxona tizimi
+CREATE TABLE authors (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    birth_year INTEGER,
+    nationality TEXT
+);
+
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    author_id INTEGER,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    FOREIGN KEY (author_id) REFERENCES authors(id)
+);
+
+CREATE TABLE categories (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE book_categories (
+    book_id INTEGER,
+    category_id INTEGER,
+    PRIMARY KEY (book_id, category_id),
+    FOREIGN KEY (book_id) REFERENCES books(id),
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+-- Ma'lumotlar
+INSERT INTO authors (name, birth_year, nationality) VALUES 
+('Alisher Navoiy', 1441, 'O''zbek'),
+('Abdulla Avloniy', 1878, 'O''zbek'),
+('Chingiz Aytmatov', 1928, 'Qirg''iz'),
+('Leo Tolstoy', 1828, 'Rus');
+
+INSERT INTO books (title, author_id, publication_year, pages, price) VALUES 
+('Xamsa', 1, 1495, 500, 25.50),
+('Turkiy guliston', 1, 1499, 300, 20.00),
+('O''zbek tili grammatikasi', 2, 1920, 200, 15.75),
+('Jamilia', 3, 1958, 150, 12.00),
+('War and Peace', 4, 1869, 1200, 35.00);
+
+INSERT INTO categories (name, description) VALUES 
+('Poetry', 'She''r va nazm'),
+('Grammar', 'Til grammatikasi'),
+('Fiction', 'Badiiy asar'),
+('History', 'Tarixiy asar');
+
+INSERT INTO book_categories (book_id, category_id) VALUES 
+(1, 1),  -- Xamsa - Poetry
+(2, 1),  -- Turkiy guliston - Poetry
+(3, 2),  -- O'zbek tili grammatikasi - Grammar
+(4, 3),  -- Jamilia - Fiction
+(5, 3);  -- War and Peace - Fiction</code></pre>
+      </div>
+
+      <h2>6. JOIN misollari</h2>
+      <div class="code-block">
+        <pre><code>-- 1. INNER JOIN - Muallif va kitoblar
+SELECT a.name as author, b.title as book
+FROM authors a
+INNER JOIN books b ON a.id = b.author_id;
+
+-- 2. LEFT JOIN - Barcha mualliflar va ularning kitoblari
+SELECT a.name as author, b.title as book
+FROM authors a
+LEFT JOIN books b ON a.id = b.author_id;
+
+-- 3. Murakkab JOIN - Muallif, kitob va kategoriya
+SELECT 
+    a.name as author,
+    b.title as book,
+    c.name as category
+FROM authors a
+INNER JOIN books b ON a.id = b.author_id
+INNER JOIN book_categories bc ON b.id = bc.book_id
+INNER JOIN categories c ON bc.category_id = c.id;
+
+-- 4. CROSS JOIN - Barcha mualliflar va kategoriyalar
+SELECT a.name as author, c.name as category
+FROM authors a
+CROSS JOIN categories c;</code></pre>
+      </div>
+
+      <h2>7. Murakkab JOIN misollar</h2>
+      <div class="code-block">
+        <pre><code>-- E-commerce tizimi
+CREATE TABLE customers (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    phone TEXT
+);
+
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY,
+    customer_id INTEGER,
+    order_date DATE,
+    total_amount REAL,
+    status TEXT,
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+CREATE TABLE order_items (
+    id INTEGER PRIMARY KEY,
+    order_id INTEGER,
+    product_name TEXT,
+    quantity INTEGER,
+    price REAL,
+    FOREIGN KEY (order_id) REFERENCES orders(id)
+);
+
+-- Ma'lumotlar
+INSERT INTO customers (name, email, phone) VALUES 
+('Ali Valiyev', 'ali@example.com', '+998901234567'),
+('Malika Karimova', 'malika@example.com', '+998901234568'),
+('Bobur Toshmatov', 'bobur@example.com', '+998901234569');
+
+INSERT INTO orders (customer_id, order_date, total_amount, status) VALUES 
+(1, '2023-01-15', 150.00, 'completed'),
+(2, '2023-01-16', 200.00, 'completed'),
+(1, '2023-01-17', 100.00, 'pending'),
+(3, '2023-01-18', 300.00, 'completed');
+
+INSERT INTO order_items (order_id, product_name, quantity, price) VALUES 
+(1, 'Laptop', 1, 150.00),
+(2, 'Phone', 1, 200.00),
+(3, 'Book', 2, 50.00),
+(4, 'Tablet', 1, 300.00);
+
+-- Murakkab JOIN so'rovlar
+-- 1. Mijoz, buyurtma va mahsulotlar
+SELECT 
+    c.name as customer,
+    o.order_date,
+    o.total_amount,
+    oi.product_name,
+    oi.quantity,
+    oi.price
+FROM customers c
+INNER JOIN orders o ON c.id = o.customer_id
+INNER JOIN order_items oi ON o.id = oi.order_id;
+
+-- 2. Barcha mijozlar va ularning buyurtmalari (LEFT JOIN)
+SELECT 
+    c.name as customer,
+    o.order_date,
+    o.total_amount,
+    o.status
+FROM customers c
+LEFT JOIN orders o ON c.id = o.customer_id;
+
+-- 3. Mijozlar bo'yicha statistika
+SELECT 
+    c.name as customer,
+    COUNT(o.id) as order_count,
+    SUM(o.total_amount) as total_spent,
+    AVG(o.total_amount) as avg_order_value
+FROM customers c
+LEFT JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id, c.name;</code></pre>
+      </div>
+
+      <h2>8. JOIN optimizatsiya</h2>
+      <div class="code-block">
+        <pre><code>-- Index yaratish JOIN uchun
+CREATE INDEX idx_books_author_id ON books(author_id);
+CREATE INDEX idx_orders_customer_id ON orders(customer_id);
+CREATE INDEX idx_order_items_order_id ON order_items(order_id);
+
+-- Performance test
+EXPLAIN QUERY PLAN
+SELECT a.name, b.title
+FROM authors a
+INNER JOIN books b ON a.id = b.author_id;
+
+-- Natija: SCAN authors, SEARCH books USING INDEX idx_books_author_id</code></pre>
+      </div>
+
+      <h2>9. Xatolar va ularni hal qilish</h2>
+      <div class="code-block">
+        <pre><code>-- Xato: Ambiguous column name
+SELECT id, name FROM users u
+INNER JOIN posts p ON u.id = p.user_id;
+-- Xato: ambiguous column name: id
+
+-- To'g'ri:
+SELECT u.id, u.name, p.title FROM users u
+INNER JOIN posts p ON u.id = p.user_id;
+
+-- Xato: Mavjud bo'lmagan jadval
+SELECT * FROM users u
+INNER JOIN wrong_table w ON u.id = w.user_id;
+-- Xato: no such table: wrong_table
+
+-- Xato: Mavjud bo'lmagan ustun
+SELECT * FROM users u
+INNER JOIN posts p ON u.id = p.wrong_column;
+-- Xato: no such column: wrong_column</code></pre>
+      </div>
+
+      <h2>10. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Alias ishlatish:</strong> Jadval nomlarini qisqartirish</li>
+        <li>✅ <strong>Index yaratish:</strong> JOIN ustunlari uchun</li>
+        <li>✅ <strong>Ustun nomlarini aniq belgilash:</strong> Ambiguous xatolarni oldini olish</li>
+        <li>✅ <strong>JOIN turini to'g'ri tanlash:</strong> Maqsadga mos</li>
+        <li>✅ <strong>Performance test:</strong> EXPLAIN QUERY PLAN ishlatish</li>
+        <li>✅ <strong>Foreign Key constraint-lar:</strong> Bog'lanishlarni ta'minlash</li>
+      </ul>
+
+      <h2>11. Real-world misollar</h2>
+      <div class="code-block">
+        <pre><code>-- Blog tizimi
+SELECT 
+    u.username,
+    p.title,
+    p.created_at,
+    c.name as category
+FROM users u
+INNER JOIN posts p ON u.id = p.author_id
+INNER JOIN post_categories pc ON p.id = pc.post_id
+INNER JOIN categories c ON pc.category_id = c.id
+WHERE p.is_published = 1
+ORDER BY p.created_at DESC;
+
+-- E-commerce analytics
+SELECT 
+    c.name as customer,
+    o.order_date,
+    oi.product_name,
+    oi.quantity,
+    oi.price,
+    oi.quantity * oi.price as line_total
+FROM customers c
+INNER JOIN orders o ON c.id = o.customer_id
+INNER JOIN order_items oi ON o.id = oi.order_id
+WHERE o.status = 'completed'
+ORDER BY o.order_date DESC;
+
+-- Inventory management
+SELECT 
+    p.name as product,
+    c.name as category,
+    s.quantity as stock,
+    s.location
+FROM products p
+INNER JOIN categories c ON p.category_id = c.id
+LEFT JOIN stock s ON p.id = s.product_id
+WHERE s.quantity > 0 OR s.quantity IS NULL;</code></pre>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../2-dars/">Keyingi dars: Subqueries - Ichki so'rovlar →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

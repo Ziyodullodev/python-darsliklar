@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Index yaratish va boshqarish</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>📇 Index yaratish va boshqarish</h1>
+
+    <div class="lesson-content">
+      <h2>Index nima?</h2>
+      <p>Index - bu ma'lumotlarni tez qidirish uchun yaratiladigan maxsus struktura. U kitobdagi mazmun ro'yxatiga o'xshaydi.</p>
+
+      <h2>1. Index yaratish</h2>
+      <div class="code-block">
+        <pre><code>-- Oddiy index yaratish
+CREATE INDEX idx_users_email ON users(email);
+
+-- Murakkab index yaratish
+CREATE INDEX idx_users_name_age ON users(name, age);
+
+-- Unique index yaratish
+CREATE UNIQUE INDEX idx_users_username ON users(username);
+
+-- Partial index yaratish
+CREATE INDEX idx_active_users ON users(email) WHERE is_active = 1;</code></pre>
+      </div>
+
+      <h2>2. Index turlari</h2>
+
+      <h3>B-tree Index (Default)</h3>
+      <div class="code-block">
+        <pre><code>-- B-tree index (default)
+CREATE INDEX idx_products_price ON products(price);
+
+-- Xususiyatlari:
+-- - Tenglik qidiruv uchun tez
+-- - Tartiblash uchun tez
+-- - Oraliq qidiruv uchun tez
+-- - Ko'p ma'lumot turlari uchun ishlaydi</code></pre>
+      </div>
+
+      <h3>Unique Index</h3>
+      <div class="code-block">
+        <pre><code>-- Unique index
+CREATE UNIQUE INDEX idx_users_email ON users(email);
+
+-- Xususiyatlari:
+-- - Takrorlanmas qiymatlar
+-- - PRIMARY KEY kabi ishlaydi
+-- - Tez qidiruv
+-- - UNIQUE constraint yaratadi</code></pre>
+      </div>
+
+      <h3>Composite Index</h3>
+      <div class="code-block">
+        <pre><code>-- Murakkab index
+CREATE INDEX idx_orders_customer_date ON orders(customer_id, order_date);
+
+-- Xususiyatlari:
+-- - Bir nechta ustun
+-- - Ustunlar tartibi muhim
+-- - Birinchi ustun bo'yicha qidiruv tez
+-- - Birinchi + ikkinchi ustun bo'yicha qidiruv tez</code></pre>
+      </div>
+
+      <h2>3. Index bilan ishlash</h2>
+
+      <h3>Index yaratish</h3>
+      <div class="code-block">
+        <pre><code>-- Index yaratish
+CREATE INDEX idx_products_name ON products(name);
+CREATE INDEX idx_products_category ON products(category);
+CREATE INDEX idx_products_price ON products(price);
+
+-- Murakkab index
+CREATE INDEX idx_products_category_price ON products(category, price);
+
+-- Unique index
+CREATE UNIQUE INDEX idx_products_sku ON products(sku);</code></pre>
+      </div>
+
+      <h3>Indexlarni ko'rish</h3>
+      <div class="code-block">
+        <pre><code>-- Barcha indexlarni ko'rish
+.indices
+
+-- Belgili jadval indexlari
+.indices products
+
+-- Index ma'lumotlari
+.schema --indices
+
+-- Index haqida batafsil ma'lumot
+SELECT * FROM sqlite_master WHERE type = 'index';</code></pre>
+      </div>
+
+      <h2>4. Index performance</h2>
+
+      <h3>Tez ishlaydigan so'rovlar</h3>
+      <div class="code-block">
+        <pre><code>-- Index ishlatiladigan so'rovlar
+SELECT * FROM products WHERE price = 100;  -- idx_products_price
+SELECT * FROM products WHERE category = 'Electronics';  -- idx_products_category
+SELECT * FROM products WHERE name LIKE 'Laptop%';  -- idx_products_name
+
+-- Murakkab index bilan
+SELECT * FROM products WHERE category = 'Electronics' AND price > 100;  -- idx_products_category_price</code></pre>
+      </div>
+
+      <h3>Sekin ishlaydigan so'rovlar</h3>
+      <div class="code-block">
+        <pre><code>-- Index ishlatilmaydigan so'rovlar
+SELECT * FROM products WHERE price > 100 AND price < 200;  -- Murakkab shart
+SELECT * FROM products WHERE name LIKE '%Laptop%';  -- Pattern boshi emas
+SELECT * FROM products WHERE category = 'Electronics' OR price > 100;  -- OR sharti</code></pre>
+      </div>
+
+      <h2>5. EXPLAIN QUERY PLAN</h2>
+      <div class="code-block">
+        <pre><code>-- So'rov rejasini ko'rish
+EXPLAIN QUERY PLAN SELECT * FROM products WHERE price = 100;
+
+-- Natija:
+-- 0|0|0|SEARCH products USING INDEX idx_products_price (price=?)
+
+-- Index ishlatilmaydigan so'rov
+EXPLAIN QUERY PLAN SELECT * FROM products WHERE price > 100;
+
+-- Natija:
+-- 0|0|0|SCAN products</code></pre>
+      </div>
+
+      <h2>6. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code>-- Kutubxona tizimi
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    isbn TEXT UNIQUE,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    category TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE book_loans (
+    id INTEGER PRIMARY KEY,
+    book_id INTEGER,
+    borrower_name TEXT,
+    loan_date DATE,
+    return_date DATE,
+    is_returned BOOLEAN DEFAULT 0,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+-- Indexlar yaratish
+-- Asosiy qidiruv maydonlari uchun
+CREATE INDEX idx_books_title ON books(title);
+CREATE INDEX idx_books_author ON books(author);
+CREATE INDEX idx_books_category ON books(category);
+CREATE INDEX idx_books_year ON books(publication_year);
+
+-- Murakkab indexlar
+CREATE INDEX idx_books_author_year ON books(author, publication_year);
+CREATE INDEX idx_books_category_price ON books(category, price);
+
+-- Unique indexlar
+CREATE UNIQUE INDEX idx_books_isbn ON books(isbn);
+
+-- Loan jadvali uchun indexlar
+CREATE INDEX idx_loans_book_id ON book_loans(book_id);
+CREATE INDEX idx_loans_borrower ON book_loans(borrower_name);
+CREATE INDEX idx_loans_date ON book_loans(loan_date);
+CREATE INDEX idx_loans_returned ON book_loans(is_returned);
+
+-- Murakkab indexlar
+CREATE INDEX idx_loans_book_returned ON book_loans(book_id, is_returned);
+CREATE INDEX idx_loans_borrower_date ON book_loans(borrower_name, loan_date);
+
+-- Ma'lumotlar qo'shish
+INSERT INTO books (title, author, isbn, publication_year, pages, price, category) VALUES 
+('Python Programming', 'John Doe', '978-1234567890', 2020, 300, 45.99, 'Programming'),
+('JavaScript Guide', 'Jane Smith', '978-1234567891', 2019, 250, 35.50, 'Programming'),
+('History of Uzbekistan', 'Ahmad Karimov', '978-1234567892', 2018, 400, 25.00, 'History'),
+('O''zbek tili', 'Malika Toshmatova', '978-1234567893', 2021, 200, 15.75, 'Language');
+
+INSERT INTO book_loans (book_id, borrower_name, loan_date, return_date, is_returned) VALUES 
+(1, 'Ali Valiyev', '2023-01-15', '2023-02-15', 1),
+(2, 'Malika Karimova', '2023-02-01', NULL, 0),
+(3, 'Bobur Toshmatov', '2023-01-20', '2023-02-20', 1);
+
+-- Performance test
+-- Tez ishlaydigan so'rovlar
+EXPLAIN QUERY PLAN SELECT * FROM books WHERE title = 'Python Programming';
+EXPLAIN QUERY PLAN SELECT * FROM books WHERE author = 'John Doe';
+EXPLAIN QUERY PLAN SELECT * FROM books WHERE category = 'Programming';
+EXPLAIN QUERY PLAN SELECT * FROM books WHERE publication_year = 2020;
+
+-- Murakkab so'rovlar
+EXPLAIN QUERY PLAN SELECT * FROM books WHERE author = 'John Doe' AND publication_year = 2020;
+EXPLAIN QUERY PLAN SELECT * FROM books WHERE category = 'Programming' AND price > 30;</code></pre>
+      </div>
+
+      <h2>7. Index boshqaruvi</h2>
+
+      <h3>Index o'chirish</h3>
+      <div class="code-block">
+        <pre><code>-- Index o'chirish
+DROP INDEX idx_products_name;
+
+-- Agar mavjud bo'lsa o'chirish
+DROP INDEX IF EXISTS idx_products_name;</code></pre>
+      </div>
+
+      <h3>Index yangilash</h3>
+      <div class="code-block">
+        <pre><code>-- Index yangilash (eski indexni o'chirish, yangisini yaratish)
+DROP INDEX idx_products_name;
+CREATE INDEX idx_products_name ON products(name);</code></pre>
+      </div>
+
+      <h2>8. Index optimizatsiya</h2>
+
+      <h3>Qaysi indexlar kerak?</h3>
+      <div class="code-block">
+        <pre><code>-- Tez-tez ishlatiladigan so'rovlar
+SELECT * FROM products WHERE category = ?;  -- idx_products_category
+SELECT * FROM products WHERE price > ?;  -- idx_products_price
+SELECT * FROM products WHERE name LIKE ?;  -- idx_products_name
+
+-- Murakkab so'rovlar
+SELECT * FROM products WHERE category = ? AND price > ?;  -- idx_products_category_price
+SELECT * FROM products WHERE author = ? AND year = ?;  -- idx_books_author_year</code></pre>
+      </div>
+
+      <h3>Index hajmi</h3>
+      <div class="code-block">
+        <pre><code>-- Index hajmini tekshirish
+SELECT name, sql FROM sqlite_master WHERE type = 'index';
+
+-- Index statistikasi
+ANALYZE;
+SELECT * FROM sqlite_stat1;</code></pre>
+      </div>
+
+      <h2>9. Xatolar va ularni hal qilish</h2>
+
+      <h3>Keng tarqalgan xatolar</h3>
+      <div class="code-block">
+        <pre><code>-- Xato: Index allaqachon mavjud
+CREATE INDEX idx_products_name ON products(name);
+CREATE INDEX idx_products_name ON products(name);  -- Xato: index idx_products_name already exists
+
+-- To'g'ri:
+CREATE INDEX IF NOT EXISTS idx_products_name ON products(name);
+
+-- Xato: Mavjud bo'lmagan ustun
+CREATE INDEX idx_products_wrong ON products(wrong_column);  -- Xato: no such column: wrong_column
+
+-- Xato: Mavjud bo'lmagan jadval
+CREATE INDEX idx_wrong_table ON wrong_table(column);  -- Xato: no such table: wrong_table</code></pre>
+      </div>
+
+      <h2>10. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Asosiy qidiruv maydonlari uchun:</strong> WHERE da tez-tez ishlatiladigan ustunlar</li>
+        <li>✅ <strong>ORDER BY uchun:</strong> Tartiblash uchun ishlatiladigan ustunlar</li>
+        <li>✅ <strong>JOIN uchun:</strong> Bog'lanish uchun ishlatiladigan ustunlar</li>
+        <li>✅ <strong>Murakkab indexlar:</strong> Bir nechta ustun bilan ishlash</li>
+        <li>✅ <strong>Performance test:</strong> EXPLAIN QUERY PLAN ishlatish</li>
+        <li>✅ <strong>Index hajmi:</strong> Ko'p index yaratmaslik</li>
+        <li>✅ <strong>Regular cleanup:</strong> Keraksiz indexlarni o'chirish</li>
+      </ul>
+
+      <h2>11. Index monitoring</h2>
+      <div class="code-block">
+        <pre><code>-- Indexlarni monitoring qilish
+-- Barcha indexlarni ko'rish
+SELECT name, sql FROM sqlite_master WHERE type = 'index';
+
+-- Index statistikasi
+ANALYZE;
+SELECT * FROM sqlite_stat1;
+
+-- Index hajmi
+SELECT 
+    name,
+    sql,
+    (SELECT COUNT(*) FROM sqlite_master WHERE type = 'index') as total_indexes
+FROM sqlite_master 
+WHERE type = 'index';</code></pre>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../4-dars/">Keyingi dars: ORDER BY - Saralash →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

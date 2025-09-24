@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Transactions - BEGIN, COMMIT, ROLLBACK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>🔄 Transactions - BEGIN, COMMIT, ROLLBACK</h1>
+
+    <div class="lesson-content">
+      <h2>Transaction nima?</h2>
+      <p>Transaction - bu ma'lumotlar bazasida bajariladigan operatsiyalar to'plami. Ular barchasi muvaffaqiyatli bajariladi yoki barchasi bekor qilinadi. Bu ACID xususiyatlarini ta'minlaydi.</p>
+
+      <h2>1. Transaction sintaksisi</h2>
+      <div class="code-block">
+        <pre><code>-- Transaction boshlash
+BEGIN TRANSACTION;
+
+-- Operatsiyalar
+INSERT INTO users (name, email) VALUES ('Ali', 'ali@example.com');
+UPDATE products SET stock_quantity = stock_quantity - 1 WHERE id = 1;
+
+-- Transaction yakunlash
+COMMIT;
+
+-- Yoki bekor qilish
+-- ROLLBACK;</code></pre>
+      </div>
+
+      <h2>2. ACID xususiyatlari</h2>
+
+      <h3>Atomicity - Atomiklik</h3>
+      <div class="code-block">
+        <pre><code>-- Barcha operatsiyalar bajariladi yoki barchasi bekor qilinadi
+BEGIN TRANSACTION;
+INSERT INTO users (name, email) VALUES ('Ali', 'ali@example.com');
+INSERT INTO users (name, email) VALUES ('Malika', 'malika@example.com');
+-- Agar biror operatsiya xato bersa, barchasi bekor qilinadi
+COMMIT;</code></pre>
+      </div>
+
+      <h3>Consistency - Yaxlitlik</h3>
+      <div class="code-block">
+        <pre><code>-- Ma'lumotlar bazasi doimo yaxlit holatda bo'ladi
+BEGIN TRANSACTION;
+UPDATE products SET stock_quantity = stock_quantity - 1 WHERE id = 1;
+INSERT INTO order_items (product_id, quantity) VALUES (1, 1);
+-- Agar stock_quantity 0 dan kichik bo'lsa, xato beradi
+COMMIT;</code></pre>
+      </div>
+
+      <h3>Isolation - Ajratilganlik</h3>
+      <div class="code-block">
+        <pre><code>-- Bir vaqtda bajarilayotgan transactionlar bir-biriga ta'sir qilmaydi
+-- Transaction 1
+BEGIN TRANSACTION;
+SELECT * FROM products WHERE id = 1;
+-- Bu vaqtda boshqa transaction bu jadvalni o'zgartira olmaydi
+UPDATE products SET price = 100 WHERE id = 1;
+COMMIT;</code></pre>
+      </div>
+
+      <h3>Durability - Bardavomlilik</h3>
+      <div class="code-block">
+        <pre><code>-- COMMIT qilingan ma'lumotlar doimiy saqlanadi
+BEGIN TRANSACTION;
+INSERT INTO users (name, email) VALUES ('Bobur', 'bobur@example.com');
+COMMIT;
+-- Bu ma'lumot doimiy saqlanadi, hatto dastur o'chsa ham</code></pre>
+      </div>
+
+      <h2>3. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code>-- E-commerce tizimi
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    price REAL,
+    stock_quantity INTEGER DEFAULT 0
+);
+
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY,
+    customer_id INTEGER,
+    order_date DATE DEFAULT CURRENT_DATE,
+    total_amount REAL,
+    status TEXT DEFAULT 'pending'
+);
+
+CREATE TABLE order_items (
+    id INTEGER PRIMARY KEY,
+    order_id INTEGER,
+    product_id INTEGER,
+    quantity INTEGER,
+    price REAL,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+-- Ma'lumotlar
+INSERT INTO products (name, price, stock_quantity) VALUES 
+('Laptop', 1000.00, 10),
+('Phone', 500.00, 25),
+('Book', 20.00, 100);
+
+-- Ma'lumotlar
+INSERT INTO products (name, price, stock_quantity) VALUES 
+('Laptop', 1000.00, 10),
+('Phone', 500.00, 25),
+('Book', 20.00, 100);</code></pre>
+      </div>
+
+      <h2>4. Transaction misollari</h2>
+      <div class="code-block">
+        <pre><code>-- 1. Buyurtma yaratish
+BEGIN TRANSACTION;
+
+-- Buyurtma yaratish
+INSERT INTO orders (customer_id, total_amount) VALUES (1, 1020.00);
+SET @order_id = LAST_INSERT_ID();
+
+-- Mahsulotlar qo'shish
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES 
+(@order_id, 1, 1, 1000.00),
+(@order_id, 3, 1, 20.00);
+
+-- Zaxira kamaytirish
+UPDATE products SET stock_quantity = stock_quantity - 1 WHERE id = 1;
+UPDATE products SET stock_quantity = stock_quantity - 1 WHERE id = 3;
+
+-- Zaxira tekshirish
+SELECT stock_quantity FROM products WHERE id = 1;
+-- Agar zaxira yetarli bo'lmasa, ROLLBACK qilish
+
+COMMIT;
+
+-- 2. Mahsulot yangilash
+BEGIN TRANSACTION;
+
+-- Eski ma'lumotlarni saqlash
+INSERT INTO product_history (product_id, old_price, new_price, change_date)
+SELECT id, price, 1200.00, CURRENT_TIMESTAMP FROM products WHERE id = 1;
+
+-- Yangi narx o'rnatish
+UPDATE products SET price = 1200.00 WHERE id = 1;
+
+-- Agar xato bo'lsa, bekor qilish
+-- ROLLBACK;
+
+COMMIT;</code></pre>
+      </div>
+
+      <h2>5. ROLLBACK misollari</h2>
+      <div class="code-block">
+        <pre><code>-- 1. Xato bilan ROLLBACK
+BEGIN TRANSACTION;
+
+INSERT INTO users (name, email) VALUES ('Ali', 'ali@example.com');
+INSERT INTO users (name, email) VALUES ('Malika', 'malika@example.com');
+
+-- Xato sodir bo'ldi
+INSERT INTO users (name, email) VALUES ('Bobur', 'invalid-email');  -- Xato: email format
+
+-- Barcha operatsiyalarni bekor qilish
+ROLLBACK;
+
+-- 2. Shartli ROLLBACK
+BEGIN TRANSACTION;
+
+UPDATE products SET stock_quantity = stock_quantity - 5 WHERE id = 1;
+
+-- Zaxira tekshirish
+SELECT stock_quantity FROM products WHERE id = 1;
+
+-- Agar zaxira yetarli bo'lmasa, bekor qilish
+-- IF (SELECT stock_quantity FROM products WHERE id = 1) < 0 THEN
+--     ROLLBACK;
+-- ELSE
+--     COMMIT;
+-- END IF;
+
+COMMIT;</code></pre>
+      </div>
+
+      <h2>6. Murakkab transaction misollar</h2>
+      <div class="code-block">
+        <pre><code>-- Kutubxona tizimi
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    isbn TEXT UNIQUE,
+    price REAL,
+    stock_quantity INTEGER DEFAULT 0
+);
+
+CREATE TABLE book_loans (
+    id INTEGER PRIMARY KEY,
+    book_id INTEGER,
+    borrower_name TEXT,
+    loan_date DATE DEFAULT CURRENT_DATE,
+    return_date DATE,
+    is_returned BOOLEAN DEFAULT 0,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+CREATE TABLE book_activity (
+    id INTEGER PRIMARY KEY,
+    book_id INTEGER,
+    activity TEXT,
+    details TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ma'lumotlar
+INSERT INTO books (title, author, isbn, price, stock_quantity) VALUES 
+('Python Programming', 'John Doe', '978-1234567890', 45.99, 10),
+('JavaScript Guide', 'Jane Smith', '978-1234567891', 35.50, 5),
+('History of Uzbekistan', 'Ahmad Karimov', '978-1234567892', 25.00, 8);
+
+-- Murakkab transaction misollari
+-- 1. Kitob ijaraga berish
+BEGIN TRANSACTION;
+
+-- Kitob mavjudligini tekshirish
+SELECT stock_quantity FROM books WHERE id = 1;
+
+-- Zaxira kamaytirish
+UPDATE books SET stock_quantity = stock_quantity - 1 WHERE id = 1;
+
+-- Ijara yozuvi yaratish
+INSERT INTO book_loans (book_id, borrower_name) VALUES (1, 'Ali Valiyev');
+
+-- Faoliyat yozish
+INSERT INTO book_activity (book_id, activity, details) VALUES 
+(1, 'Book loaned', 'Borrower: Ali Valiyev');
+
+COMMIT;
+
+-- 2. Kitob qaytarish
+BEGIN TRANSACTION;
+
+-- Ijara yozuvini yangilash
+UPDATE book_loans 
+SET is_returned = 1, return_date = CURRENT_DATE 
+WHERE book_id = 1 AND borrower_name = 'Ali Valiyev' AND is_returned = 0;
+
+-- Zaxira oshirish
+UPDATE books SET stock_quantity = stock_quantity + 1 WHERE id = 1;
+
+-- Faoliyat yozish
+INSERT INTO book_activity (book_id, activity, details) VALUES 
+(1, 'Book returned', 'Borrower: Ali Valiyev');
+
+COMMIT;</code></pre>
+      </div>
+
+      <h2>7. Transaction monitoring</h2>
+      <div class="code-block">
+        <pre><code>-- Transaction holatini tekshirish
+PRAGMA transaction_state;
+
+-- Transaction ma'lumotlari
+SELECT * FROM sqlite_master WHERE type = 'table';
+
+-- Transaction log
+CREATE TABLE transaction_log (
+    id INTEGER PRIMARY KEY,
+    transaction_type TEXT,
+    table_name TEXT,
+    operation TEXT,
+    details TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Transaction monitoring
+BEGIN TRANSACTION;
+
+INSERT INTO users (name, email) VALUES ('Test', 'test@example.com');
+INSERT INTO transaction_log (transaction_type, table_name, operation, details) 
+VALUES ('INSERT', 'users', 'CREATE', 'New user created');
+
+COMMIT;</code></pre>
+      </div>
+
+      <h2>8. Xatolar va ularni hal qilish</h2>
+      <div class="code-block">
+        <pre><code>-- Xato: Transaction ichida xato
+BEGIN TRANSACTION;
+
+INSERT INTO users (name, email) VALUES ('Ali', 'ali@example.com');
+INSERT INTO users (name, email) VALUES ('Malika', 'malika@example.com');
+
+-- Xato sodir bo'ldi
+INSERT INTO users (name, email) VALUES ('Bobur', 'invalid-email');  -- Xato: email format
+
+-- Xato: Transaction ichida COMMIT/ROLLBACK yo'q
+-- Bu xato: Transaction ichida boshqa transaction boshlash
+BEGIN TRANSACTION;
+INSERT INTO users (name, email) VALUES ('Test', 'test@example.com');
+BEGIN TRANSACTION;  -- Xato: nested transaction
+COMMIT;
+
+-- To'g'ri:
+BEGIN TRANSACTION;
+INSERT INTO users (name, email) VALUES ('Test', 'test@example.com');
+COMMIT;</code></pre>
+      </div>
+
+      <h2>9. Performance optimizatsiya</h2>
+      <div class="code-block">
+        <pre><code>-- Transaction performance
+-- 1. Kichik transactionlar
+-- 2. Tez operatsiyalar
+-- 3. Index ishlatish
+-- 4. Lock vaqtini kamaytirish
+
+-- Performance test
+EXPLAIN QUERY PLAN
+SELECT * FROM products WHERE id = 1;
+
+-- Transaction monitoring
+SELECT 
+    name,
+    sql,
+    (SELECT COUNT(*) FROM sqlite_master WHERE type = 'table') as total_tables
+FROM sqlite_master 
+WHERE type = 'table';</code></pre>
+      </div>
+
+      <h2>10. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Kichik transactionlar:</strong> Tez va xavfsiz</li>
+        <li>✅ <strong>Error handling:</strong> Xatolarni boshqarish</li>
+        <li>✅ <strong>Lock vaqtini kamaytirish:</strong> Performance uchun</li>
+        <li>✅ <strong>Index ishlatish:</strong> Tez operatsiyalar uchun</li>
+        <li>✅ <strong>Testing:</strong> Transactionlarni sinash</li>
+        <li>✅ <strong>Monitoring:</strong> Transactionlarni kuzatish</li>
+      </ul>
+
+      <h2>11. Real-world misollar</h2>
+      <div class="code-block">
+        <pre><code>-- Blog tizimi
+BEGIN TRANSACTION;
+
+-- Post yaratish
+INSERT INTO posts (title, content, author_id) VALUES 
+('New Post', 'Post content', 1);
+
+-- Post kategoriyalarini qo'shish
+INSERT INTO post_categories (post_id, category_id) VALUES 
+(LAST_INSERT_ID(), 1);
+
+-- Muallif statistikasini yangilash
+UPDATE user_stats SET post_count = post_count + 1 WHERE user_id = 1;
+
+COMMIT;
+
+-- E-commerce tizimi
+BEGIN TRANSACTION;
+
+-- Buyurtma yaratish
+INSERT INTO orders (customer_id, total_amount) VALUES (1, 150.00);
+
+-- Mahsulotlar qo'shish
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES 
+(LAST_INSERT_ID(), 1, 1, 150.00);
+
+-- Zaxira kamaytirish
+UPDATE products SET stock_quantity = stock_quantity - 1 WHERE id = 1;
+
+-- Mijoz statistikasini yangilash
+UPDATE customer_stats SET total_orders = total_orders + 1 WHERE customer_id = 1;
+
+COMMIT;</code></pre>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../../5-bolim/1-dars/">Keyingi bo'lim: Amaliyot va Integratsiya →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

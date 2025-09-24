@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>SQLite afzalliklari va cheklovlari</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>⚡ SQLite afzalliklari va cheklovlari</h1>
+
+    <div class="lesson-content">
+      <h2>SQLite afzalliklari</h2>
+
+      <h3>1. O'rnatish va sozlash</h3>
+      <div class="advantage">
+        <h4>✅ Zero-configuration</h4>
+        <p>SQLite hech qanday sozlash talab qilmaydi. Faqat faylni yarating va ishlatishni boshlang.</p>
+        <div class="code-block">
+          <pre><code># Faqat bitta buyruq
+sqlite3 mydatabase.db</code></pre>
+        </div>
+      </div>
+
+      <h3>2. Server-siz</h3>
+      <div class="advantage">
+        <h4>✅ Server talab qilmaydi</h4>
+        <p>Alohida server o'rnatish va boshqarish shart emas. Ma'lumotlar bazasi fayl sifatida ishlaydi.</p>
+        <div class="code-block">
+          <pre><code># Server yo'q, faqat fayl
+ls -la mydatabase.db
+-rw-r--r-- 1 user user 8192 Jan 15 10:30 mydatabase.db</code></pre>
+        </div>
+      </div>
+
+      <h3>3. Kichik hajm</h3>
+      <div class="advantage">
+        <h4>✅ Minimal hajm</h4>
+        <p>SQLite juda kichik hajmda - atigi ~1MB. Bu uni mobile ilovalar uchun ideal qiladi.</p>
+        <div class="code-block">
+          <pre><code># SQLite hajmi
+du -h sqlite3
+1.2M    sqlite3</code></pre>
+        </div>
+      </div>
+
+      <h3>4. Tez ishlash</h3>
+      <div class="advantage">
+        <h4>✅ Kichik loyihalar uchun juda tez</h4>
+        <p>Kichik va o'rta hajmdagi loyihalar uchun SQLite juda tez ishlaydi.</p>
+        <div class="code-block">
+          <pre><code># 100,000 qatorni 0.1 soniyada o'qish
+SELECT COUNT(*) FROM large_table;
+-- Natija: 0.1s</code></pre>
+        </div>
+      </div>
+
+      <h3>5. Xavfsizlik</h3>
+      <div class="advantage">
+        <h4>✅ ACID-compliant</h4>
+        <p>Ma'lumotlar yaxlitligini to'liq ta'minlaydi. Barcha operatsiyalar xavfsiz.</p>
+        <div class="code-block">
+          <pre><code># Transaction misoli
+BEGIN TRANSACTION;
+INSERT INTO users (name) VALUES ('Ali');
+INSERT INTO users (name) VALUES ('Malika');
+COMMIT; -- Barcha operatsiyalar muvaffaqiyatli</code></pre>
+        </div>
+      </div>
+
+      <h3>6. Cross-platform</h3>
+      <div class="advantage">
+        <h4>✅ Barcha operatsion tizimlarda ishlaydi</h4>
+        <p>Windows, macOS, Linux, Android, iOS - hamma joyda ishlaydi.</p>
+        <div class="code-block">
+          <pre><code># Har qanday OS da bir xil
+sqlite3 database.db
+SELECT * FROM users;</code></pre>
+        </div>
+      </div>
+
+      <h3>7. Bepul va ochiq</h3>
+      <div class="advantage">
+        <h4>✅ Public domain</h4>
+        <p>To'liq bepul, hech qanday litsenziya to'lovi yo'q. Ixtiyoriy loyihada ishlatish mumkin.</p>
+      </div>
+
+      <h2>SQLite cheklovlari</h2>
+
+      <h3>1. Concurrent writes</h3>
+        <div class="limitation">
+          <h4>❌ Bir vaqtda faqat bitta yozish</h4>
+          <p>SQLite bir vaqtda faqat bitta foydalanuvchi yozish mumkin. Ko'p foydalanuvchi yozsa, biri kutishga majbur.</p>
+          <div class="code-block">
+            <pre><code># Bu muammo keltirib chiqaradi
+-- Foydalanuvchi 1:
+INSERT INTO users (name) VALUES ('Ali');
+
+-- Foydalanuvchi 2 (bir vaqtda):
+INSERT INTO users (name) VALUES ('Malika'); -- Kutishga majbur</code></pre>
+          </div>
+        </div>
+
+      <h3>2. Network access yo'q</h3>
+        <div class="limitation">
+          <h4>❌ Tarmoq orqali ulanish yo'q</h4>
+          <p>SQLite fayl darajasida ishlaydi. Tarmoq orqali ulanish imkoniyati yo'q.</p>
+          <div class="code-block">
+            <pre><code># Bu ishlamaydi
+sqlite3 //remote-server/database.db  # ❌ Xato</code></pre>
+          </div>
+        </div>
+
+      <h3>3. User management yo'q</h3>
+        <div class="limitation">
+          <h4>❌ Foydalanuvchi boshqaruvi yo'q</h4>
+          <p>Foydalanuvchi yaratish, ruxsatlar berish, parollar o'rnatish imkoniyati yo'q.</p>
+          <div class="code-block">
+            <pre><code># Bu buyruqlar ishlamaydi
+CREATE USER admin;  -- ❌ Xato
+GRANT SELECT ON users TO admin;  -- ❌ Xato</code></pre>
+          </div>
+        </div>
+
+      <h3>4. Stored procedures yo'q</h3>
+        <div class="limitation">
+          <h4>❌ Saqlangan protseduralar yo'q</h4>
+          <p>Murakkab biznes mantiqini ma'lumotlar bazasida saqlash imkoniyati yo'q.</p>
+          <div class="code-block">
+            <pre><code># Bu ishlamaydi
+CREATE PROCEDURE calculate_total()  -- ❌ Xato
+BEGIN
+    -- Protsedura kodi
+END;</code></pre>
+          </div>
+        </div>
+
+      <h3>5. Cheklangan ALTER TABLE</h3>
+        <div class="limitation">
+          <h4>❌ Ba'zi ALTER TABLE operatsiyalari yo'q</h4>
+          <p>Ustun o'chirish, ma'lumot turini o'zgartirish kabi operatsiyalar cheklangan.</p>
+          <div class="code-block">
+            <pre><code># Bu ishlamaydi
+ALTER TABLE users DROP COLUMN phone;  -- ❌ Xato
+ALTER TABLE users MODIFY COLUMN age VARCHAR(10);  -- ❌ Xato</code></pre>
+          </div>
+        </div>
+
+      <h3>6. Katta hajmdagi ma'lumotlar</h3>
+        <div class="limitation">
+          <h4>❌ Katta loyihalar uchun mos emas</h4>
+          <p>Terabyte hajmdagi ma'lumotlar bilan ishlash qiyin. Performance tez pasayadi.</p>
+          <div class="code-block">
+            <pre><code># 1TB ma'lumot bilan ishlash qiyin
+SELECT * FROM huge_table;  -- Sekin ishlaydi</code></pre>
+          </div>
+        </div>
+
+      <h2>Qachon SQLite ishlatish kerak</h2>
+
+      <div class="use-cases">
+        <h3>✅ SQLite ishlatish kerak:</h3>
+        <ul>
+          <li>📱 <strong>Mobile ilovalar:</strong> Android, iOS ilovalar</li>
+          <li>💻 <strong>Desktop dasturlar:</strong> Windows, macOS, Linux dasturlar</li>
+          <li>🧪 <strong>Prototyping:</strong> Loyiha prototipi yaratish</li>
+          <li>📊 <strong>Kichik loyihalar:</strong> Blog, portfolio saytlar</li>
+          <li>🔧 <strong>Embedded tizimlar:</strong> IoT qurilmalar</li>
+          <li>📚 <strong>O'quv loyihalar:</strong> Dasturlash o'rganish</li>
+          <li>📈 <strong>Analytics:</strong> Ma'lumotlarni tahlil qilish</li>
+        </ul>
+      </div>
+
+      <h2>Qachon SQLite ishlatmaslik kerak</h2>
+
+      <div class="avoid-cases">
+        <h3>❌ SQLite ishlatmaslik kerak:</h3>
+        <ul>
+          <li>🌐 <strong>Ko'p foydalanuvchi web saytlar:</strong> 1000+ foydalanuvchi</li>
+          <li>📊 <strong>Katta hajmdagi ma'lumotlar:</strong> 100GB+ ma'lumotlar</li>
+          <li>🔄 <strong>Real-time collaboration:</strong> Bir vaqtda ko'p foydalanuvchi yozish</li>
+          <li>🌍 <strong>Distributed systems:</strong> Bir nechta server</li>
+          <li>🔐 <strong>Murakkab ruxsatlar:</strong> Foydalanuvchi boshqaruvi kerak</li>
+          <li>⚡ <strong>High-performance:</strong> Mikrosekund darajasidagi tezlik</li>
+        </ul>
+      </div>
+
+      <h2>Alternativ yechimlar</h2>
+
+      <div class="alternatives">
+        <h3>SQLite o'rniga ishlatish mumkin:</h3>
+        <ul>
+          <li><strong>MySQL:</strong> Web ilovalar uchun</li>
+          <li><strong>PostgreSQL:</strong> Murakkab loyihalar uchun</li>
+          <li><strong>MongoDB:</strong> NoSQL ma'lumotlar uchun</li>
+          <li><strong>Redis:</strong> Cache va session uchun</li>
+          <li><strong>Firebase:</strong> Real-time ilovalar uchun</li>
+        </ul>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../../2-bolim/1-dars/">Keyingi bo'lim: SQL Asoslari →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

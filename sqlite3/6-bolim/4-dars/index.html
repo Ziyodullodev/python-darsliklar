@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Foreign Keys - PRAGMA foreign_keys = ON</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+  <style>
+    .presentation-slide {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      margin: 2rem 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .presentation-slide h3 {
+      color: #fff;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    
+    .code-example {
+      background: rgba(255,255,255,0.1);
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+      backdrop-filter: blur(10px);
+    }
+    
+    .code-example h4 {
+      color: #fff;
+      margin: 1rem 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    
+    .code-example .code-block {
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 0.5rem 0;
+    }
+    
+    .code-example .code-block pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+    
+    .result-table {
+      background: rgba(255,255,255,0.95);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+    }
+    
+    .result-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .result-table th {
+      background: #4a5568;
+      color: white;
+      padding: 0.75rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    
+    .result-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e2e8f0;
+      color: #2d3748;
+    }
+    
+    .result-table tr:hover {
+      background: #f7fafc;
+    }
+    
+    .foreign-key-demo {
+      background: linear-gradient(135deg, #74b9ff, #0984e3);
+      color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      margin: 2rem 0;
+    }
+    
+    .fk-step {
+      background: rgba(255,255,255,0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 0.5rem 0;
+      border-left: 4px solid #00b894;
+    }
+    
+    .constraint-types {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .constraint-card {
+      background: rgba(255,255,255,0.95);
+      color: #2d3748;
+      padding: 1.5rem;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .constraint-card h4 {
+      color: #4a5568;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    
+    .constraint-card .action {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 1rem 0;
+    }
+    
+    .cascade { color: #e53e3e; }
+    .set-null { color: #f6ad55; }
+    .restrict { color: #38a169; }
+    .no-action { color: #4299e1; }
+    
+    .fk-tip {
+      background: linear-gradient(135deg, #fd79a8, #e84393);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+      border-left: 5px solid #e84393;
+    }
+    
+    .fk-tip h4 {
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    
+    .relationship-diagram {
+      background: rgba(255,255,255,0.95);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      text-align: center;
+    }
+    
+    .table-box {
+      display: inline-block;
+      background: #f7fafc;
+      border: 2px solid #4a5568;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 0.5rem;
+      min-width: 150px;
+    }
+    
+    .table-box h5 {
+      color: #4a5568;
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    
+    .table-box .field {
+      font-size: 0.9rem;
+      color: #2d3748;
+      margin: 0.25rem 0;
+    }
+    
+    .relationship-arrow {
+      font-size: 2rem;
+      color: #4a5568;
+      margin: 0 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🔗 Foreign Keys - PRAGMA foreign_keys = ON</h1>
+
+    <div class="lesson-content">
+      <h2>Foreign Key nima?</h2>
+      <p>Foreign Key - bu ikki jadval orasidagi bog'lanishni belgilaydigan ustun. U ma'lumotlar yaxlitligini ta'minlaydi va bog'langan jadvallar orasidagi munosabatlarni boshqaradi.</p>
+
+      <h2>1. Foreign Key yoqish</h2>
+      
+      <div class="presentation-slide">
+        <h3>🔗 Foreign Key yoqish</h3>
+        
+        <div class="code-example">
+          <h4>Foreign Key yoqish:</h4>
+          <div class="code-block">
+            <pre><code>-- Foreign Key constraint-larni yoqish
+PRAGMA foreign_keys = ON;
+
+-- Foreign Key holatini tekshirish
+PRAGMA foreign_keys;</code></pre>
+          </div>
+          
+          <h4>Natija:</h4>
+          <div class="result-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Holat</th>
+                  <th>Qiymat</th>
+                  <th>Tushuntirish</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Yoqilgan</td>
+                  <td>1</td>
+                  <td>Foreign Key constraint-lar faol</td>
+                </tr>
+                <tr>
+                  <td>O'chirilgan</td>
+                  <td>0</td>
+                  <td>Foreign Key constraint-lar o'chirilgan</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="fk-tip">
+          <h4>💡 Muhim eslatma</h4>
+          <p>Foreign Key constraint-lar default holatda o'chirilgan bo'ladi. Har doim yoqish kerak!</p>
+        </div>
+      </div>
+
+      <h2>2. Foreign Key yaratish</h2>
+      <div class="code-block">
+        <pre><code># Jadvallar yaratish
+CREATE TABLE authors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    birth_year INTEGER,
+    nationality TEXT
+);
+
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author_id INTEGER,
+    isbn TEXT UNIQUE,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    FOREIGN KEY (author_id) REFERENCES authors(id)
+);
+
+# Foreign Key yoqish
+PRAGMA foreign_keys = ON;</code></pre>
+      </div>
+
+      <h2>3. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code># Kutubxona tizimi
+sqlite3 library.db
+
+# Foreign Key yoqish
+PRAGMA foreign_keys = ON;
+
+# Jadvallar yaratish
+CREATE TABLE authors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    birth_year INTEGER,
+    nationality TEXT
+);
+
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author_id INTEGER,
+    isbn TEXT UNIQUE,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    FOREIGN KEY (author_id) REFERENCES authors(id)
+);
+
+CREATE TABLE categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE book_categories (
+    book_id INTEGER,
+    category_id INTEGER,
+    PRIMARY KEY (book_id, category_id),
+    FOREIGN KEY (book_id) REFERENCES books(id),
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+CREATE TABLE book_loans (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id INTEGER,
+    borrower_name TEXT,
+    loan_date DATE DEFAULT CURRENT_DATE,
+    return_date DATE,
+    is_returned BOOLEAN DEFAULT 0,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+# Ma'lumotlar qo'shish
+INSERT INTO authors (name, birth_year, nationality) VALUES 
+('Alisher Navoiy', 1441, 'O''zbek'),
+('Abdulla Avloniy', 1878, 'O''zbek'),
+('Chingiz Aytmatov', 1928, 'Qirg''iz'),
+('Leo Tolstoy', 1828, 'Rus');
+
+INSERT INTO books (title, author_id, isbn, publication_year, pages, price) VALUES 
+('Xamsa', 1, '978-1234567890', 1495, 500, 25.50),
+('Turkiy guliston', 1, '978-1234567891', 1499, 300, 20.00),
+('O''zbek tili grammatikasi', 2, '978-1234567892', 1920, 200, 15.75),
+('Jamilia', 3, '978-1234567893', 1958, 150, 12.00),
+('War and Peace', 4, '978-1234567894', 1869, 1200, 35.00);
+
+INSERT INTO categories (name, description) VALUES 
+('Poetry', 'She''r va nazm'),
+('Grammar', 'Til grammatikasi'),
+('Fiction', 'Badiiy asar'),
+('History', 'Tarixiy asar');
+
+INSERT INTO book_categories (book_id, category_id) VALUES 
+(1, 1),  -- Xamsa - Poetry
+(2, 1),  -- Turkiy guliston - Poetry
+(3, 2),  -- O'zbek tili grammatikasi - Grammar
+(4, 3),  -- Jamilia - Fiction
+(5, 3);  -- War and Peace - Fiction
+
+INSERT INTO book_loans (book_id, borrower_name, loan_date, return_date, is_returned) VALUES 
+(1, 'Ali Valiyev', '2023-01-15', '2023-02-15', 1),
+(2, 'Malika Karimova', '2023-02-01', NULL, 0),
+(3, 'Bobur Toshmatov', '2023-01-20', '2023-02-20', 1),
+(1, 'Zarina Qodirova', '2023-03-01', NULL, 0),
+(4, 'Ahmad Karimov', '2023-02-15', '2023-03-15', 1);</code></pre>
+      </div>
+
+      <h2>4. Foreign Key tekshirish</h2>
+      <div class="code-block">
+        <pre><code># Foreign Key constraint-larni tekshirish
+PRAGMA foreign_key_check;
+
+# Belgili jadval uchun
+PRAGMA foreign_key_check(books);
+
+# Foreign Key ma'lumotlari
+PRAGMA foreign_key_list(books);
+
+# Natija:
+# 0|author_id|authors|id|NO ACTION|NO ACTION|NONE
+
+# Barcha jadvallar uchun
+SELECT name FROM sqlite_master WHERE type = 'table';
+PRAGMA foreign_key_list(authors);
+PRAGMA foreign_key_list(books);
+PRAGMA foreign_key_list(categories);
+PRAGMA foreign_key_list(book_categories);
+PRAGMA foreign_key_list(book_loans);</code></pre>
+      </div>
+
+      <h2>5. Foreign Key xatolari</h2>
+      <div class="code-block">
+        <pre><code># Xato: Mavjud bo'lmagan author_id
+INSERT INTO books (title, author_id) VALUES ('Test Book', 999);
+-- Xato: FOREIGN KEY constraint failed
+
+# Xato: Mavjud bo'lmagan book_id
+INSERT INTO book_loans (book_id, borrower_name) VALUES (999, 'Test User');
+-- Xato: FOREIGN KEY constraint failed
+
+# Xato: Mavjud bo'lmagan category_id
+INSERT INTO book_categories (book_id, category_id) VALUES (1, 999);
+-- Xato: FOREIGN KEY constraint failed
+
+# To'g'ri: Mavjud author_id
+INSERT INTO books (title, author_id) VALUES ('Test Book', 1);
+-- Ishlamaydi</code></pre>
+      </div>
+
+      <h2>6. Murakkab misollar</h2>
+      <div class="code-block">
+        <pre><code># E-commerce tizimi
+sqlite3 ecommerce.db
+
+# Foreign Key yoqish
+PRAGMA foreign_keys = ON;
+
+# Jadvallar yaratish
+CREATE TABLE customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    phone TEXT,
+    registration_date DATE DEFAULT CURRENT_DATE
+);
+
+CREATE TABLE categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    price REAL NOT NULL,
+    stock_quantity INTEGER DEFAULT 0,
+    category_id INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER,
+    order_date DATE DEFAULT CURRENT_DATE,
+    total_amount REAL,
+    status TEXT DEFAULT 'pending',
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+CREATE TABLE order_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER,
+    product_id INTEGER,
+    quantity INTEGER,
+    price REAL,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+# Ma'lumotlar qo'shish
+INSERT INTO customers (name, email, phone) VALUES 
+('Ali Valiyev', 'ali@example.com', '+998901234567'),
+('Malika Karimova', 'malika@example.com', '+998901234568'),
+('Bobur Toshmatov', 'bobur@example.com', '+998901234569');
+
+INSERT INTO categories (name, description) VALUES 
+('Electronics', 'Electronic devices and accessories'),
+('Clothing', 'Fashion and clothing items'),
+('Books', 'Books and educational materials');
+
+INSERT INTO products (name, price, stock_quantity, category_id) VALUES 
+('Laptop', 1000.00, 10, 1),
+('Phone', 500.00, 25, 1),
+('Book', 20.00, 100, 3),
+('T-shirt', 30.00, 50, 2);
+
+INSERT INTO orders (customer_id, total_amount, status) VALUES 
+(1, 150.00, 'completed'),
+(2, 200.00, 'completed'),
+(1, 100.00, 'pending'),
+(3, 300.00, 'completed');
+
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES 
+(1, 1, 1, 150.00),
+(2, 2, 1, 200.00),
+(3, 3, 2, 50.00),
+(4, 1, 1, 300.00);</code></pre>
+      </div>
+
+      <h2>7. Foreign Key operatsiyalari</h2>
+      
+      <div class="presentation-slide">
+        <h3>⚙️ Foreign Key operatsiyalari</h3>
+        
+        <div class="constraint-types">
+          <div class="constraint-card">
+            <h4>🗑️ CASCADE DELETE</h4>
+            <div class="action cascade">CASCADE</div>
+            <p>Agar parent o'chirilsa, child ham o'chiriladi</p>
+            <div class="code-block">
+              <pre><code>FOREIGN KEY (parent_id) 
+REFERENCES parent(id) 
+ON DELETE CASCADE</code></pre>
+            </div>
+          </div>
+          
+          <div class="constraint-card">
+            <h4>🔗 SET NULL</h4>
+            <div class="action set-null">SET NULL</div>
+            <p>Agar parent o'chirilsa, child da NULL bo'ladi</p>
+            <div class="code-block">
+              <pre><code>FOREIGN KEY (parent_id) 
+REFERENCES parent(id) 
+ON DELETE SET NULL</code></pre>
+            </div>
+          </div>
+          
+          <div class="constraint-card">
+            <h4>🚫 RESTRICT</h4>
+            <div class="action restrict">RESTRICT</div>
+            <p>Agar child mavjud bo'lsa, parent o'chirilmaydi</p>
+            <div class="code-block">
+              <pre><code>FOREIGN KEY (parent_id) 
+REFERENCES parent(id) 
+ON DELETE RESTRICT</code></pre>
+            </div>
+          </div>
+          
+          <div class="constraint-card">
+            <h4>⏸️ NO ACTION</h4>
+            <div class="action no-action">NO ACTION</div>
+            <p>Default holat - o'chirishni cheklaydi</p>
+            <div class="code-block">
+              <pre><code>FOREIGN KEY (parent_id) 
+REFERENCES parent(id) 
+ON DELETE NO ACTION</code></pre>
+            </div>
+          </div>
+        </div>
+        
+        <div class="relationship-diagram">
+          <h4>📊 Jadval munosabatlari diagrammasi</h4>
+          <div class="table-box">
+            <h5>Authors</h5>
+            <div class="field">id (PK)</div>
+            <div class="field">name</div>
+            <div class="field">birth_year</div>
+          </div>
+          <span class="relationship-arrow">→</span>
+          <div class="table-box">
+            <h5>Books</h5>
+            <div class="field">id (PK)</div>
+            <div class="field">title</div>
+            <div class="field">author_id (FK)</div>
+          </div>
+          <span class="relationship-arrow">→</span>
+          <div class="table-box">
+            <h5>Book_Loans</h5>
+            <div class="field">id (PK)</div>
+            <div class="field">book_id (FK)</div>
+            <div class="field">borrower_name</div>
+          </div>
+        </div>
+      </div>
+
+      <h2>8. Amaliy loyiha</h2>
+      <div class="code-block">
+        <pre><code># Blog tizimi
+sqlite3 blog.db
+
+# Foreign Key yoqish
+PRAGMA foreign_keys = ON;
+
+# Jadvallar yaratish
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    is_active BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    description TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    content TEXT,
+    author_id INTEGER,
+    is_published BOOLEAN DEFAULT 0,
+    view_count INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE post_categories (
+    post_id INTEGER,
+    category_id INTEGER,
+    PRIMARY KEY (post_id, category_id),
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+);
+
+CREATE TABLE comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    post_id INTEGER,
+    author_id INTEGER,
+    content TEXT NOT NULL,
+    is_approved BOOLEAN DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TABLE tags (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE post_tags (
+    post_id INTEGER,
+    tag_id INTEGER,
+    PRIMARY KEY (post_id, tag_id),
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+);
+
+# Ma'lumotlar qo'shish
+INSERT INTO users (username, email, password_hash) VALUES 
+('admin', 'admin@example.com', 'hashed_password_1'),
+('author1', 'author1@example.com', 'hashed_password_2'),
+('author2', 'author2@example.com', 'hashed_password_3');
+
+INSERT INTO categories (name, description) VALUES 
+('Programming', 'Dasturlash haqida'),
+('Technology', 'Texnologiya yangiliklari'),
+('Education', 'Ta''lim va o''qish');
+
+INSERT INTO posts (title, content, author_id, is_published, view_count) VALUES 
+('Python dasturlash', 'Python dasturlash tili haqida...', 1, 1, 150),
+('JavaScript asoslari', 'JavaScript dasturlash tili...', 2, 1, 200),
+('O''zbekiston tarixi', 'O''zbekiston tarixi haqida...', 3, 1, 100);
+
+INSERT INTO post_categories (post_id, category_id) VALUES 
+(1, 1),  -- Python dasturlash - Programming
+(2, 1),  -- JavaScript asoslari - Programming
+(3, 3);  -- O'zbekiston tarixi - Education
+
+INSERT INTO comments (post_id, author_id, content, is_approved) VALUES 
+(1, 2, 'Juda foydali maqola!', 1),
+(1, 3, 'Rahmat, ko''p narsa o''rgandim', 1),
+(2, 1, 'JavaScript haqida ko''proq yozing', 0);
+
+INSERT INTO tags (name) VALUES 
+('Python'), ('JavaScript'), ('Programming'), ('Technology'), ('Education');
+
+INSERT INTO post_tags (post_id, tag_id) VALUES 
+(1, 1),  -- Python dasturlash - Python
+(1, 3),  -- Python dasturlash - Programming
+(2, 2),  -- JavaScript asoslari - JavaScript
+(2, 3);  -- JavaScript asoslari - Programming</code></pre>
+      </div>
+
+      <h2>9. Foreign Key monitoring</h2>
+      <div class="code-block">
+        <pre><code># Foreign Key monitoring script
+import sqlite3
+
+def check_foreign_keys(db_path):
+    """Foreign Key constraint-larni tekshirish"""
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        
+        # Foreign Key holatini tekshirish
+        cursor.execute("PRAGMA foreign_keys")
+        fk_status = cursor.fetchone()[0]
+        print(f"Foreign Keys: {'ON' if fk_status else 'OFF'}")
+        
+        # Barcha jadvallar
+        cursor.execute("SELECT name FROM sqlite_master WHERE type = 'table'")
+        tables = cursor.fetchall()
+        
+        for table in tables:
+            table_name = table[0]
+            print(f"\n{table_name} jadvali:")
+            
+            # Foreign Key ma'lumotlari
+            cursor.execute(f"PRAGMA foreign_key_list({table_name})")
+            fk_list = cursor.fetchall()
+            
+            if fk_list:
+                for fk in fk_list:
+                    print(f"  - {fk[3]} -> {fk[2]}.{fk[4]}")
+            else:
+                print("  - Foreign Key yo'q")
+        
+        # Foreign Key constraint-larni tekshirish
+        cursor.execute("PRAGMA foreign_key_check")
+        violations = cursor.fetchall()
+        
+        if violations:
+            print(f"\nForeign Key xatolari: {len(violations)}")
+            for violation in violations:
+                print(f"  - {violation}")
+        else:
+            print("\nForeign Key constraint-lar to'g'ri")
+
+# Foydalanish
+check_foreign_keys('blog.db')</code></pre>
+      </div>
+
+      <h2>10. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Foreign Key yoqish:</strong> PRAGMA foreign_keys = ON</li>
+        <li>✅ <strong>Ma'lumotlar yaxlitligi:</strong> Constraint-larni tekshirish</li>
+        <li>✅ <strong>CASCADE DELETE:</strong> Bog'langan ma'lumotlarni o'chirish</li>
+        <li>✅ <strong>SET NULL:</strong> Bog'lanishni uzish</li>
+        <li>✅ <strong>RESTRICT:</strong> O'chirishni cheklash</li>
+        <li>✅ <strong>Monitoring:</strong> Foreign Key holatini tekshirish</li>
+      </ul>
+
+      <div class="next-lesson">
+        <a href="../../7-bolim/1-dars/">Keyingi bo'lim: Yakuniy Bosqich →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>INSERT INTO - Ma'lumot qo'shish</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>➕ INSERT INTO - Ma'lumot qo'shish</h1>
+
+    <div class="lesson-content">
+      <h2>INSERT INTO sintaksisi</h2>
+      <div class="code-block">
+        <pre><code>INSERT INTO table_name (column1, column2, column3, ...)
+VALUES (value1, value2, value3, ...);</code></pre>
+      </div>
+
+      <h2>1. Barcha ustunlarga ma'lumot qo'shish</h2>
+      <div class="code-block">
+        <pre><code>-- Jadval yaratish
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    age INTEGER
+);
+
+-- Ma'lumot qo'shish (barcha ustunlar)
+INSERT INTO users VALUES (1, 'Ali Valiyev', 'ali@example.com', 25);
+INSERT INTO users VALUES (2, 'Malika Karimova', 'malika@example.com', 30);</code></pre>
+      </div>
+
+      <h2>2. Belgili ustunlarga ma'lumot qo'shish</h2>
+      <div class="code-block">
+        <pre><code>-- Faqat kerakli ustunlarga
+INSERT INTO users (name, email) VALUES ('Bobur Toshmatov', 'bobur@example.com');
+
+-- DEFAULT qiymatlar avtomatik qo'shiladi
+INSERT INTO users (name, email, age) VALUES ('Zarina Qodirova', 'zarina@example.com', 28);</code></pre>
+      </div>
+
+      <h2>3. Bir nechta qator qo'shish</h2>
+      <div class="code-block">
+        <pre><code>-- Bir vaqtda ko'p qator qo'shish
+INSERT INTO users (name, email, age) VALUES 
+('Ahmad Karimov', 'ahmad@example.com', 35),
+('Malika Toshmatova', 'malika2@example.com', 22),
+('Bobur Valiyev', 'bobur2@example.com', 29);</code></pre>
+      </div>
+
+      <h2>4. DEFAULT qiymatlar bilan ishlash</h2>
+      <div class="code-block">
+        <pre><code>-- DEFAULT qiymatlar bilan jadval
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    price REAL DEFAULT 0.0,
+    is_active BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- DEFAULT qiymatlarni ishlatish
+INSERT INTO products (name) VALUES ('Laptop');
+-- price=0.0, is_active=1, created_at=CURRENT_TIMESTAMP avtomatik qo'shiladi
+
+-- DEFAULT qiymatlarni bekor qilish
+INSERT INTO products (name, price, is_active) VALUES ('Phone', 500.0, 0);</code></pre>
+      </div>
+
+      <h2>5. NULL qiymatlar bilan ishlash</h2>
+      <div class="code-block">
+        <pre><code>-- NULL qiymat qo'shish
+INSERT INTO users (name, email, age) VALUES ('Test User', 'test@example.com', NULL);
+
+-- Yoki ustunni umuman ko'rsatmaslik
+INSERT INTO users (name, email) VALUES ('Test User 2', 'test2@example.com');
+-- age ustuni NULL bo'ladi</code></pre>
+      </div>
+
+      <h2>6. Boshqa jadvaldan ma'lumot nusxalash</h2>
+      <div class="code-block">
+        <pre><code>-- Boshqa jadvaldan ma'lumot nusxalash
+INSERT INTO users (name, email, age)
+SELECT name, email, age FROM old_users WHERE age > 25;
+
+-- Barcha ma'lumotlarni nusxalash
+INSERT INTO users_backup SELECT * FROM users;</code></pre>
+      </div>
+
+      <h2>7. Murakkab misollar</h2>
+
+      <h3>Blog loyihasi</h3>
+      <div class="code-block">
+        <pre><code>-- Jadvallar yaratish
+CREATE TABLE categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    description TEXT
+);
+
+CREATE TABLE posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    content TEXT,
+    category_id INTEGER,
+    author TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_published BOOLEAN DEFAULT 0,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+-- Kategoriyalar qo'shish
+INSERT INTO categories (name, description) VALUES 
+('Texnologiya', 'IT va texnologiya yangiliklari'),
+('Sport', 'Sport yangiliklari va natijalar'),
+('Siyosat', 'Siyosiy yangiliklari');
+
+-- Postlar qo'shish
+INSERT INTO posts (title, content, category_id, author, is_published) VALUES 
+('Python dasturlash', 'Python dasturlash tili haqida...', 1, 'Ali Valiyev', 1),
+('Futbol natijalari', 'O''zbekiston - Braziliya 2:1', 2, 'Malika Karimova', 1),
+('Saylov natijalari', 'Prezident saylovi natijalari...', 3, 'Bobur Toshmatov', 0);</code></pre>
+      </div>
+
+      <h2>8. Xatolar va ularni hal qilish</h2>
+
+      <h3>Keng tarqalgan xatolar</h3>
+      <div class="code-block">
+        <pre><code>-- Xato: NOT NULL constraint
+INSERT INTO users (email, age) VALUES ('test@example.com', 25);
+-- Xato: NOT NULL constraint failed: users.name
+
+-- To'g'ri:
+INSERT INTO users (name, email, age) VALUES ('Test User', 'test@example.com', 25);
+
+-- Xato: UNIQUE constraint
+INSERT INTO users (name, email) VALUES ('User 1', 'ali@example.com');
+INSERT INTO users (name, email) VALUES ('User 2', 'ali@example.com');
+-- Xato: UNIQUE constraint failed: users.email
+
+-- Xato: CHECK constraint
+CREATE TABLE products (price REAL CHECK (price > 0));
+INSERT INTO products (price) VALUES (-10);
+-- Xato: CHECK constraint failed: products</code></pre>
+      </div>
+
+      <h2>9. INSERT OR IGNORE</h2>
+      <div class="code-block">
+        <pre><code>-- Xatolarni e'tiborsiz qoldirish
+INSERT OR IGNORE INTO users (name, email) VALUES 
+('Ali Valiyev', 'ali@example.com'),
+('Malika Karimova', 'malika@example.com'),
+('Ali Valiyev', 'ali@example.com');  -- Bu qator e'tiborsiz qoldiriladi
+
+-- INSERT OR REPLACE
+INSERT OR REPLACE INTO users (id, name, email) VALUES 
+(1, 'Ali Valiyev Yangi', 'ali@example.com');</code></pre>
+      </div>
+
+      <h2>10. Amaliy loyiha</h2>
+      <div class="code-block">
+        <pre><code>-- Kutubxona tizimi
+CREATE TABLE authors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    birth_year INTEGER,
+    nationality TEXT
+);
+
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author_id INTEGER,
+    isbn TEXT UNIQUE,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL DEFAULT 0.0,
+    FOREIGN KEY (author_id) REFERENCES authors(id)
+);
+
+-- Mualliflar qo'shish
+INSERT INTO authors (name, birth_year, nationality) VALUES 
+('Alisher Navoiy', 1441, 'O''zbek'),
+('Abdulla Avloniy', 1878, 'O''zbek'),
+('Chingiz Aytmatov', 1928, 'Qirg''iz'),
+('Leo Tolstoy', 1828, 'Rus');
+
+-- Kitoblar qo'shish
+INSERT INTO books (title, author_id, isbn, publication_year, pages, price) VALUES 
+('Xamsa', 1, '978-1234567890', 1495, 500, 25.50),
+('Turkiy guliston', 1, '978-1234567891', 1499, 300, 20.00),
+('O''zbek tili grammatikasi', 2, '978-1234567892', 1920, 200, 15.75),
+('Jamilia', 3, '978-1234567893', 1958, 150, 12.00),
+('War and Peace', 4, '978-1234567894', 1869, 1200, 35.00);
+
+-- Ma'lumotlarni tekshirish
+SELECT * FROM authors;
+SELECT * FROM books;</code></pre>
+      </div>
+
+      <h2>Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Ustun nomlarini ko'rsating:</strong> Aniqroq va xavfsizroq</li>
+        <li>✅ <strong>DEFAULT qiymatlardan foydalaning:</strong> Kodni soddalashtirish</li>
+        <li>✅ <strong>NULL qiymatlarni tekshiring:</strong> Ma'lumotlar to'g'riligini ta'minlash</li>
+        <li>✅ <strong>Transaction ishlatish:</strong> Ko'p operatsiyalar uchun</li>
+        <li>✅ <strong>Xatolarni boshqarish:</strong> INSERT OR IGNORE, INSERT OR REPLACE</li>
+      </ul>
+
+      <div class="next-lesson">
+        <a href="../3-dars/">Keyingi dars: SELECT - Ma'lumotlarni tanlash →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

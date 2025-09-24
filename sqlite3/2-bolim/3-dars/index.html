@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>SELECT - Ma'lumotlarni tanlash</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>🔍 SELECT - Ma'lumotlarni tanlash</h1>
+
+    <div class="lesson-content">
+      <h2>SELECT sintaksisi</h2>
+      <div class="code-block">
+        <pre><code>SELECT column1, column2, column3, ...
+FROM table_name
+WHERE condition
+ORDER BY column_name
+LIMIT number;</code></pre>
+      </div>
+
+      <h2>1. Barcha ma'lumotlarni tanlash</h2>
+      <div class="code-block">
+        <pre><code>-- Barcha ustunlar
+SELECT * FROM users;
+
+-- Belgili ustunlar
+SELECT name, email FROM users;
+
+-- Ustun nomini o'zgartirish (alias)
+SELECT name AS ism, email AS pochta FROM users;</code></pre>
+      </div>
+
+      <h2>2. WHERE shartlari</h2>
+      <div class="code-block">
+        <pre><code>-- Tenglik tekshirish
+SELECT * FROM users WHERE age = 25;
+
+-- Katta/kichik tekshirish
+SELECT * FROM users WHERE age > 25;
+SELECT * FROM users WHERE age < 30;
+SELECT * FROM users WHERE age >= 25 AND age <= 35;
+
+-- Matn qidirish
+SELECT * FROM users WHERE name = 'Ali Valiyev';
+SELECT * FROM users WHERE name LIKE 'Ali%';  -- Ali bilan boshlanadigan
+SELECT * FROM users WHERE name LIKE '%Ali%';  -- Ali ni o'z ichiga olgan</code></pre>
+      </div>
+
+      <h2>3. Mantiqiy operatorlar</h2>
+      <div class="code-block">
+        <pre><code>-- AND (va)
+SELECT * FROM users WHERE age > 25 AND age < 35;
+
+-- OR (yoki)
+SELECT * FROM users WHERE name = 'Ali' OR name = 'Malika';
+
+-- NOT (emas)
+SELECT * FROM users WHERE NOT age = 25;
+
+-- Murakkab shartlar
+SELECT * FROM users 
+WHERE (age > 25 AND age < 35) OR (name LIKE 'A%');</code></pre>
+      </div>
+
+      <h2>4. NULL qiymatlar bilan ishlash</h2>
+      <div class="code-block">
+        <pre><code>-- NULL qiymatlarni topish
+SELECT * FROM users WHERE phone IS NULL;
+
+-- NULL bo'lmagan qiymatlarni topish
+SELECT * FROM users WHERE phone IS NOT NULL;
+
+-- NULL qiymatni almashtirish
+SELECT name, COALESCE(phone, 'Telefon yo''q') AS telefon FROM users;</code></pre>
+      </div>
+
+      <h2>5. DISTINCT - Takrorlanmas qiymatlar</h2>
+      <div class="code-block">
+        <pre><code>-- Takrorlanmas qiymatlar
+SELECT DISTINCT age FROM users;
+
+-- Takrorlanmas juftliklar
+SELECT DISTINCT name, age FROM users;</code></pre>
+      </div>
+
+      <h2>6. ORDER BY - Saralash</h2>
+      <div class="code-block">
+        <pre><code>-- O'sish tartibida
+SELECT * FROM users ORDER BY age;
+
+-- Kamayish tartibida
+SELECT * FROM users ORDER BY age DESC;
+
+-- Bir nechta ustun bo'yicha saralash
+SELECT * FROM users ORDER BY name ASC, age DESC;
+
+-- NULL qiymatlar bilan ishlash
+SELECT * FROM users ORDER BY phone NULLS LAST;</code></pre>
+      </div>
+
+      <h2>7. LIMIT - Cheklash</h2>
+      <div class="code-block">
+        <pre><code>-- Birinchi 5 ta qator
+SELECT * FROM users LIMIT 5;
+
+-- 5 ta qatorni o'tkazib, keyingi 10 tasini olish
+SELECT * FROM users LIMIT 10 OFFSET 5;
+
+-- Eng yoshi katta 3 ta foydalanuvchi
+SELECT * FROM users ORDER BY age DESC LIMIT 3;</code></pre>
+      </div>
+
+      <h2>8. Amaliy misollar</h2>
+
+      <h3>Kutubxona tizimi</h3>
+      <div class="code-block">
+        <pre><code>-- Jadvallar
+CREATE TABLE authors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    birth_year INTEGER,
+    nationality TEXT
+);
+
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author_id INTEGER,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    FOREIGN KEY (author_id) REFERENCES authors(id)
+);
+
+-- Ma'lumotlar
+INSERT INTO authors (name, birth_year, nationality) VALUES 
+('Alisher Navoiy', 1441, 'O''zbek'),
+('Abdulla Avloniy', 1878, 'O''zbek'),
+('Chingiz Aytmatov', 1928, 'Qirg''iz');
+
+INSERT INTO books (title, author_id, publication_year, pages, price) VALUES 
+('Xamsa', 1, 1495, 500, 25.50),
+('Turkiy guliston', 1, 1499, 300, 20.00),
+('O''zbek tili grammatikasi', 2, 1920, 200, 15.75),
+('Jamilia', 3, 1958, 150, 12.00);
+
+-- So'rovlar
+-- Barcha mualliflar
+SELECT * FROM authors;
+
+-- O'zbek mualliflari
+SELECT * FROM authors WHERE nationality = 'O''zbek';
+
+-- 1900 yildan keyin tug'ilgan mualliflar
+SELECT * FROM authors WHERE birth_year > 1900;
+
+-- Kitoblar 200 sahifadan ko'p
+SELECT * FROM books WHERE pages > 200;
+
+-- Eng qimmat kitoblar (top 3)
+SELECT * FROM books ORDER BY price DESC LIMIT 3;
+
+-- Kitob nomi 'X' bilan boshlanadigan
+SELECT * FROM books WHERE title LIKE 'X%';
+
+-- 20 dan 30 gacha narxli kitoblar
+SELECT * FROM books WHERE price BETWEEN 20 AND 30;</code></pre>
+      </div>
+
+      <h2>9. Murakkab so'rovlar</h2>
+      <div class="code-block">
+        <pre><code>-- Eng yoshi kichik muallif
+SELECT * FROM authors ORDER BY birth_year DESC LIMIT 1;
+
+-- Eng ko'p sahifali kitob
+SELECT * FROM books ORDER BY pages DESC LIMIT 1;
+
+-- Belgili muallifning kitoblari
+SELECT b.title, b.publication_year, b.price 
+FROM books b 
+JOIN authors a ON b.author_id = a.id 
+WHERE a.name = 'Alisher Navoiy';
+
+-- Murakkab shartlar
+SELECT * FROM books 
+WHERE (pages > 200 AND price < 25) 
+   OR (publication_year > 1900 AND price > 20)
+ORDER BY price DESC;</code></pre>
+      </div>
+
+      <h2>10. Funksiyalar bilan ishlash</h2>
+      <div class="code-block">
+        <pre><code>-- COUNT - Son
+SELECT COUNT(*) FROM books;
+SELECT COUNT(*) FROM books WHERE price > 20;
+
+-- MAX/MIN - Eng katta/kichik
+SELECT MAX(price) FROM books;
+SELECT MIN(pages) FROM books;
+
+-- AVG - O'rtacha
+SELECT AVG(price) FROM books;
+SELECT AVG(pages) FROM books WHERE publication_year > 1900;
+
+-- SUM - Yig'indi
+SELECT SUM(price) FROM books;
+
+-- Ustun nomini o'zgartirish
+SELECT COUNT(*) AS kitoblar_soni FROM books;
+SELECT MAX(price) AS eng_qimmat_kitob FROM books;</code></pre>
+      </div>
+
+      <h2>11. Xatolar va ularni hal qilish</h2>
+      <div class="code-block">
+        <pre><code>-- Xato: Mavjud bo'lmagan ustun
+SELECT wrong_column FROM books;
+-- Xato: no such column: wrong_column
+
+-- Xato: Mavjud bo'lmagan jadval
+SELECT * FROM wrong_table;
+-- Xato: no such table: wrong_table
+
+-- Xato: Sintaks xatosi
+SELECT * FROM books WHERE price = 'not_a_number';
+-- Xato: no such column: not_a_number</code></pre>
+      </div>
+
+      <h2>12. Performance optimizatsiya</h2>
+      <div class="code-block">
+        <pre><code>-- Faqat kerakli ustunlarni tanlash
+SELECT name, email FROM users;  -- Yaxshi
+SELECT * FROM users;  -- Yomon (barcha ustunlar)
+
+-- LIMIT ishlatish
+SELECT * FROM books LIMIT 10;  -- Yaxshi
+SELECT * FROM books;  -- Yomon (barcha qatorlar)
+
+-- Indekslardan foydalanish
+CREATE INDEX idx_books_price ON books(price);
+SELECT * FROM books WHERE price > 20;  -- Tezroq ishlaydi</code></pre>
+      </div>
+
+      <h2>Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Faqat kerakli ustunlarni tanlang:</strong> * o'rniga aniq ustun nomlari</li>
+        <li>✅ <strong>LIMIT ishlatish:</strong> Katta natijalar uchun</li>
+        <li>✅ <strong>Indekslardan foydalanish:</strong> Tez qidiruv uchun</li>
+        <li>✅ <strong>WHERE shartlarini optimizatsiya qiling:</strong> Eng cheklovchi shartni birinchi qo'ying</li>
+        <li>✅ <strong>Alias ishlatish:</strong> Natijalarni tushunarli qiling</li>
+      </ul>
+
+      <div class="next-lesson">
+        <a href="../4-dars/">Keyingi dars: WHERE shartlari - =, <, >, !=, BETWEEN, LIKE →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

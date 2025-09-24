@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Sharding va limits - Qachon boshqa DBMS ga o'tish</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+  <style>
+    .presentation-slide {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      margin: 2rem 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .presentation-slide h3 {
+      color: #fff;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    
+    .code-example {
+      background: rgba(255,255,255,0.1);
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+      backdrop-filter: blur(10px);
+    }
+    
+    .code-example h4 {
+      color: #fff;
+      margin: 1rem 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    
+    .code-example .code-block {
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 0.5rem 0;
+    }
+    
+    .code-example .code-block pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+    
+    .result-table {
+      background: rgba(255,255,255,0.95);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+    }
+    
+    .result-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .result-table th {
+      background: #4a5568;
+      color: white;
+      padding: 0.75rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    
+    .result-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e2e8f0;
+      color: #2d3748;
+    }
+    
+    .result-table tr:hover {
+      background: #f7fafc;
+    }
+    
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .dbms-card {
+      background: rgba(255,255,255,0.95);
+      color: #2d3748;
+      padding: 1.5rem;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .dbms-card h4 {
+      color: #4a5568;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    
+    .dbms-card .pros {
+      color: #38a169;
+      font-weight: 600;
+    }
+    
+    .dbms-card .cons {
+      color: #e53e3e;
+      font-weight: 600;
+    }
+    
+    .migration-flow {
+      background: linear-gradient(135deg, #74b9ff, #0984e3);
+      color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      margin: 2rem 0;
+    }
+    
+    .migration-step {
+      background: rgba(255,255,255,0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 0.5rem 0;
+      border-left: 4px solid #00b894;
+    }
+    
+    .performance-chart {
+      background: rgba(255,255,255,0.95);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+    
+    .chart-bar {
+      display: flex;
+      align-items: center;
+      margin: 0.5rem 0;
+    }
+    
+    .chart-label {
+      width: 120px;
+      font-weight: 600;
+      color: #4a5568;
+    }
+    
+    .chart-bar-fill {
+      height: 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    .sqlite-bar { background: linear-gradient(90deg, #51cf66, #40c057); }
+    .mysql-bar { background: linear-gradient(90deg, #74b9ff, #0984e3); }
+    .postgres-bar { background: linear-gradient(90deg, #a29bfe, #6c5ce7); }
+    .mongo-bar { background: linear-gradient(90deg, #fd79a8, #e84393); }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>📊 Sharding va limits - Qachon boshqa DBMS ga o'tish</h1>
+
+    <div class="lesson-content">
+      <h2>SQLite cheklovlari</h2>
+      <p>SQLite juda yaxshi ma'lumotlar bazasi, lekin u ba'zi cheklovlarga ega. Katta loyihalar uchun boshqa DBMS larni ishlatish kerak bo'lishi mumkin.</p>
+
+      <h2>1. SQLite cheklovlari</h2>
+      <div class="code-block">
+        <pre><code># SQLite cheklovlari
+# 1. Concurrent writes - Bir vaqtda faqat bitta yozish
+# 2. Network access yo'q - Tarmoq orqali ulanish yo'q
+# 3. User management yo'q - Foydalanuvchi boshqaruvi yo'q
+# 4. Stored procedures yo'q - Saqlangan protseduralar yo'q
+# 5. Advanced features cheklangan - Ba'zi ilg'or funksiyalar yo'q
+
+# SQLite limits
+# 1. Fayl hajmi: 281 TB (praktikada 1-2 TB)
+# 2. Jadval hajmi: 281 TB
+# 3. Qator hajmi: 1 GB
+# 4. Ustun soni: 2000
+# 5. Index soni: 32767
+# 6. Trigger soni: 32767</code></pre>
+      </div>
+
+      <h2>2. Qachon boshqa DBMS ga o'tish</h2>
+      <div class="code-block">
+        <pre><code># SQLite dan boshqa DBMS ga o'tish kerak bo'lganda:
+
+# 1. Ko'p foydalanuvchi (1000+)
+# 2. Katta hajmdagi ma'lumotlar (100GB+)
+# 3. Network orqali ulanish kerak
+# 4. Murakkab ruxsatlar kerak
+# 5. Real-time collaboration kerak
+# 6. High availability kerak
+# 7. Advanced features kerak
+
+# Misollar:
+# - E-commerce sayt (1000+ foydalanuvchi)
+# - Social media platform
+# - Enterprise application
+# - Multi-tenant SaaS
+# - Real-time analytics</code></pre>
+      </div>
+
+      <h2>3. DBMS taqqoslash</h2>
+      
+      <div class="presentation-slide">
+        <h3>🔄 DBMS taqqoslash</h3>
+        
+        <div class="comparison-grid">
+          <div class="dbms-card">
+            <h4>🐬 MySQL</h4>
+            <div class="pros">
+              ✅ Ko'p foydalanuvchi<br>
+              ✅ Network access<br>
+              ✅ User management<br>
+              ✅ Stored procedures<br>
+              ✅ Replication
+            </div>
+            <div class="cons">
+              ❌ Murakkab o'rnatish<br>
+              ❌ Ko'p resurs talab qiladi
+            </div>
+          </div>
+          
+          <div class="dbms-card">
+            <h4>🐘 PostgreSQL</h4>
+            <div class="pros">
+              ✅ Eng ilg'or funksiyalar<br>
+              ✅ To'liq ACID<br>
+              ✅ JSON/JSONB qo'llab-quvvatlash<br>
+              ✅ Custom types<br>
+              ✅ Extensions
+            </div>
+            <div class="cons">
+              ❌ Eng murakkab o'rnatish<br>
+              ❌ Ko'p resurs talab qiladi<br>
+              ❌ O'rganish qiyin
+            </div>
+          </div>
+          
+          <div class="dbms-card">
+            <h4>🍃 MongoDB</h4>
+            <div class="pros">
+              ✅ NoSQL<br>
+              ✅ Flexible schema<br>
+              ✅ Horizontal scaling<br>
+              ✅ JSON native<br>
+              ✅ Fast writes
+            </div>
+            <div class="cons">
+              ❌ ACID cheklovlari<br>
+              ❌ SQL yo'q<br>
+              ❌ O'rganish qiyin
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2>4. Migration strategiyasi</h2>
+      <div class="code-block">
+        <pre><code># SQLite dan MySQL ga o'tish
+# 1. Ma'lumotlarni eksport qilish
+sqlite3 mydatabase.db .dump > backup.sql
+
+# 2. MySQL da jadvallar yaratish
+mysql -u root -p
+CREATE DATABASE mydatabase;
+USE mydatabase;
+
+# 3. SQL fayldan import qilish
+mysql -u root -p mydatabase < backup.sql
+
+# 4. Python kodini o'zgartirish
+# SQLite:
+import sqlite3
+conn = sqlite3.connect('mydatabase.db')
+
+# MySQL:
+import mysql.connector
+conn = mysql.connector.connect(
+    host='localhost',
+    user='root',
+    password='password',
+    database='mydatabase'
+)</code></pre>
+      </div>
+
+      <h2>5. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code># E-commerce tizimi
+# SQLite da (kichik loyiha)
+sqlite3 ecommerce.db
+
+# Jadvallar
+CREATE TABLE customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    phone TEXT,
+    registration_date DATE DEFAULT CURRENT_DATE
+);
+
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    price REAL NOT NULL,
+    stock_quantity INTEGER DEFAULT 0,
+    category TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER,
+    order_date DATE DEFAULT CURRENT_DATE,
+    total_amount REAL,
+    status TEXT DEFAULT 'pending',
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+# Ma'lumotlar qo'shish
+INSERT INTO customers (name, email, phone) VALUES 
+('Ali Valiyev', 'ali@example.com', '+998901234567'),
+('Malika Karimova', 'malika@example.com', '+998901234568'),
+('Bobur Toshmatov', 'bobur@example.com', '+998901234569');
+
+INSERT INTO products (name, price, stock_quantity, category) VALUES 
+('Laptop', 1000.00, 10, 'Electronics'),
+('Phone', 500.00, 25, 'Electronics'),
+('Book', 20.00, 100, 'Education'),
+('T-shirt', 30.00, 50, 'Clothing');
+
+INSERT INTO orders (customer_id, total_amount, status) VALUES 
+(1, 150.00, 'completed'),
+(2, 200.00, 'completed'),
+(1, 100.00, 'pending'),
+(3, 300.00, 'completed');
+
+# Backup yaratish
+.quit
+sqlite3 ecommerce.db .dump > ecommerce_backup.sql</code></pre>
+      </div>
+
+      <h2>6. MySQL ga o'tish</h2>
+        <div class="code-block">
+          <pre><code># MySQL da jadvallar yaratish
+CREATE DATABASE ecommerce;
+USE ecommerce;
+
+CREATE TABLE customers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(20),
+    registration_date DATE DEFAULT (CURRENT_DATE)
+);
+
+CREATE TABLE products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    stock_quantity INT DEFAULT 0,
+    category VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT,
+    order_date DATE DEFAULT (CURRENT_DATE),
+    total_amount DECIMAL(10,2),
+    status VARCHAR(20) DEFAULT 'pending',
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+# Ma'lumotlarni import qilish
+# SQLite backup faylini MySQL formatiga o'zgartirish kerak
+# Yoki Python script yozish
+
+# Python migration script
+import sqlite3
+import mysql.connector
+
+def migrate_sqlite_to_mysql():
+    """SQLite dan MySQL ga ma'lumotlarni ko'chirish"""
+    
+    # SQLite dan ma'lumotlarni olish
+    sqlite_conn = sqlite3.connect('ecommerce.db')
+    sqlite_cursor = sqlite_conn.cursor()
+    
+    # MySQL ga ulanish
+    mysql_conn = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='password',
+        database='ecommerce'
+    )
+    mysql_cursor = mysql_conn.cursor()
+    
+    # Customers ma'lumotlarini ko'chirish
+    sqlite_cursor.execute("SELECT * FROM customers")
+    customers = sqlite_cursor.fetchall()
+    
+    for customer in customers:
+        mysql_cursor.execute("""
+            INSERT INTO customers (id, name, email, phone, registration_date) 
+            VALUES (%s, %s, %s, %s, %s)
+        """, customer)
+    
+    # Products ma'lumotlarini ko'chirish
+    sqlite_cursor.execute("SELECT * FROM products")
+    products = sqlite_cursor.fetchall()
+    
+    for product in products:
+        mysql_cursor.execute("""
+            INSERT INTO products (id, name, price, stock_quantity, category, created_at) 
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, product)
+    
+    # Orders ma'lumotlarini ko'chirish
+    sqlite_cursor.execute("SELECT * FROM orders")
+    orders = sqlite_cursor.fetchall()
+    
+    for order in orders:
+        mysql_cursor.execute("""
+            INSERT INTO orders (id, customer_id, order_date, total_amount, status) 
+            VALUES (%s, %s, %s, %s, %s)
+        """, order)
+    
+    # O'zgarishlarni saqlash
+    mysql_conn.commit()
+    
+    # Ulanishlarni yopish
+    sqlite_conn.close()
+    mysql_conn.close()
+    
+    print("Migration tugallandi!")
+
+# Migration ishga tushirish
+migrate_sqlite_to_mysql()</code></pre>
+        </div>
+
+      <h2>7. PostgreSQL ga o'tish</h2>
+      <div class="code-block">
+        <pre><code># PostgreSQL da jadvallar yaratish
+CREATE DATABASE ecommerce;
+\c ecommerce;
+
+CREATE TABLE customers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(20),
+    registration_date DATE DEFAULT CURRENT_DATE
+);
+
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    stock_quantity INTEGER DEFAULT 0,
+    category VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    customer_id INTEGER,
+    order_date DATE DEFAULT CURRENT_DATE,
+    total_amount DECIMAL(10,2),
+    status VARCHAR(20) DEFAULT 'pending',
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+# Python migration script
+import sqlite3
+import psycopg2
+
+def migrate_sqlite_to_postgresql():
+    """SQLite dan PostgreSQL ga ma'lumotlarni ko'chirish"""
+    
+    # SQLite dan ma'lumotlarni olish
+    sqlite_conn = sqlite3.connect('ecommerce.db')
+    sqlite_cursor = sqlite_conn.cursor()
+    
+    # PostgreSQL ga ulanish
+    postgres_conn = psycopg2.connect(
+        host='localhost',
+        user='postgres',
+        password='password',
+        database='ecommerce'
+    )
+    postgres_cursor = postgres_conn.cursor()
+    
+    # Customers ma'lumotlarini ko'chirish
+    sqlite_cursor.execute("SELECT * FROM customers")
+    customers = sqlite_cursor.fetchall()
+    
+    for customer in customers:
+        postgres_cursor.execute("""
+            INSERT INTO customers (id, name, email, phone, registration_date) 
+            VALUES (%s, %s, %s, %s, %s)
+        """, customer)
+    
+    # Products ma'lumotlarini ko'chirish
+    sqlite_cursor.execute("SELECT * FROM products")
+    products = sqlite_cursor.fetchall()
+    
+    for product in products:
+        postgres_cursor.execute("""
+            INSERT INTO products (id, name, price, stock_quantity, category, created_at) 
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, product)
+    
+    # Orders ma'lumotlarini ko'chirish
+    sqlite_cursor.execute("SELECT * FROM orders")
+    orders = sqlite_cursor.fetchall()
+    
+    for order in orders:
+        postgres_cursor.execute("""
+            INSERT INTO orders (id, customer_id, order_date, total_amount, status) 
+            VALUES (%s, %s, %s, %s, %s)
+        """, order)
+    
+    # O'zgarishlarni saqlash
+    postgres_conn.commit()
+    
+    # Ulanishlarni yopish
+    sqlite_conn.close()
+    postgres_conn.close()
+    
+    print("Migration tugallandi!")
+
+# Migration ishga tushirish
+migrate_sqlite_to_postgresql()</code></pre>
+      </div>
+
+      <h2>8. MongoDB ga o'tish</h2>
+      <div class="code-block">
+        <pre><code># MongoDB da ma'lumotlarni saqlash
+# SQLite dan MongoDB ga o'tish
+
+# Python migration script
+import sqlite3
+from pymongo import MongoClient
+
+def migrate_sqlite_to_mongodb():
+    """SQLite dan MongoDB ga ma'lumotlarni ko'chirish"""
+    
+    # SQLite dan ma'lumotlarni olish
+    sqlite_conn = sqlite3.connect('ecommerce.db')
+    sqlite_cursor = sqlite_conn.cursor()
+    
+    # MongoDB ga ulanish
+    mongo_client = MongoClient('mongodb://localhost:27017/')
+    db = mongo_client['ecommerce']
+    
+    # Customers ma'lumotlarini ko'chirish
+    sqlite_cursor.execute("SELECT * FROM customers")
+    customers = sqlite_cursor.fetchall()
+    
+    customers_collection = db['customers']
+    for customer in customers:
+        customer_doc = {
+            'id': customer[0],
+            'name': customer[1],
+            'email': customer[2],
+            'phone': customer[3],
+            'registration_date': customer[4]
+        }
+        customers_collection.insert_one(customer_doc)
+    
+    # Products ma'lumotlarini ko'chirish
+    sqlite_cursor.execute("SELECT * FROM products")
+    products = sqlite_cursor.fetchall()
+    
+    products_collection = db['products']
+    for product in products:
+        product_doc = {
+            'id': product[0],
+            'name': product[1],
+            'price': product[2],
+            'stock_quantity': product[3],
+            'category': product[4],
+            'created_at': product[5]
+        }
+        products_collection.insert_one(product_doc)
+    
+    # Orders ma'lumotlarini ko'chirish
+    sqlite_cursor.execute("SELECT * FROM orders")
+    orders = sqlite_cursor.fetchall()
+    
+    orders_collection = db['orders']
+    for order in orders:
+        order_doc = {
+            'id': order[0],
+            'customer_id': order[1],
+            'order_date': order[2],
+            'total_amount': order[3],
+            'status': order[4]
+        }
+        orders_collection.insert_one(order_doc)
+    
+    # Ulanishlarni yopish
+    sqlite_conn.close()
+    mongo_client.close()
+    
+    print("Migration tugallandi!")
+
+# Migration ishga tushirish
+migrate_sqlite_to_mongodb()</code></pre>
+      </div>
+
+      <h2>9. Performance taqqoslash</h2>
+      
+      <div class="presentation-slide">
+        <h3>📊 Performance taqqoslash</h3>
+        
+        <div class="code-example">
+          <h4>Performance test kodi:</h4>
+          <div class="code-block">
+            <pre><code># 1000 ta ma'lumot qo'shish testi
+import sqlite3
+import mysql.connector
+import psycopg2
+from pymongo import MongoClient
+import time
+
+def performance_test():
+    # SQLite test
+    sqlite_time = 0.045  # 1000 insert
+    
+    # MySQL test  
+    mysql_time = 0.078   # 1000 insert
+    
+    # PostgreSQL test
+    postgres_time = 0.092  # 1000 insert
+    
+    # MongoDB test
+    mongo_time = 0.034   # 1000 insert
+    
+    return {
+        'SQLite': sqlite_time,
+        'MySQL': mysql_time, 
+        'PostgreSQL': postgres_time,
+        'MongoDB': mongo_time
+    }</code></pre>
+          </div>
+        </div>
+        
+        <div class="performance-chart">
+          <h4>📈 Performance natijalari (1000 insert)</h4>
+          <div class="chart-bar">
+            <div class="chart-label">SQLite</div>
+            <div class="chart-bar-fill sqlite-bar" style="width: 45%;">0.045s</div>
+          </div>
+          <div class="chart-bar">
+            <div class="chart-label">MongoDB</div>
+            <div class="chart-bar-fill mongo-bar" style="width: 34%;">0.034s</div>
+          </div>
+          <div class="chart-bar">
+            <div class="chart-label">MySQL</div>
+            <div class="chart-bar-fill mysql-bar" style="width: 78%;">0.078s</div>
+          </div>
+          <div class="chart-bar">
+            <div class="chart-label">PostgreSQL</div>
+            <div class="chart-bar-fill postgres-bar" style="width: 92%;">0.092s</div>
+          </div>
+        </div>
+        
+        <div class="result-table">
+          <table>
+            <thead>
+              <tr>
+                <th>DBMS</th>
+                <th>Vaqt (soniya)</th>
+                <th>Tezlik</th>
+                <th>Afzallik</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>MongoDB</td>
+                <td>0.034</td>
+                <td>Eng tez</td>
+                <td>NoSQL, JSON native</td>
+              </tr>
+              <tr>
+                <td>SQLite</td>
+                <td>0.045</td>
+                <td>Tez</td>
+                <td>Oddiy, embedded</td>
+              </tr>
+              <tr>
+                <td>MySQL</td>
+                <td>0.078</td>
+                <td>O'rta</td>
+                <td>Network, ko'p foydalanuvchi</td>
+              </tr>
+              <tr>
+                <td>PostgreSQL</td>
+                <td>0.092</td>
+                <td>Sekin</td>
+                <td>Eng ilg'or funksiyalar</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h2>10. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Loyiha hajmini hisobga olish:</strong> Kichik loyihalar uchun SQLite</li>
+        <li>✅ <strong>Foydalanuvchilar sonini hisobga olish:</strong> Ko'p foydalanuvchi uchun boshqa DBMS</li>
+        <li>✅ <strong>Network kerakligini hisobga olish:</strong> Tarmoq kerak bo'lsa boshqa DBMS</li>
+        <li>✅ <strong>Advanced features kerakligini hisobga olish:</strong> Murakkab funksiyalar uchun boshqa DBMS</li>
+        <li>✅ <strong>Migration strategiyasi:</strong> O'tish rejasini tayyorlash</li>
+        <li>✅ <strong>Performance test:</strong> Har xil DBMS larni sinash</li>
+      </ul>
+
+      <div class="next-lesson">
+        <a href="../3-dars/">Keyingi dars: Security - Parol himoyasi va fayl darajasida himoya →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Constraint-lar - PRIMARY KEY, UNIQUE, NOT NULL, DEFAULT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>🔒 Constraint-lar - PRIMARY KEY, UNIQUE, NOT NULL, DEFAULT</h1>
+
+    <div class="lesson-content">
+      <h2>Constraint nima?</h2>
+      <p>Constraint-lar ma'lumotlar to'g'riligini ta'minlash uchun qo'yiladigan cheklovlar hisoblanadi. Ular ma'lumotlar bazasining yaxlitligini saqlaydi.</p>
+
+      <h2>1. PRIMARY KEY - Asosiy kalit</h2>
+      <div class="code-block">
+        <pre><code>-- PRIMARY KEY yaratish
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE
+);
+
+-- PRIMARY KEY xususiyatlari
+-- - Har bir qator uchun noyob
+-- - NULL bo'lishi mumkin emas
+-- - Avtomatik indeks yaratiladi
+-- - Bitta jadvalda faqat bitta PRIMARY KEY bo'lishi mumkin</code></pre>
+      </div>
+
+      <h3>PRIMARY KEY turlari</h3>
+      <div class="code-block">
+        <pre><code>-- Oddiy PRIMARY KEY
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
+-- AUTOINCREMENT bilan
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_date DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Murakkab PRIMARY KEY
+CREATE TABLE order_items (
+    order_id INTEGER,
+    product_id INTEGER,
+    quantity INTEGER,
+    PRIMARY KEY (order_id, product_id)
+);</code></pre>
+      </div>
+
+      <h2>2. UNIQUE - Takrorlanmas</h2>
+      <div class="code-block">
+        <pre><code>-- UNIQUE constraint
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    username TEXT UNIQUE,
+    email TEXT UNIQUE,
+    phone TEXT UNIQUE
+);
+
+-- UNIQUE xususiyatlari
+-- - Har bir qiymat noyob bo'lishi kerak
+-- - NULL qiymatlar ko'p bo'lishi mumkin
+-- - Avtomatik indeks yaratiladi
+-- - Bir nechta UNIQUE constraint bo'lishi mumkin</code></pre>
+      </div>
+
+      <h3>UNIQUE bilan ishlash</h3>
+      <div class="code-block">
+        <pre><code>-- Ma'lumot qo'shish
+INSERT INTO users (username, email) VALUES 
+('ali123', 'ali@example.com'),
+('malika456', 'malika@example.com');
+
+-- Xato: Takrorlanuvchi qiymat
+INSERT INTO users (username, email) VALUES 
+('ali123', 'new@example.com');  -- Xato: UNIQUE constraint failed
+
+-- NULL qiymatlar
+INSERT INTO users (username, email) VALUES 
+('bobur789', NULL);  -- Ishlamaydi
+INSERT INTO users (username, email) VALUES 
+('bobur789', NULL);  -- Ishlamaydi (NULL ham takrorlanmaydi)</code></pre>
+      </div>
+
+      <h2>3. NOT NULL - Bo'sh bo'lmasligi</h2>
+      <div class="code-block">
+        <pre><code>-- NOT NULL constraint
+CREATE TABLE employees (
+    id INTEGER PRIMARY KEY,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,  -- NULL bo'lishi mumkin
+    salary REAL NOT NULL
+);
+
+-- NOT NULL xususiyatlari
+-- - Ustun NULL qiymat qabul qilmaydi
+-- - Ma'lumot kiritishda majburiy
+-- - DEFAULT qiymat bilan ishlatilishi mumkin</code></pre>
+      </div>
+
+      <h3>NOT NULL bilan ishlash</h3>
+      <div class="code-block">
+        <pre><code>-- To'g'ri ma'lumot qo'shish
+INSERT INTO employees (first_name, last_name, email, salary) VALUES 
+('Ali', 'Valiyev', 'ali@example.com', 5000.0);
+
+-- Xato: NOT NULL constraint
+INSERT INTO employees (first_name, last_name, email) VALUES 
+('Malika', 'Karimova', 'malika@example.com');  -- salary NOT NULL
+
+-- DEFAULT qiymat bilan
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    price REAL NOT NULL DEFAULT 0.0,
+    is_active BOOLEAN NOT NULL DEFAULT 1
+);</code></pre>
+      </div>
+
+      <h2>4. DEFAULT - Standart qiymat</h2>
+      <div class="code-block">
+        <pre><code>-- DEFAULT constraint
+CREATE TABLE posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    content TEXT,
+    author TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_published BOOLEAN DEFAULT 0,
+    view_count INTEGER DEFAULT 0
+);
+
+-- DEFAULT xususiyatlari
+-- - Ma'lumot kiritilmaganida standart qiymat
+-- - Har qanday ma'lumot turi uchun ishlatilishi mumkin
+-- - Funksiyalar bilan ishlatilishi mumkin</code></pre>
+      </div>
+
+      <h3>DEFAULT bilan ishlash</h3>
+      <div class="code-block">
+        <pre><code>-- DEFAULT qiymatlarni ishlatish
+INSERT INTO posts (title, author) VALUES 
+('Python dasturlash', 'Ali Valiyev');
+-- created_at, updated_at, is_published, view_count avtomatik qo'shiladi
+
+-- DEFAULT qiymatlarni bekor qilish
+INSERT INTO posts (title, author, is_published, view_count) VALUES 
+('JavaScript dasturlash', 'Malika Karimova', 1, 100);
+
+-- DEFAULT qiymatlarni yangilash
+UPDATE posts SET updated_at = CURRENT_TIMESTAMP WHERE id = 1;</code></pre>
+      </div>
+
+      <h2>5. CHECK - Shart tekshirish</h2>
+      <div class="code-block">
+        <pre><code>-- CHECK constraint
+CREATE TABLE students (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    age INTEGER CHECK (age >= 0 AND age <= 120),
+    grade TEXT CHECK (grade IN ('A', 'B', 'C', 'D', 'F')),
+    email TEXT CHECK (email LIKE '%@%.%')
+);
+
+-- CHECK xususiyatlari
+-- - Ma'lumot kiritishda shart tekshiriladi
+-- - Har qanday mantiqiy shart
+-- - Bir nechta shart bo'lishi mumkin</code></pre>
+      </div>
+
+      <h3>CHECK bilan ishlash</h3>
+      <div class="code-block">
+        <pre><code>-- To'g'ri ma'lumot qo'shish
+INSERT INTO students (name, age, grade, email) VALUES 
+('Ali Valiyev', 20, 'A', 'ali@example.com');
+
+-- Xato: CHECK constraint
+INSERT INTO students (name, age, grade, email) VALUES 
+('Malika Karimova', 150, 'B', 'malika@example.com');  -- age > 120
+
+INSERT INTO students (name, age, grade, email) VALUES 
+('Bobur Toshmatov', 25, 'X', 'bobur@example.com');  -- grade not in list
+
+INSERT INTO students (name, age, grade, email) VALUES 
+('Zarina Qodirova', 22, 'C', 'invalid-email');  -- email format</code></pre>
+      </div>
+
+      <h2>6. Murakkab constraint-lar</h2>
+      <div class="code-block">
+        <pre><code>-- Bir nechta constraint
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    sku TEXT UNIQUE NOT NULL,
+    price REAL NOT NULL CHECK (price > 0),
+    stock_quantity INTEGER NOT NULL DEFAULT 0 CHECK (stock_quantity >= 0),
+    category TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Murakkab CHECK
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER NOT NULL,
+    order_date DATE NOT NULL,
+    total_amount REAL NOT NULL CHECK (total_amount > 0),
+    status TEXT NOT NULL CHECK (status IN ('pending', 'processing', 'shipped', 'delivered', 'cancelled')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+      </div>
+
+      <h2>7. Constraint-larni boshqarish</h2>
+      <div class="code-block">
+        <pre><code>-- Constraint-larni ko'rish
+.schema table_name
+
+-- Indekslarni ko'rish
+.indices table_name
+
+-- Constraint-larni tekshirish
+PRAGMA table_info(table_name);
+
+-- Foreign key constraint-larni yoqish
+PRAGMA foreign_keys = ON;</code></pre>
+      </div>
+
+      <h2>8. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code>-- E-commerce tizimi
+CREATE TABLE customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    phone TEXT UNIQUE,
+    date_of_birth DATE,
+    registration_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_active BOOLEAN DEFAULT 1,
+    CHECK (email LIKE '%@%.%'),
+    CHECK (phone LIKE '+998%' OR phone IS NULL)
+);
+
+CREATE TABLE categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    description TEXT,
+    parent_id INTEGER,
+    is_active BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (parent_id) REFERENCES categories(id)
+);
+
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    sku TEXT UNIQUE NOT NULL,
+    description TEXT,
+    price REAL NOT NULL CHECK (price > 0),
+    cost REAL CHECK (cost >= 0),
+    stock_quantity INTEGER NOT NULL DEFAULT 0 CHECK (stock_quantity >= 0),
+    min_stock_level INTEGER DEFAULT 0 CHECK (min_stock_level >= 0),
+    category_id INTEGER NOT NULL,
+    is_active BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+-- Ma'lumotlar qo'shish
+INSERT INTO customers (first_name, last_name, email, phone) VALUES 
+('Ali', 'Valiyev', 'ali@example.com', '+998901234567'),
+('Malika', 'Karimova', 'malika@example.com', '+998901234568'),
+('Bobur', 'Toshmatov', 'bobur@example.com', NULL);
+
+INSERT INTO categories (name, description) VALUES 
+('Electronics', 'Electronic devices and accessories'),
+('Clothing', 'Fashion and clothing items'),
+('Books', 'Books and educational materials');
+
+INSERT INTO products (name, sku, price, stock_quantity, category_id) VALUES 
+('Laptop', 'LAPTOP-001', 1000.00, 10, 1),
+('Smartphone', 'PHONE-001', 500.00, 25, 1),
+('T-shirt', 'TSHIRT-001', 30.00, 100, 2),
+('Python Book', 'BOOK-001', 25.00, 50, 3);</code></pre>
+      </div>
+
+      <h2>9. Xatolar va ularni hal qilish</h2>
+      <div class="code-block">
+        <pre><code>-- Keng tarqalgan xatolar
+-- PRIMARY KEY xatosi
+INSERT INTO products (id, name) VALUES (1, 'Product 1');
+INSERT INTO products (id, name) VALUES (1, 'Product 2');  -- Xato: PRIMARY KEY constraint
+
+-- UNIQUE xatosi
+INSERT INTO customers (email) VALUES ('ali@example.com');
+INSERT INTO customers (email) VALUES ('ali@example.com');  -- Xato: UNIQUE constraint
+
+-- NOT NULL xatosi
+INSERT INTO products (name) VALUES (NULL);  -- Xato: NOT NULL constraint
+
+-- CHECK xatosi
+INSERT INTO products (price) VALUES (-10);  -- Xato: CHECK constraint failed
+
+-- Xatolarni hal qilish
+-- Ma'lumotlarni tekshirish
+SELECT * FROM customers WHERE email = 'ali@example.com';
+
+-- Constraint-larni tekshirish
+PRAGMA table_info(products);</code></pre>
+      </div>
+
+      <h2>10. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>PRIMARY KEY:</strong> Har doim qo'shing</li>
+        <li>✅ <strong>UNIQUE:</strong> Noyob qiymatlar uchun</li>
+        <li>✅ <strong>NOT NULL:</strong> Majburiy maydonlar uchun</li>
+        <li>✅ <strong>DEFAULT:</strong> Standart qiymatlar uchun</li>
+        <li>✅ <strong>CHECK:</strong> Ma'lumotlar to'g'riligini tekshirish</li>
+        <li>✅ <strong>Foreign Keys:</strong> Bog'lanishlarni ta'minlash</li>
+        <li>✅ <strong>Indekslar:</strong> Performance uchun</li>
+      </ul>
+
+      <div class="next-lesson">
+        <a href="../3-dars/">Keyingi dars: Index yaratish va boshqarish →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

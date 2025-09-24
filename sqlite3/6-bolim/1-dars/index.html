@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Query optimization - EXPLAIN QUERY PLAN</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+  <style>
+    .presentation-slide {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      margin: 2rem 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .presentation-slide h3 {
+      color: #fff;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    
+    .code-example {
+      background: rgba(255,255,255,0.1);
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+      backdrop-filter: blur(10px);
+    }
+    
+    .code-example h4 {
+      color: #fff;
+      margin: 1rem 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    
+    .code-example .code-block {
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 0.5rem 0;
+    }
+    
+    .code-example .code-block pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+    
+    .result-table {
+      background: rgba(255,255,255,0.95);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+    }
+    
+    .result-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .result-table th {
+      background: #4a5568;
+      color: white;
+      padding: 0.75rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    
+    .result-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e2e8f0;
+      color: #2d3748;
+    }
+    
+    .result-table tr:hover {
+      background: #f7fafc;
+    }
+    
+    .performance-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+    
+    .performance-before, .performance-after {
+      padding: 1.5rem;
+      border-radius: 10px;
+      text-align: center;
+    }
+    
+    .performance-before {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      color: white;
+    }
+    
+    .performance-after {
+      background: linear-gradient(135deg, #51cf66, #40c057);
+      color: white;
+    }
+    
+    .performance-before h4, .performance-after h4 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    
+    .performance-time {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 1rem 0;
+    }
+    
+    .optimization-tip {
+      background: linear-gradient(135deg, #74b9ff, #0984e3);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+      border-left: 5px solid #00b894;
+    }
+    
+    .optimization-tip h4 {
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>⚡ Query optimization - EXPLAIN QUERY PLAN</h1>
+
+    <div class="lesson-content">
+      <h2>Query optimization nima?</h2>
+      <p>Query optimization - bu SQL so'rovlarini tezlashtirish va samaraliroq qilish jarayoni. Bu ma'lumotlar bazasi performance ni yaxshilash uchun juda muhim.</p>
+
+      <h2>1. EXPLAIN QUERY PLAN</h2>
+      
+      <div class="presentation-slide">
+        <h3>📊 So'rov rejasini tahlil qilish</h3>
+        
+        <div class="code-example">
+          <h4>Kod:</h4>
+          <div class="code-block">
+            <pre><code>-- So'rov rejasini ko'rish
+EXPLAIN QUERY PLAN SELECT * FROM users WHERE age > 25;</code></pre>
+          </div>
+          
+          <h4>Natija:</h4>
+          <div class="result-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>selectid</th>
+                  <th>order</th>
+                  <th>from</th>
+                  <th>detail</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>SCAN users</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="code-example">
+          <h4>Index ishlatilgan so'rov:</h4>
+          <div class="code-block">
+            <pre><code>EXPLAIN QUERY PLAN SELECT * FROM users WHERE id = 1;</code></pre>
+          </div>
+          
+          <h4>Natija:</h4>
+          <div class="result-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>selectid</th>
+                  <th>order</th>
+                  <th>from</th>
+                  <th>detail</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>SEARCH users USING INTEGER PRIMARY KEY (id=?)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <h2>2. Index optimization</h2>
+      
+      <div class="presentation-slide">
+        <h3>⚡ Index yaratish va optimizatsiya</h3>
+        
+        <div class="code-example">
+          <h4>Index yaratish:</h4>
+          <div class="code-block">
+            <pre><code>-- Oddiy indexlar
+CREATE INDEX idx_users_age ON users(age);
+CREATE INDEX idx_users_name ON users(name);
+CREATE INDEX idx_posts_user_id ON posts(user_id);</code></pre>
+          </div>
+          
+          <h4>Index ishlatilgan so'rov:</h4>
+          <div class="code-block">
+            <pre><code>EXPLAIN QUERY PLAN SELECT * FROM users WHERE age > 25;</code></pre>
+          </div>
+          
+          <h4>Natija:</h4>
+          <div class="result-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>selectid</th>
+                  <th>order</th>
+                  <th>from</th>
+                  <th>detail</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>SEARCH users USING INDEX idx_users_age (age>?)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="code-example">
+          <h4>Murakkab index:</h4>
+          <div class="code-block">
+            <pre><code>-- Murakkab index (compound index)
+CREATE INDEX idx_users_age_name ON users(age, name);</code></pre>
+          </div>
+          
+          <h4>Murakkab so'rov:</h4>
+          <div class="code-block">
+            <pre><code>EXPLAIN QUERY PLAN 
+SELECT * FROM users 
+WHERE age > 25 AND name LIKE 'A%';</code></pre>
+          </div>
+          
+          <h4>Natija:</h4>
+          <div class="result-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>selectid</th>
+                  <th>order</th>
+                  <th>from</th>
+                  <th>detail</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>SEARCH users USING INDEX idx_users_age_name (age>? AND name>?)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <h2>3. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code># Kutubxona tizimi
+CREATE TABLE authors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    birth_year INTEGER,
+    nationality TEXT
+);
+
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author_id INTEGER,
+    isbn TEXT UNIQUE,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    category TEXT,
+    FOREIGN KEY (author_id) REFERENCES authors(id)
+);
+
+CREATE TABLE book_loans (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id INTEGER,
+    borrower_name TEXT,
+    loan_date DATE,
+    return_date DATE,
+    is_returned BOOLEAN DEFAULT 0,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+# Ma'lumotlar qo'shish
+INSERT INTO authors (name, birth_year, nationality) VALUES 
+('Alisher Navoiy', 1441, 'O''zbek'),
+('Abdulla Avloniy', 1878, 'O''zbek'),
+('Chingiz Aytmatov', 1928, 'Qirg''iz'),
+('Leo Tolstoy', 1828, 'Rus');
+
+INSERT INTO books (title, author_id, isbn, publication_year, pages, price, category) VALUES 
+('Xamsa', 1, '978-1234567890', 1495, 500, 25.50, 'Poetry'),
+('Turkiy guliston', 1, '978-1234567891', 1499, 300, 20.00, 'Poetry'),
+('O''zbek tili grammatikasi', 2, '978-1234567892', 1920, 200, 15.75, 'Grammar'),
+('Jamilia', 3, '978-1234567893', 1958, 150, 12.00, 'Fiction'),
+('War and Peace', 4, '978-1234567894', 1869, 1200, 35.00, 'Fiction');
+
+INSERT INTO book_loans (book_id, borrower_name, loan_date, return_date, is_returned) VALUES 
+(1, 'Ali Valiyev', '2023-01-15', '2023-02-15', 1),
+(2, 'Malika Karimova', '2023-02-01', NULL, 0),
+(3, 'Bobur Toshmatov', '2023-01-20', '2023-02-20', 1),
+(1, 'Zarina Qodirova', '2023-03-01', NULL, 0),
+(4, 'Ahmad Karimov', '2023-02-15', '2023-03-15', 1);</code></pre>
+      </div>
+
+      <h2>4. Performance test</h2>
+      
+      <div class="presentation-slide">
+        <h3>📈 Performance taqqoslash</h3>
+        
+        <div class="performance-comparison">
+          <div class="performance-before">
+            <h4>❌ Index yo'q</h4>
+            <div class="code-block">
+              <pre><code>EXPLAIN QUERY PLAN 
+SELECT * FROM books 
+WHERE category = 'Poetry';</code></pre>
+            </div>
+            <div class="performance-time">0.045s</div>
+            <div class="result-table">
+              <table>
+                <thead>
+                  <tr><th>Detail</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>SCAN books</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="performance-after">
+            <h4>✅ Index bilan</h4>
+            <div class="code-block">
+              <pre><code>CREATE INDEX idx_books_category 
+ON books(category);
+
+EXPLAIN QUERY PLAN 
+SELECT * FROM books 
+WHERE category = 'Poetry';</code></pre>
+            </div>
+            <div class="performance-time">0.002s</div>
+            <div class="result-table">
+              <table>
+                <thead>
+                  <tr><th>Detail</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>SEARCH books USING INDEX idx_books_category (category=?)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <div class="optimization-tip">
+          <h4>💡 Optimizatsiya natijasi</h4>
+          <p><strong>22.5x tezroq!</strong> Index ishlatish bilan so'rov 22.5 marta tezroq ishlaydi.</p>
+        </div>
+      </div>
+
+      <h2>5. Murakkab optimization</h2>
+      <div class="code-block">
+        <pre><code># E-commerce tizimi
+CREATE TABLE customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    phone TEXT,
+    registration_date DATE DEFAULT CURRENT_DATE
+);
+
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    price REAL NOT NULL,
+    stock_quantity INTEGER DEFAULT 0,
+    category TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER,
+    order_date DATE DEFAULT CURRENT_DATE,
+    total_amount REAL,
+    status TEXT DEFAULT 'pending',
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+CREATE TABLE order_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER,
+    product_id INTEGER,
+    quantity INTEGER,
+    price REAL,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+# Ma'lumotlar qo'shish
+INSERT INTO customers (name, email, phone) VALUES 
+('Ali Valiyev', 'ali@example.com', '+998901234567'),
+('Malika Karimova', 'malika@example.com', '+998901234568'),
+('Bobur Toshmatov', 'bobur@example.com', '+998901234569');
+
+INSERT INTO products (name, price, stock_quantity, category) VALUES 
+('Laptop', 1000.00, 10, 'Electronics'),
+('Phone', 500.00, 25, 'Electronics'),
+('Book', 20.00, 100, 'Education'),
+('T-shirt', 30.00, 50, 'Clothing');
+
+INSERT INTO orders (customer_id, total_amount, status) VALUES 
+(1, 150.00, 'completed'),
+(2, 200.00, 'completed'),
+(1, 100.00, 'pending'),
+(3, 300.00, 'completed');
+
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES 
+(1, 1, 1, 150.00),
+(2, 2, 1, 200.00),
+(3, 3, 2, 50.00),
+(4, 1, 1, 300.00);
+
+# Indexlar yaratish
+CREATE INDEX idx_customers_email ON customers(email);
+CREATE INDEX idx_products_category ON products(category);
+CREATE INDEX idx_products_price ON products(price);
+CREATE INDEX idx_orders_customer_id ON orders(customer_id);
+CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX idx_orders_date ON orders(order_date);
+CREATE INDEX idx_order_items_order_id ON order_items(order_id);
+CREATE INDEX idx_order_items_product_id ON order_items(product_id);
+
+# Performance test
+# 1. Mijozlar bo'yicha qidirish
+EXPLAIN QUERY PLAN 
+SELECT * FROM customers WHERE email = 'ali@example.com';
+# Natija: SEARCH customers USING INDEX idx_customers_email (email=?)
+
+# 2. Mahsulotlar bo'yicha qidirish
+EXPLAIN QUERY PLAN 
+SELECT * FROM products WHERE category = 'Electronics' AND price > 100;
+# Natija: SCAN products USING INDEX idx_products_category
+
+# 3. Murakkab so'rov
+EXPLAIN QUERY PLAN 
+SELECT c.name, o.order_date, o.total_amount
+FROM customers c
+INNER JOIN orders o ON c.id = o.customer_id
+WHERE o.status = 'completed'
+ORDER BY o.order_date DESC;
+
+# 4. Murakkab index
+CREATE INDEX idx_orders_status_date ON orders(status, order_date);
+
+# 5. Optimizatsiya qilingan so'rov
+EXPLAIN QUERY PLAN 
+SELECT c.name, o.order_date, o.total_amount
+FROM customers c
+INNER JOIN orders o ON c.id = o.customer_id
+WHERE o.status = 'completed'
+ORDER BY o.order_date DESC;</code></pre>
+      </div>
+
+      <h2>6. Query optimization texnikalari</h2>
+      <div class="code-block">
+        <pre><code># 1. SELECT * o'rniga aniq ustunlar
+# Yomon:
+SELECT * FROM users WHERE age > 25;
+
+# Yaxshi:
+SELECT name, email FROM users WHERE age > 25;
+
+# 2. LIMIT ishlatish
+# Yomon:
+SELECT * FROM users ORDER BY created_at DESC;
+
+# Yaxshi:
+SELECT * FROM users ORDER BY created_at DESC LIMIT 10;
+
+# 3. WHERE shartlarini optimizatsiya qilish
+# Yomon:
+SELECT * FROM users WHERE age > 25 OR age < 18;
+
+# Yaxshi:
+SELECT * FROM users WHERE age > 25;
+SELECT * FROM users WHERE age < 18;
+
+# 4. JOIN optimizatsiya
+# Yomon:
+SELECT * FROM users u, posts p WHERE u.id = p.user_id;
+
+# Yaxshi:
+SELECT u.name, p.title FROM users u INNER JOIN posts p ON u.id = p.user_id;
+
+# 5. Subquery o'rniga JOIN
+# Yomon:
+SELECT * FROM users WHERE id IN (SELECT user_id FROM posts);
+
+# Yaxshi:
+SELECT DISTINCT u.* FROM users u INNER JOIN posts p ON u.id = p.user_id;</code></pre>
+      </div>
+
+      <h2>7. Index monitoring</h2>
+      <div class="code-block">
+        <pre><code># Indexlarni ko'rish
+SELECT name, sql FROM sqlite_master WHERE type = 'index';
+
+# Index statistikasi
+ANALYZE;
+SELECT * FROM sqlite_stat1;
+
+# Index hajmi
+SELECT 
+    name,
+    sql,
+    (SELECT COUNT(*) FROM sqlite_master WHERE type = 'index') as total_indexes
+FROM sqlite_master 
+WHERE type = 'index';
+
+# Index performance
+EXPLAIN QUERY PLAN 
+SELECT * FROM books WHERE category = 'Poetry';
+
+# Index ishlatilayotganini tekshirish
+SELECT * FROM sqlite_stat1 WHERE tbl = 'books';</code></pre>
+      </div>
+
+      <h2>8. Real-world optimization</h2>
+      <div class="code-block">
+        <pre><code># Blog tizimi optimization
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    is_active BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    content TEXT,
+    author_id INTEGER,
+    is_published BOOLEAN DEFAULT 0,
+    view_count INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (author_id) REFERENCES users(id)
+);
+
+CREATE TABLE categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE post_categories (
+    post_id INTEGER,
+    category_id INTEGER,
+    PRIMARY KEY (post_id, category_id),
+    FOREIGN KEY (post_id) REFERENCES posts(id),
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+# Indexlar yaratish
+CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_posts_author_id ON posts(author_id);
+CREATE INDEX idx_posts_published ON posts(is_published);
+CREATE INDEX idx_posts_created_at ON posts(created_at);
+CREATE INDEX idx_posts_view_count ON posts(view_count);
+CREATE INDEX idx_post_categories_post_id ON post_categories(post_id);
+CREATE INDEX idx_post_categories_category_id ON post_categories(category_id);
+
+# Murakkab indexlar
+CREATE INDEX idx_posts_author_published ON posts(author_id, is_published);
+CREATE INDEX idx_posts_published_created ON posts(is_published, created_at);
+
+# Performance test
+# 1. Faol postlar
+EXPLAIN QUERY PLAN 
+SELECT * FROM posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT 10;
+
+# 2. Muallif postlari
+EXPLAIN QUERY PLAN 
+SELECT * FROM posts WHERE author_id = 1 AND is_published = 1;
+
+# 3. Eng ko'p ko'rilgan postlar
+EXPLAIN QUERY PLAN 
+SELECT * FROM posts WHERE is_published = 1 ORDER BY view_count DESC LIMIT 10;
+
+# 4. Kategoriya bo'yicha postlar
+EXPLAIN QUERY PLAN 
+SELECT p.title, p.created_at 
+FROM posts p
+INNER JOIN post_categories pc ON p.id = pc.post_id
+WHERE pc.category_id = 1 AND p.is_published = 1
+ORDER BY p.created_at DESC;</code></pre>
+      </div>
+
+      <h2>9. Performance monitoring</h2>
+      <div class="code-block">
+        <pre><code># Performance monitoring script
+import sqlite3
+import time
+
+def performance_test():
+    """Performance test"""
+    conn = sqlite3.connect('performance_test.db')
+    cursor = conn.cursor()
+    
+    # Jadval yaratish
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS test_data (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        value INTEGER,
+        category TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+    
+    # Index yaratish
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_test_data_name ON test_data(name)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_test_data_category ON test_data(category)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_test_data_value ON test_data(value)')
+    
+    # Ma'lumotlar qo'shish
+    data = [('Test ' + str(i), i, 'Category ' + str(i % 10)) for i in range(10000)]
+    cursor.executemany("INSERT INTO test_data (name, value, category) VALUES (?, ?, ?)", data)
+    
+    # Performance test
+    start_time = time.time()
+    cursor.execute("SELECT * FROM test_data WHERE name LIKE 'Test 5000%'")
+    results = cursor.fetchall()
+    query_time = time.time() - start_time
+    
+    print(f"So'rov vaqti: {query_time:.4f} soniya")
+    print(f"Natijalar soni: {len(results)}")
+    
+    # EXPLAIN QUERY PLAN
+    cursor.execute("EXPLAIN QUERY PLAN SELECT * FROM test_data WHERE name LIKE 'Test 5000%'")
+    plan = cursor.fetchall()
+    print("Query plan:")
+    for row in plan:
+        print(f"  {row}")
+    
+    conn.commit()
+    conn.close()
+
+# Performance test
+performance_test()</code></pre>
+      </div>
+
+      <h2>10. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Index ishlatish:</strong> Tez qidiruv uchun</li>
+        <li>✅ <strong>SELECT * dan saqlanish:</strong> Faqat kerakli ustunlar</li>
+        <li>✅ <strong>LIMIT ishlatish:</strong> Katta natijalar uchun</li>
+        <li>✅ <strong>WHERE shartlarini optimizatsiya qilish:</strong> Eng cheklovchi shartni birinchi</li>
+        <li>✅ <strong>JOIN optimizatsiya:</strong> Subquery o'rniga JOIN</li>
+        <li>✅ <strong>Performance monitoring:</strong> So'rovlarni tekshirish</li>
+      </ul>
+
+      <div class="next-lesson">
+        <a href="../2-dars/">Keyingi dars: Sharding va limits - Qachon boshqa DBMS ga o'tish →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

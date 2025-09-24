@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>DELETE - Ma'lumotlarni o'chirish</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>🗑️ DELETE - Ma'lumotlarni o'chirish</h1>
+
+    <div class="lesson-content">
+      <h2>DELETE sintaksisi</h2>
+      <div class="code-block">
+        <pre><code>DELETE FROM table_name
+WHERE condition;</code></pre>
+      </div>
+
+      <h2>1. Belgili qatorlarni o'chirish</h2>
+      <div class="code-block">
+        <pre><code>-- Belgili ID li foydalanuvchini o'chirish
+DELETE FROM users WHERE id = 1;
+
+-- Belgili ismli foydalanuvchini o'chirish
+DELETE FROM users WHERE name = 'Ali Valiyev';
+
+-- Belgili email li foydalanuvchini o'chirish
+DELETE FROM users WHERE email = 'ali@example.com';</code></pre>
+      </div>
+
+      <h2>2. Shartlar bilan o'chirish</h2>
+      <div class="code-block">
+        <pre><code>-- 25 yoshdan kichik foydalanuvchilarni o'chirish
+DELETE FROM users WHERE age < 25;
+
+-- Belgili kategoriyadagi mahsulotlarni o'chirish
+DELETE FROM products WHERE category = 'Discontinued';
+
+-- Belgili sanadan oldin yaratilgan ma'lumotlarni o'chirish
+DELETE FROM orders WHERE order_date < '2023-01-01';</code></pre>
+      </div>
+
+      <h2>3. Murakkab shartlar bilan o'chirish</h2>
+      <div class="code-block">
+        <pre><code>-- Bir nechta shart bilan o'chirish
+DELETE FROM users 
+WHERE age < 18 AND status = 'inactive';
+
+-- OR sharti bilan o'chirish
+DELETE FROM products 
+WHERE category = 'Electronics' OR price > 1000;
+
+-- Murakkab shartlar
+DELETE FROM orders 
+WHERE (status = 'cancelled' AND order_date < '2023-01-01') 
+   OR (total_amount < 10 AND order_date < '2022-01-01');</code></pre>
+      </div>
+
+      <h2>4. Barcha qatorlarni o'chirish</h2>
+      <div class="code-block">
+        <pre><code>-- Barcha foydalanuvchilarni o'chirish
+DELETE FROM users;
+
+-- Barcha mahsulotlarni o'chirish
+DELETE FROM products;
+
+-- Barcha buyurtmalarni o'chirish
+DELETE FROM orders;</code></pre>
+      </div>
+
+      <h2>5. Amaliy misollar</h2>
+
+      <h3>Kutubxona tizimi</h3>
+      <div class="code-block">
+        <pre><code>-- Jadvallar
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    category TEXT,
+    is_available BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE book_loans (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id INTEGER,
+    borrower_name TEXT NOT NULL,
+    loan_date DATE DEFAULT CURRENT_DATE,
+    return_date DATE,
+    is_returned BOOLEAN DEFAULT 0,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+-- Ma'lumotlar
+INSERT INTO books (title, author, publication_year, pages, price, category) VALUES 
+('Python Programming', 'John Doe', 2020, 300, 45.99, 'Programming'),
+('JavaScript Guide', 'Jane Smith', 2019, 250, 35.50, 'Programming'),
+('History of Uzbekistan', 'Ahmad Karimov', 2018, 400, 25.00, 'History'),
+('O''zbek tili', 'Malika Toshmatova', 2021, 200, 15.75, 'Language'),
+('Old Book', 'Unknown Author', 1990, 100, 5.00, 'Old');
+
+INSERT INTO book_loans (book_id, borrower_name, loan_date, return_date, is_returned) VALUES 
+(1, 'Ali Valiyev', '2023-01-15', '2023-02-15', 1),
+(2, 'Malika Karimova', '2023-02-01', NULL, 0),
+(3, 'Bobur Toshmatov', '2023-01-20', '2023-02-20', 1);
+
+-- O'chirish misollari
+-- 1. Eski kitoblarni o'chirish (1995 yildan oldin)
+DELETE FROM books WHERE publication_year < 1995;
+
+-- 2. Qaytarilgan kitoblar haqidagi ma'lumotlarni o'chirish
+DELETE FROM book_loans WHERE is_returned = 1;
+
+-- 3. Belgili kitobni o'chirish
+DELETE FROM books WHERE title = 'Old Book';
+
+-- 4. 2023 yilning birinchi yarimida qaytarilgan kitoblar
+DELETE FROM book_loans 
+WHERE is_returned = 1 AND loan_date BETWEEN '2023-01-01' AND '2023-06-30';</code></pre>
+      </div>
+
+      <h2>6. Foreign Key constraint-lar bilan ishlash</h2>
+      <div class="code-block">
+        <pre><code>-- Foreign key constraint-larni yoqish
+PRAGMA foreign_keys = ON;
+
+-- Bog'langan ma'lumotlarni o'chirish
+-- Avval bog'langan ma'lumotlarni o'chirish kerak
+DELETE FROM book_loans WHERE book_id = 1;
+DELETE FROM books WHERE id = 1;
+
+-- Yoki CASCADE DELETE ishlatish (SQLite da cheklangan)
+-- Bu ishlamaydi:
+-- DELETE FROM books WHERE id = 1;  -- Xato: foreign key constraint failed</code></pre>
+      </div>
+
+      <h2>7. Soft Delete - Yumshoq o'chirish</h2>
+      <div class="code-block">
+        <pre><code>-- Soft delete - ma'lumotni o'chirmasdan, faol emas deb belgilash
+UPDATE users SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE id = 1;
+
+-- Soft delete qilingan ma'lumotlarni ko'rish
+SELECT * FROM users WHERE is_deleted = 1;
+
+-- Faol ma'lumotlarni ko'rish
+SELECT * FROM users WHERE is_deleted = 0 OR is_deleted IS NULL;
+
+-- Soft delete qilingan ma'lumotlarni to'liq o'chirish
+DELETE FROM users WHERE is_deleted = 1 AND deleted_at < '2023-01-01';</code></pre>
+      </div>
+
+      <h2>8. Transaction bilan ishlash</h2>
+      <div class="code-block">
+        <pre><code>-- Transaction boshlash
+BEGIN TRANSACTION;
+
+-- Bir nechta o'chirish operatsiyalari
+DELETE FROM book_loans WHERE is_returned = 1;
+DELETE FROM books WHERE is_available = 0;
+DELETE FROM users WHERE last_login < '2022-01-01';
+
+-- Barcha operatsiyalar muvaffaqiyatli bo'lsa
+COMMIT;
+
+-- Yoki barcha operatsiyalarni bekor qilish
+-- ROLLBACK;</code></pre>
+      </div>
+
+      <h2>9. O'chirish natijalarini tekshirish</h2>
+      <div class="code-block">
+        <pre><code>-- O'chirishdan oldin tekshirish
+SELECT COUNT(*) FROM users WHERE age < 18;  -- Qancha qator o'chiriladi
+
+-- O'chirish operatsiyasi
+DELETE FROM users WHERE age < 18;
+
+-- O'chirishdan keyin tekshirish
+SELECT COUNT(*) FROM users;  -- Qancha qator qoldi</code></pre>
+      </div>
+
+      <h2>10. Xatolar va ularni hal qilish</h2>
+
+      <h3>Keng tarqalgan xatolar</h3>
+      <div class="code-block">
+        <pre><code>-- Xato: WHERE shartini unutish
+DELETE FROM users;
+-- Bu BARCHA qatorlarni o'chiradi!
+
+-- Xato: Foreign key constraint
+DELETE FROM books WHERE id = 1;
+-- Xato: foreign key constraint failed
+
+-- Xato: Mavjud bo'lmagan jadval
+DELETE FROM wrong_table WHERE id = 1;
+-- Xato: no such table: wrong_table</code></pre>
+      </div>
+
+      <h3>Xatolarni oldini olish</h3>
+      <div class="code-block">
+        <pre><code>-- O'chirishdan oldin tekshirish
+SELECT * FROM users WHERE id = 1;  -- Mavjudligini tekshirish
+
+-- WHERE shartini har doim qo'shing
+DELETE FROM users WHERE id = 1;  -- Xavfsiz
+
+-- Foreign key constraint-larni tekshirish
+SELECT * FROM book_loans WHERE book_id = 1;  -- Bog'langan ma'lumotlar borligini tekshirish</code></pre>
+      </div>
+
+      <h2>11. Performance optimizatsiya</h2>
+      <div class="code-block">
+        <pre><code>-- Indekslardan foydalanish
+CREATE INDEX idx_users_age ON users(age);
+CREATE INDEX idx_products_category ON products(category);
+
+-- Tez ishlaydigan o'chirish
+DELETE FROM users WHERE age < 18;  -- Indeks ishlatiladi
+
+-- Sekin ishlaydigan o'chirish
+DELETE FROM users WHERE name LIKE '%Ali%';  -- Indeks ishlatilmaydi</code></pre>
+      </div>
+
+      <h2>12. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>WHERE shartini har doim qo'shing:</strong> Barcha qatorlarni o'chirishdan saqlanish</li>
+        <li>✅ <strong>O'chirishdan oldin tekshirish:</strong> SELECT bilan tekshirib ko'ring</li>
+        <li>✅ <strong>Backup olish:</strong> Muhim ma'lumotlarni saqlash</li>
+        <li>✅ <strong>Soft delete ishlatish:</strong> Ma'lumotlarni to'liq o'chirmaslik</li>
+        <li>✅ <strong>Transaction ishlatish:</strong> Murakkab operatsiyalar uchun</li>
+        <li>✅ <strong>Foreign key constraint-larni tekshirish:</strong> Bog'langan ma'lumotlarni hisobga olish</li>
+      </ul>
+
+      <h2>13. Amaliy loyiha</h2>
+      <div class="code-block">
+        <pre><code>-- E-commerce tizimi
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    price REAL NOT NULL,
+    category TEXT,
+    stock_quantity INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id INTEGER,
+    quantity INTEGER,
+    total_price REAL,
+    order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status TEXT DEFAULT 'pending',
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+-- Ma'lumotlar
+INSERT INTO products (name, price, category, stock_quantity) VALUES 
+('Laptop', 1000.00, 'Electronics', 10),
+('Phone', 500.00, 'Electronics', 25),
+('Book', 20.00, 'Education', 100),
+('T-shirt', 30.00, 'Clothing', 50),
+('Old Product', 5.00, 'Discontinued', 0);
+
+INSERT INTO orders (product_id, quantity, total_price, order_date, status) VALUES 
+(1, 1, 1000.00, '2023-01-15', 'completed'),
+(2, 2, 1000.00, '2023-02-01', 'pending'),
+(3, 5, 100.00, '2023-01-20', 'completed'),
+(5, 1, 5.00, '2022-12-01', 'cancelled');
+
+-- O'chirish operatsiyalari
+-- 1. To'xtatilgan mahsulotlarni o'chirish
+DELETE FROM products WHERE category = 'Discontinued';
+
+-- 2. Bekor qilingan buyurtmalarni o'chirish
+DELETE FROM orders WHERE status = 'cancelled';
+
+-- 3. 2022 yilgi buyurtmalarni o'chirish
+DELETE FROM orders WHERE order_date < '2023-01-01';
+
+-- 4. Zaxirasi tugagan mahsulotlarni o'chirish
+DELETE FROM products WHERE stock_quantity = 0;
+
+-- 5. Murakkab shart: 6 oydan ko'p vaqt o'tgan bekor qilingan buyurtmalar
+DELETE FROM orders 
+WHERE status = 'cancelled' 
+  AND order_date < date('now', '-6 months');
+
+-- Natijalarni tekshirish
+SELECT * FROM products;
+SELECT * FROM orders;</code></pre>
+      </div>
+
+      <h2>14. Xavfsizlik masalalari</h2>
+      <div class="code-block">
+        <pre><code>-- Xavfsiz o'chirish - faqat o'z ma'lumotlarini o'chirish
+DELETE FROM users WHERE id = ? AND user_id = ?;  -- Prepared statement
+
+-- Admin o'chirish - faqat admin huquqi bor foydalanuvchilar
+DELETE FROM users WHERE id = ? AND role = 'admin';  -- Role tekshirish
+
+-- Soft delete - ma'lumotlarni to'liq o'chirmaslik
+UPDATE users SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE id = ?;</code></pre>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../../3-bolim/1-dars/">Keyingi bo'lim: Oraliq Daraja →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

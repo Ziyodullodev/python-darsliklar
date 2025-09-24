@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Subqueries - Ichki so'rovlar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>🔍 Subqueries - Ichki so'rovlar</h1>
+
+    <div class="lesson-content">
+      <h2>Subquery nima?</h2>
+      <p>Subquery - bu boshqa so'rov ichida ishlatiladigan ichki so'rov. U asosiy so'rovga ma'lumot berish yoki shart tekshirish uchun ishlatiladi.</p>
+
+      <h2>1. WHERE da subquery</h2>
+      <div class="code-block">
+        <pre><code>-- Oddiy subquery
+SELECT * FROM products 
+WHERE price > (SELECT AVG(price) FROM products);
+
+-- Murakkab subquery
+SELECT * FROM users 
+WHERE id IN (SELECT user_id FROM orders WHERE total_amount > 100);
+
+-- EXISTS bilan
+SELECT * FROM customers 
+WHERE EXISTS (SELECT 1 FROM orders WHERE customer_id = customers.id);</code></pre>
+      </div>
+
+      <h2>2. SELECT da subquery</h2>
+      <div class="code-block">
+        <pre><code>-- SELECT da subquery
+SELECT 
+    name,
+    price,
+    (SELECT AVG(price) FROM products) as avg_price,
+    price - (SELECT AVG(price) FROM products) as price_diff
+FROM products;
+
+-- Murakkab SELECT subquery
+SELECT 
+    c.name as customer,
+    (SELECT COUNT(*) FROM orders WHERE customer_id = c.id) as order_count,
+    (SELECT SUM(total_amount) FROM orders WHERE customer_id = c.id) as total_spent
+FROM customers c;</code></pre>
+      </div>
+
+      <h2>3. FROM da subquery</h2>
+      <div class="code-block">
+        <pre><code>-- FROM da subquery (derived table)
+SELECT 
+    category,
+    COUNT(*) as product_count,
+    AVG(price) as avg_price
+FROM (
+    SELECT category, price 
+    FROM products 
+    WHERE price > 50
+) as expensive_products
+GROUP BY category;
+
+-- Murakkab FROM subquery
+SELECT 
+    customer_name,
+    order_count,
+    total_spent
+FROM (
+    SELECT 
+        c.name as customer_name,
+        COUNT(o.id) as order_count,
+        SUM(o.total_amount) as total_spent
+    FROM customers c
+    LEFT JOIN orders o ON c.id = o.customer_id
+    GROUP BY c.id, c.name
+) as customer_stats
+WHERE order_count > 0;</code></pre>
+      </div>
+
+      <h2>4. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code>-- Kutubxona tizimi
+CREATE TABLE authors (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    birth_year INTEGER,
+    nationality TEXT
+);
+
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    author_id INTEGER,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    FOREIGN KEY (author_id) REFERENCES authors(id)
+);
+
+CREATE TABLE book_loans (
+    id INTEGER PRIMARY KEY,
+    book_id INTEGER,
+    borrower_name TEXT,
+    loan_date DATE,
+    return_date DATE,
+    is_returned BOOLEAN DEFAULT 0,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+-- Ma'lumotlar
+INSERT INTO authors (name, birth_year, nationality) VALUES 
+('Alisher Navoiy', 1441, 'O''zbek'),
+('Abdulla Avloniy', 1878, 'O''zbek'),
+('Chingiz Aytmatov', 1928, 'Qirg''iz'),
+('Leo Tolstoy', 1828, 'Rus');
+
+INSERT INTO books (title, author_id, publication_year, pages, price) VALUES 
+('Xamsa', 1, 1495, 500, 25.50),
+('Turkiy guliston', 1, 1499, 300, 20.00),
+('O''zbek tili grammatikasi', 2, 1920, 200, 15.75),
+('Jamilia', 3, 1958, 150, 12.00),
+('War and Peace', 4, 1869, 1200, 35.00);
+
+INSERT INTO book_loans (book_id, borrower_name, loan_date, return_date, is_returned) VALUES 
+(1, 'Ali Valiyev', '2023-01-15', '2023-02-15', 1),
+(2, 'Malika Karimova', '2023-02-01', NULL, 0),
+(3, 'Bobur Toshmatov', '2023-01-20', '2023-02-20', 1),
+(1, 'Zarina Qodirova', '2023-03-01', NULL, 0),
+(4, 'Ahmad Karimov', '2023-02-15', '2023-03-15', 1);</code></pre>
+      </div>
+
+      <h2>5. Subquery misollari</h2>
+      <div class="code-block">
+        <pre><code>-- 1. Eng qimmat kitoblar
+SELECT * FROM books 
+WHERE price = (SELECT MAX(price) FROM books);
+
+-- 2. Eng ko'p o'qilgan kitoblar
+SELECT * FROM books 
+WHERE id IN (
+    SELECT book_id 
+    FROM book_loans 
+    GROUP BY book_id 
+    HAVING COUNT(*) > 1
+);
+
+-- 3. Hali qaytarilmagan kitoblar
+SELECT * FROM books 
+WHERE id IN (
+    SELECT book_id 
+    FROM book_loans 
+    WHERE is_returned = 0
+);
+
+-- 4. Mualliflar va ularning kitoblari soni
+SELECT 
+    a.name as author,
+    (SELECT COUNT(*) FROM books WHERE author_id = a.id) as book_count,
+    (SELECT AVG(price) FROM books WHERE author_id = a.id) as avg_price
+FROM authors a;
+
+-- 5. Eng ko'p o'qilgan mualliflar
+SELECT * FROM authors 
+WHERE id IN (
+    SELECT b.author_id 
+    FROM books b
+    INNER JOIN book_loans bl ON b.id = bl.book_id
+    GROUP BY b.author_id
+    HAVING COUNT(*) > 1
+);</code></pre>
+      </div>
+
+      <h2>6. Murakkab subquery misollar</h2>
+      <div class="code-block">
+        <pre><code>-- E-commerce tizimi
+CREATE TABLE customers (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    registration_date DATE
+);
+
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY,
+    customer_id INTEGER,
+    order_date DATE,
+    total_amount REAL,
+    status TEXT,
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+CREATE TABLE order_items (
+    id INTEGER PRIMARY KEY,
+    order_id INTEGER,
+    product_name TEXT,
+    quantity INTEGER,
+    price REAL,
+    FOREIGN KEY (order_id) REFERENCES orders(id)
+);
+
+-- Ma'lumotlar
+INSERT INTO customers (name, email, registration_date) VALUES 
+('Ali Valiyev', 'ali@example.com', '2023-01-01'),
+('Malika Karimova', 'malika@example.com', '2023-01-15'),
+('Bobur Toshmatov', 'bobur@example.com', '2023-02-01');
+
+INSERT INTO orders (customer_id, order_date, total_amount, status) VALUES 
+(1, '2023-01-15', 150.00, 'completed'),
+(2, '2023-01-16', 200.00, 'completed'),
+(1, '2023-01-17', 100.00, 'pending'),
+(3, '2023-01-18', 300.00, 'completed');
+
+INSERT INTO order_items (order_id, product_name, quantity, price) VALUES 
+(1, 'Laptop', 1, 150.00),
+(2, 'Phone', 1, 200.00),
+(3, 'Book', 2, 50.00),
+(4, 'Tablet', 1, 300.00);
+
+-- Murakkab subquery so'rovlar
+-- 1. Eng ko'p xarid qilgan mijozlar
+SELECT * FROM customers 
+WHERE id IN (
+    SELECT customer_id 
+    FROM orders 
+    GROUP BY customer_id 
+    HAVING SUM(total_amount) > 200
+);
+
+-- 2. Mijozlar va ularning xarid statistikasi
+SELECT 
+    c.name as customer,
+    (SELECT COUNT(*) FROM orders WHERE customer_id = c.id) as order_count,
+    (SELECT SUM(total_amount) FROM orders WHERE customer_id = c.id) as total_spent,
+    (SELECT AVG(total_amount) FROM orders WHERE customer_id = c.id) as avg_order_value
+FROM customers c;
+
+-- 3. Eng ko'p sotilgan mahsulotlar
+SELECT * FROM order_items 
+WHERE product_name IN (
+    SELECT product_name 
+    FROM order_items 
+    GROUP BY product_name 
+    HAVING SUM(quantity) > 1
+);
+
+-- 4. Mijozlar va ularning oxirgi buyurtmalari
+SELECT 
+    c.name as customer,
+    (SELECT order_date FROM orders WHERE customer_id = c.id ORDER BY order_date DESC LIMIT 1) as last_order_date,
+    (SELECT total_amount FROM orders WHERE customer_id = c.id ORDER BY order_date DESC LIMIT 1) as last_order_amount
+FROM customers c;</code></pre>
+      </div>
+
+      <h2>7. EXISTS va NOT EXISTS</h2>
+      <div class="code-block">
+        <pre><code>-- EXISTS - mavjudligini tekshirish
+SELECT * FROM customers 
+WHERE EXISTS (
+    SELECT 1 FROM orders 
+    WHERE customer_id = customers.id 
+    AND status = 'completed'
+);
+
+-- NOT EXISTS - mavjud emasligini tekshirish
+SELECT * FROM customers 
+WHERE NOT EXISTS (
+    SELECT 1 FROM orders 
+    WHERE customer_id = customers.id
+);
+
+-- Murakkab EXISTS
+SELECT * FROM authors 
+WHERE EXISTS (
+    SELECT 1 FROM books 
+    WHERE author_id = authors.id 
+    AND price > (SELECT AVG(price) FROM books)
+);</code></pre>
+      </div>
+
+      <h2>8. Correlated subqueries</h2>
+      <div class="code-block">
+        <pre><code>-- Correlated subquery - tashqi so'rov bilan bog'langan
+SELECT 
+    p.name as product,
+    p.price,
+    (SELECT AVG(price) FROM products WHERE category = p.category) as category_avg_price
+FROM products p;
+
+-- Murakkab correlated subquery
+SELECT 
+    c.name as customer,
+    o.order_date,
+    o.total_amount,
+    (SELECT COUNT(*) FROM orders WHERE customer_id = c.id AND order_date <= o.order_date) as order_sequence
+FROM customers c
+INNER JOIN orders o ON c.id = o.customer_id;</code></pre>
+      </div>
+
+      <h2>9. Performance optimizatsiya</h2>
+      <div class="code-block">
+        <pre><code>-- Index yaratish subquery uchun
+CREATE INDEX idx_orders_customer_id ON orders(customer_id);
+CREATE INDEX idx_books_author_id ON books(author_id);
+CREATE INDEX idx_book_loans_book_id ON book_loans(book_id);
+
+-- Performance test
+EXPLAIN QUERY PLAN
+SELECT * FROM books 
+WHERE author_id IN (SELECT id FROM authors WHERE nationality = 'O''zbek');
+
+-- Natija: SCAN books, SEARCH authors USING INDEX</code></pre>
+      </div>
+
+      <h2>10. Xatolar va ularni hal qilish</h2>
+      <div class="code-block">
+        <pre><code>-- Xato: Subquery ko'p natija qaytaradi
+SELECT * FROM products 
+WHERE price = (SELECT price FROM products WHERE category = 'Electronics');
+-- Xato: subquery returns more than 1 row
+
+-- To'g'ri:
+SELECT * FROM products 
+WHERE price IN (SELECT price FROM products WHERE category = 'Electronics');
+
+-- Xato: Mavjud bo'lmagan ustun
+SELECT * FROM products 
+WHERE price > (SELECT wrong_column FROM products);
+-- Xato: no such column: wrong_column
+
+-- Xato: Mavjud bo'lmagan jadval
+SELECT * FROM products 
+WHERE price > (SELECT price FROM wrong_table);
+-- Xato: no such table: wrong_table</code></pre>
+      </div>
+
+      <h2>11. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Index ishlatish:</strong> Subquery uchun index yaratish</li>
+        <li>✅ <strong>EXISTS vs IN:</strong> Performance uchun to'g'ri tanlash</li>
+        <li>✅ <strong>Correlated subqueries:</strong> Ehtiyotkorlik bilan ishlatish</li>
+        <li>✅ <strong>Performance test:</strong> EXPLAIN QUERY PLAN ishlatish</li>
+        <li>✅ <strong>Subquery vs JOIN:</strong> Maqsadga mos tanlash</li>
+        <li>✅ <strong>Nested subqueries:</strong> Murakkablikni cheklash</li>
+      </ul>
+
+      <h2>12. Real-world misollar</h2>
+      <div class="code-block">
+        <pre><code>-- Blog tizimi
+SELECT 
+    u.username,
+    p.title,
+    p.created_at
+FROM users u
+INNER JOIN posts p ON u.id = p.author_id
+WHERE p.id IN (
+    SELECT post_id 
+    FROM post_views 
+    GROUP BY post_id 
+    HAVING COUNT(*) > 100
+);
+
+-- E-commerce analytics
+SELECT 
+    c.name as customer,
+    o.order_date,
+    o.total_amount
+FROM customers c
+INNER JOIN orders o ON c.id = o.customer_id
+WHERE o.total_amount > (
+    SELECT AVG(total_amount) 
+    FROM orders 
+    WHERE customer_id = c.id
+);
+
+-- Inventory management
+SELECT 
+    p.name as product,
+    p.price,
+    s.quantity as stock
+FROM products p
+LEFT JOIN stock s ON p.id = s.product_id
+WHERE s.quantity < (
+    SELECT AVG(quantity) 
+    FROM stock 
+    WHERE product_id = p.id
+);</code></pre>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../3-dars/">Keyingi dars: Triggers - Avtomatik ishlaydigan kod →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

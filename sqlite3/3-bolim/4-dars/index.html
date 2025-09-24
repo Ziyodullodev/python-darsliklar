@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>ORDER BY - Saralash</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>📊 ORDER BY - Saralash</h1>
+
+    <div class="lesson-content">
+      <h2>ORDER BY sintaksisi</h2>
+      <div class="code-block">
+        <pre><code>SELECT column1, column2, ...
+FROM table_name
+WHERE condition
+ORDER BY column1 [ASC|DESC], column2 [ASC|DESC], ...;</code></pre>
+      </div>
+
+      <h2>1. Oddiy saralash</h2>
+      <div class="code-block">
+        <pre><code>-- O'sish tartibida (ASC - default)
+SELECT * FROM users ORDER BY age;
+SELECT * FROM users ORDER BY age ASC;
+
+-- Kamayish tartibida (DESC)
+SELECT * FROM users ORDER BY age DESC;
+
+-- Matn bo'yicha saralash
+SELECT * FROM users ORDER BY name;
+SELECT * FROM users ORDER BY name DESC;</code></pre>
+      </div>
+
+      <h2>2. Bir nechta ustun bo'yicha saralash</h2>
+      <div class="code-block">
+        <pre><code>-- Bir nechta ustun bo'yicha saralash
+SELECT * FROM users ORDER BY name ASC, age DESC;
+
+-- Murakkab saralash
+SELECT * FROM products ORDER BY category ASC, price DESC, name ASC;
+
+-- Amaliy misol
+SELECT * FROM employees 
+ORDER BY department ASC, salary DESC, hire_date ASC;</code></pre>
+      </div>
+
+      <h2>3. NULL qiymatlar bilan ishlash</h2>
+      <div class="code-block">
+        <pre><code>-- NULL qiymatlar oxirida
+SELECT * FROM users ORDER BY phone NULLS LAST;
+
+-- NULL qiymatlar boshida
+SELECT * FROM users ORDER BY phone NULLS FIRST;
+
+-- Default xulq-atvor
+SELECT * FROM users ORDER BY phone;  -- NULL qiymatlar oxirida</code></pre>
+      </div>
+
+      <h2>4. Funksiyalar bilan saralash</h2>
+      <div class="code-block">
+        <pre><code>-- Funksiya natijasi bo'yicha saralash
+SELECT name, LENGTH(name) as name_length 
+FROM users 
+ORDER BY name_length;
+
+-- Murakkab funksiya
+SELECT name, UPPER(name) as upper_name 
+FROM users 
+ORDER BY upper_name;
+
+-- Arifmetik amal
+SELECT name, age, age * 2 as double_age 
+FROM users 
+ORDER BY double_age;</code></pre>
+      </div>
+
+      <h2>5. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code>-- Kutubxona tizimi
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    category TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ma'lumotlar
+INSERT INTO books (title, author, publication_year, pages, price, category) VALUES 
+('Python Programming', 'John Doe', 2020, 300, 45.99, 'Programming'),
+('JavaScript Guide', 'Jane Smith', 2019, 250, 35.50, 'Programming'),
+('History of Uzbekistan', 'Ahmad Karimov', 2018, 400, 25.00, 'History'),
+('O''zbek tili', 'Malika Toshmatova', 2021, 200, 15.75, 'Language'),
+('Data Science', 'Bobur Valiyev', 2022, 350, 55.00, 'Programming'),
+('Advanced Python', 'John Doe', 2021, 400, 60.00, 'Programming');
+
+-- Saralash misollari
+-- 1. Kitob nomi bo'yicha saralash
+SELECT * FROM books ORDER BY title;
+
+-- 2. Muallif bo'yicha saralash
+SELECT * FROM books ORDER BY author;
+
+-- 3. Narx bo'yicha saralash (qimmatdan arzonga)
+SELECT * FROM books ORDER BY price DESC;
+
+-- 4. Yil bo'yicha saralash (yangi kitoblar birinchi)
+SELECT * FROM books ORDER BY publication_year DESC;
+
+-- 5. Sahifa soni bo'yicha saralash
+SELECT * FROM books ORDER BY pages DESC;
+
+-- 6. Murakkab saralash
+SELECT * FROM books ORDER BY category ASC, price DESC, title ASC;
+
+-- 7. Funksiya bilan saralash
+SELECT title, LENGTH(title) as title_length 
+FROM books 
+ORDER BY title_length DESC;
+
+-- 8. NULL qiymatlar bilan
+SELECT * FROM books ORDER BY publication_year NULLS LAST;</code></pre>
+      </div>
+
+      <h2>6. Murakkab saralash</h2>
+      <div class="code-block">
+        <pre><code>-- E-commerce tizimi
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    category TEXT,
+    price REAL,
+    stock_quantity INTEGER,
+    rating REAL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ma'lumotlar
+INSERT INTO products (name, category, price, stock_quantity, rating) VALUES 
+('Laptop', 'Electronics', 1000.00, 10, 4.5),
+('Smartphone', 'Electronics', 500.00, 25, 4.2),
+('T-shirt', 'Clothing', 30.00, 100, 4.0),
+('Book', 'Education', 20.00, 50, 4.8),
+('Headphones', 'Electronics', 100.00, 15, 4.3);
+
+-- Murakkab saralash misollari
+-- 1. Kategoriya, keyin narx bo'yicha
+SELECT * FROM products ORDER BY category ASC, price DESC;
+
+-- 2. Reyting, keyin narx bo'yicha
+SELECT * FROM products ORDER BY rating DESC, price ASC;
+
+-- 3. Zaxira, keyin narx bo'yicha
+SELECT * FROM products ORDER BY stock_quantity DESC, price ASC;
+
+-- 4. Murakkab shartlar
+SELECT * FROM products 
+WHERE category = 'Electronics' 
+ORDER BY rating DESC, price ASC;
+
+-- 5. Funksiya bilan saralash
+SELECT name, price, stock_quantity, (price * stock_quantity) as total_value
+FROM products 
+ORDER BY total_value DESC;</code></pre>
+      </div>
+
+      <h2>7. Performance optimizatsiya</h2>
+      <div class="code-block">
+        <pre><code>-- Index yaratish saralash uchun
+CREATE INDEX idx_books_title ON books(title);
+CREATE INDEX idx_books_author ON books(author);
+CREATE INDEX idx_books_price ON books(price);
+CREATE INDEX idx_books_year ON books(publication_year);
+
+-- Murakkab index
+CREATE INDEX idx_books_category_price ON books(category, price);
+
+-- Performance test
+EXPLAIN QUERY PLAN SELECT * FROM books ORDER BY title;
+-- Natija: SCAN books USING INDEX idx_books_title
+
+EXPLAIN QUERY PLAN SELECT * FROM books ORDER BY category, price;
+-- Natija: SCAN books USING INDEX idx_books_category_price</code></pre>
+      </div>
+
+      <h2>8. LIMIT bilan ishlash</h2>
+      <div class="code-block">
+        <pre><code>-- Top N natijalar
+SELECT * FROM books ORDER BY price DESC LIMIT 3;  -- Eng qimmat 3 ta kitob
+
+-- OFFSET bilan
+SELECT * FROM books ORDER BY title LIMIT 5 OFFSET 10;  -- 11-15 kitoblar
+
+-- Pagination
+SELECT * FROM books ORDER BY title LIMIT 10 OFFSET 0;  -- 1-sahifa
+SELECT * FROM books ORDER BY title LIMIT 10 OFFSET 10; -- 2-sahifa
+SELECT * FROM books ORDER BY title LIMIT 10 OFFSET 20; -- 3-sahifa</code></pre>
+      </div>
+
+      <h2>9. Amaliy loyihalar</h2>
+      <div class="code-block">
+        <pre><code>-- Blog tizimi
+CREATE TABLE posts (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    content TEXT,
+    author TEXT NOT NULL,
+    category TEXT,
+    view_count INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ma'lumotlar
+INSERT INTO posts (title, content, author, category, view_count) VALUES 
+('Python dasturlash', 'Python dasturlash tili haqida...', 'Ali Valiyev', 'Programming', 150),
+('JavaScript asoslari', 'JavaScript dasturlash tili...', 'Malika Karimova', 'Programming', 200),
+('O''zbekiston tarixi', 'O''zbekiston tarixi haqida...', 'Bobur Toshmatov', 'History', 100),
+('O''zbek tili', 'O''zbek tili grammatikasi...', 'Zarina Qodirova', 'Language', 80);
+
+-- Blog saralash misollari
+-- 1. Eng ko'p ko'rilgan postlar
+SELECT * FROM posts ORDER BY view_count DESC;
+
+-- 2. Yangi postlar
+SELECT * FROM posts ORDER BY created_at DESC;
+
+-- 3. Kategoriya bo'yicha saralash
+SELECT * FROM posts ORDER BY category ASC, view_count DESC;
+
+-- 4. Muallif bo'yicha saralash
+SELECT * FROM posts ORDER BY author ASC, created_at DESC;
+
+-- 5. Top 5 eng ko'p ko'rilgan
+SELECT * FROM posts ORDER BY view_count DESC LIMIT 5;
+
+-- 6. Kategoriya bo'yicha top postlar
+SELECT * FROM posts 
+WHERE category = 'Programming' 
+ORDER BY view_count DESC 
+LIMIT 3;</code></pre>
+      </div>
+
+      <h2>10. Xatolar va ularni hal qilish</h2>
+      <div class="code-block">
+        <pre><code>-- Xato: Mavjud bo'lmagan ustun
+SELECT * FROM books ORDER BY wrong_column;
+-- Xato: no such column: wrong_column
+
+-- Xato: Murakkab funksiya
+SELECT * FROM books ORDER BY LENGTH(title) + LENGTH(author);
+-- Bu ishlaydi, lekin sekin
+
+-- Xato: NULL qiymatlar bilan
+SELECT * FROM books ORDER BY publication_year;
+-- NULL qiymatlar oxirida bo'ladi</code></pre>
+      </div>
+
+      <h2>11. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Index ishlatish:</strong> Saralash uchun index yaratish</li>
+        <li>✅ <strong>LIMIT ishlatish:</strong> Katta natijalar uchun</li>
+        <li>✅ <strong>NULL qiymatlar:</strong> NULLS FIRST/LAST ishlatish</li>
+        <li>✅ <strong>Performance test:</strong> EXPLAIN QUERY PLAN ishlatish</li>
+        <li>✅ <strong>Murakkab indexlar:</strong> Bir nechta ustun bilan</li>
+        <li>✅ <strong>Pagination:</strong> OFFSET va LIMIT ishlatish</li>
+      </ul>
+
+      <h2>12. Advanced saralash</h2>
+      <div class="code-block">
+        <pre><code>-- Custom saralash
+SELECT * FROM books 
+ORDER BY 
+    CASE category 
+        WHEN 'Programming' THEN 1 
+        WHEN 'History' THEN 2 
+        WHEN 'Language' THEN 3 
+        ELSE 4 
+    END,
+    price DESC;
+
+-- Funksiya bilan murakkab saralash
+SELECT title, author, publication_year,
+       (CURRENT_DATE - publication_year) as age_years
+FROM books 
+ORDER BY age_years DESC;
+
+-- Murakkab shartlar bilan
+SELECT * FROM books 
+WHERE price > 20 
+ORDER BY 
+    CASE 
+        WHEN category = 'Programming' THEN 1 
+        ELSE 2 
+    END,
+    price ASC;</code></pre>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../5-dars/">Keyingi dars: GROUP BY va Aggregation - COUNT, SUM, AVG, MIN, MAX →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Python bilan ulash - sqlite3 moduli</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>🐍 Python bilan ulash - sqlite3 moduli</h1>
+
+    <div class="lesson-content">
+      <h2>Python sqlite3 moduli</h2>
+      <p>Python da SQLite bilan ishlash uchun standart `sqlite3` moduli mavjud. U Python 2.5 dan beri standart kutubxona hisoblanadi.</p>
+
+      <h2>1. Asosiy ulanish</h2>
+      <div class="code-block">
+        <pre><code>import sqlite3
+
+# Ma'lumotlar bazasiga ulanish
+conn = sqlite3.connect('mydatabase.db')
+
+# Cursor yaratish
+cursor = conn.cursor()
+
+# So'rov bajarish
+cursor.execute("SELECT * FROM users")
+
+# Natijalarni olish
+results = cursor.fetchall()
+print(results)
+
+# Ulanishni yopish
+conn.close()</code></pre>
+      </div>
+
+      <h2>2. Context Manager bilan ishlash</h2>
+      <div class="code-block">
+        <pre><code>import sqlite3
+
+# Context manager bilan
+with sqlite3.connect('mydatabase.db') as conn:
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users")
+    results = cursor.fetchall()
+    print(results)
+# Avtomatik yopiladi</code></pre>
+      </div>
+
+      <h2>3. CRUD operatsiyalari</h2>
+      <div class="code-block">
+        <pre><code>import sqlite3
+
+# Ma'lumotlar bazasiga ulanish
+conn = sqlite3.connect('library.db')
+cursor = conn.cursor()
+
+# CREATE - Jadval yaratish
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS authors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    birth_year INTEGER,
+    nationality TEXT
+)
+''')
+
+# INSERT - Ma'lumot qo'shish
+cursor.execute("INSERT INTO authors (name, birth_year, nationality) VALUES (?, ?, ?)", 
+               ('Alisher Navoiy', 1441, 'O''zbek'))
+
+# READ - Ma'lumot o'qish
+cursor.execute("SELECT * FROM authors")
+authors = cursor.fetchall()
+print(authors)
+
+# UPDATE - Ma'lumot yangilash
+cursor.execute("UPDATE authors SET birth_year = ? WHERE name = ?", 
+               (1440, 'Alisher Navoiy'))
+
+# DELETE - Ma'lumot o'chirish
+cursor.execute("DELETE FROM authors WHERE name = ?", ('Alisher Navoiy',))
+
+# O'zgarishlarni saqlash
+conn.commit()
+
+# Ulanishni yopish
+conn.close()</code></pre>
+      </div>
+
+      <h2>4. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code>import sqlite3
+from datetime import datetime
+
+class LibraryManager:
+    def __init__(self, db_path):
+        self.db_path = db_path
+        self.init_database()
+    
+    def init_database(self):
+        """Ma'lumotlar bazasini ishga tushirish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Jadvallar yaratish
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS authors (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                birth_year INTEGER,
+                nationality TEXT
+            )
+            ''')
+            
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS books (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                author_id INTEGER,
+                isbn TEXT UNIQUE,
+                publication_year INTEGER,
+                pages INTEGER,
+                price REAL,
+                FOREIGN KEY (author_id) REFERENCES authors(id)
+            )
+            ''')
+            
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS book_loans (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                book_id INTEGER,
+                borrower_name TEXT,
+                loan_date DATE DEFAULT CURRENT_DATE,
+                return_date DATE,
+                is_returned BOOLEAN DEFAULT 0,
+                FOREIGN KEY (book_id) REFERENCES books(id)
+            )
+            ''')
+    
+    def add_author(self, name, birth_year, nationality):
+        """Muallif qo'shish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO authors (name, birth_year, nationality) VALUES (?, ?, ?)", 
+                         (name, birth_year, nationality))
+            return cursor.lastrowid
+    
+    def add_book(self, title, author_id, isbn, publication_year, pages, price):
+        """Kitob qo'shish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO books (title, author_id, isbn, publication_year, pages, price) VALUES (?, ?, ?, ?, ?, ?)", 
+                         (title, author_id, isbn, publication_year, pages, price))
+            return cursor.lastrowid
+    
+    def get_books_by_author(self, author_name):
+        """Muallif bo'yicha kitoblar"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            SELECT b.title, b.publication_year, b.price
+            FROM books b
+            INNER JOIN authors a ON b.author_id = a.id
+            WHERE a.name = ?
+            ''', (author_name,))
+            return cursor.fetchall()
+    
+    def loan_book(self, book_id, borrower_name):
+        """Kitob ijaraga berish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO book_loans (book_id, borrower_name) VALUES (?, ?)", 
+                         (book_id, borrower_name))
+            return cursor.lastrowid
+    
+    def return_book(self, loan_id):
+        """Kitob qaytarish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE book_loans SET is_returned = 1, return_date = CURRENT_DATE WHERE id = ?", 
+                         (loan_id,))
+    
+    def get_active_loans(self):
+        """Faol ijaralar"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            SELECT bl.id, b.title, a.name as author, bl.borrower_name, bl.loan_date
+            FROM book_loans bl
+            INNER JOIN books b ON bl.book_id = b.id
+            INNER JOIN authors a ON b.author_id = a.id
+            WHERE bl.is_returned = 0
+            ''')
+            return cursor.fetchall()
+    
+    def get_statistics(self):
+        """Statistika"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Mualliflar soni
+            cursor.execute("SELECT COUNT(*) FROM authors")
+            author_count = cursor.fetchone()[0]
+            
+            # Kitoblar soni
+            cursor.execute("SELECT COUNT(*) FROM books")
+            book_count = cursor.fetchone()[0]
+            
+            # Faol ijaralar soni
+            cursor.execute("SELECT COUNT(*) FROM book_loans WHERE is_returned = 0")
+            active_loans = cursor.fetchone()[0]
+            
+            return {
+                'authors': author_count,
+                'books': book_count,
+                'active_loans': active_loans
+            }
+
+# Foydalanish
+if __name__ == "__main__":
+    # Kutubxona menejeri yaratish
+    library = LibraryManager('library.db')
+    
+    # Mualliflar qo'shish
+    author1_id = library.add_author('Alisher Navoiy', 1441, 'O''zbek')
+    author2_id = library.add_author('Abdulla Avloniy', 1878, 'O''zbek')
+    author3_id = library.add_author('Chingiz Aytmatov', 1928, 'Qirg''iz')
+    
+    # Kitoblar qo'shish
+    book1_id = library.add_book('Xamsa', author1_id, '978-1234567890', 1495, 500, 25.50)
+    book2_id = library.add_book('Turkiy guliston', author1_id, '978-1234567891', 1499, 300, 20.00)
+    book3_id = library.add_book('O''zbek tili grammatikasi', author2_id, '978-1234567892', 1920, 200, 15.75)
+    book4_id = library.add_book('Jamilia', author3_id, '978-1234567893', 1958, 150, 12.00)
+    
+    # Kitob ijaraga berish
+    loan1_id = library.loan_book(book1_id, 'Ali Valiyev')
+    loan2_id = library.loan_book(book2_id, 'Malika Karimova')
+    
+    # Kitob qaytarish
+    library.return_book(loan1_id)
+    
+    # Ma'lumotlarni ko'rish
+    print("Alisher Navoiy kitoblari:")
+    books = library.get_books_by_author('Alisher Navoiy')
+    for book in books:
+        print(f"  - {book[0]} ({book[1]}) - {book[2]} so'm")
+    
+    print("\nFaol ijaralar:")
+    active_loans = library.get_active_loans()
+    for loan in active_loans:
+        print(f"  - {loan[1]} ({loan[2]}) - {loan[3]} ({loan[4]})")
+    
+    print("\nStatistika:")
+    stats = library.get_statistics()
+    print(f"  Mualliflar: {stats['authors']}")
+    print(f"  Kitoblar: {stats['books']}")
+    print(f"  Faol ijaralar: {stats['active_loans']}")</code></pre>
+      </div>
+
+      <h2>5. Error handling</h2>
+      <div class="code-block">
+        <pre><code>import sqlite3
+
+def safe_database_operation():
+    """Xavfsiz ma'lumotlar bazasi operatsiyasi"""
+    try:
+        with sqlite3.connect('library.db') as conn:
+            cursor = conn.cursor()
+            
+            # Ma'lumot qo'shish
+            cursor.execute("INSERT INTO authors (name, birth_year, nationality) VALUES (?, ?, ?)", 
+                         ('Test Author', 1990, 'Test'))
+            
+            # O'zgarishlarni saqlash
+            conn.commit()
+            print("Ma'lumot muvaffaqiyatli qo'shildi")
+            
+    except sqlite3.IntegrityError as e:
+        print(f"Integrity xatosi: {e}")
+    except sqlite3.OperationalError as e:
+        print(f"Operatsiya xatosi: {e}")
+    except sqlite3.DatabaseError as e:
+        print(f"Ma'lumotlar bazasi xatosi: {e}")
+    except Exception as e:
+        print(f"Kutilmagan xato: {e}")
+
+# Xatolarni boshqarish
+safe_database_operation()</code></pre>
+      </div>
+
+      <h2>6. Connection pooling</h2>
+      <div class="code-block">
+        <pre><code>import sqlite3
+import threading
+from contextlib import contextmanager
+
+class DatabaseManager:
+    def __init__(self, db_path):
+        self.db_path = db_path
+        self.local = threading.local()
+    
+    @contextmanager
+    def get_connection(self):
+        """Thread-safe ulanish"""
+        if not hasattr(self.local, 'connection'):
+            self.local.connection = sqlite3.connect(self.db_path)
+        
+        try:
+            yield self.local.connection
+        except Exception:
+            self.local.connection.rollback()
+            raise
+        else:
+            self.local.connection.commit()
+    
+    def execute_query(self, query, params=None):
+        """So'rov bajarish"""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            if params:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
+            return cursor.fetchall()
+    
+    def execute_update(self, query, params=None):
+        """Yangilash so'rovi"""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            if params:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
+            return cursor.rowcount
+
+# Foydalanish
+db_manager = DatabaseManager('library.db')
+
+# So'rov bajarish
+results = db_manager.execute_query("SELECT * FROM authors")
+print(results)
+
+# Yangilash
+affected_rows = db_manager.execute_update("UPDATE authors SET birth_year = ? WHERE name = ?", 
+                                        (1440, 'Alisher Navoiy'))
+print(f"Yangilangan qatorlar: {affected_rows}")</code></pre>
+      </div>
+
+      <h2>7. Performance optimizatsiya</h2>
+      <div class="code-block">
+        <pre><code>import sqlite3
+import time
+
+def performance_test():
+    """Performance test"""
+    conn = sqlite3.connect('performance_test.db')
+    cursor = conn.cursor()
+    
+    # Jadval yaratish
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS test_data (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        value INTEGER,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+    
+    # Indeks yaratish
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_test_data_name ON test_data(name)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_test_data_value ON test_data(value)')
+    
+    # Ma'lumotlar qo'shish
+    start_time = time.time()
+    
+    # Batch insert
+    data = [('Test ' + str(i), i) for i in range(10000)]
+    cursor.executemany("INSERT INTO test_data (name, value) VALUES (?, ?)", data)
+    
+    insert_time = time.time() - start_time
+    print(f"Insert vaqti: {insert_time:.2f} soniya")
+    
+    # So'rov test
+    start_time = time.time()
+    cursor.execute("SELECT * FROM test_data WHERE name LIKE 'Test 5000%'")
+    results = cursor.fetchall()
+    query_time = time.time() - start_time
+    print(f"So'rov vaqti: {query_time:.2f} soniya")
+    print(f"Natijalar soni: {len(results)}")
+    
+    conn.commit()
+    conn.close()
+
+# Performance test
+performance_test()</code></pre>
+      </div>
+
+      <h2>8. Real-world misollar</h2>
+      <div class="code-block">
+        <pre><code>import sqlite3
+from datetime import datetime, timedelta
+
+class ECommerceManager:
+    def __init__(self, db_path):
+        self.db_path = db_path
+        self.init_database()
+    
+    def init_database(self):
+        """Ma'lumotlar bazasini ishga tushirish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Mijozlar jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS customers (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                email TEXT UNIQUE,
+                phone TEXT,
+                registration_date DATE DEFAULT CURRENT_DATE
+            )
+            ''')
+            
+            # Mahsulotlar jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS products (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                price REAL NOT NULL,
+                stock_quantity INTEGER DEFAULT 0,
+                category TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+            
+            # Buyurtmalar jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS orders (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER,
+                order_date DATE DEFAULT CURRENT_DATE,
+                total_amount REAL,
+                status TEXT DEFAULT 'pending',
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+            ''')
+            
+            # Buyurtma mahsulotlari jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS order_items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                order_id INTEGER,
+                product_id INTEGER,
+                quantity INTEGER,
+                price REAL,
+                FOREIGN KEY (order_id) REFERENCES orders(id),
+                FOREIGN KEY (product_id) REFERENCES products(id)
+            )
+            ''')
+    
+    def add_customer(self, name, email, phone=None):
+        """Mijoz qo'shish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO customers (name, email, phone) VALUES (?, ?, ?)", 
+                         (name, email, phone))
+            return cursor.lastrowid
+    
+    def add_product(self, name, price, stock_quantity, category):
+        """Mahsulot qo'shish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO products (name, price, stock_quantity, category) VALUES (?, ?, ?, ?)", 
+                         (name, price, stock_quantity, category))
+            return cursor.lastrowid
+    
+    def create_order(self, customer_id, items):
+        """Buyurtma yaratish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Buyurtma yaratish
+            total_amount = sum(item['quantity'] * item['price'] for item in items)
+            cursor.execute("INSERT INTO orders (customer_id, total_amount) VALUES (?, ?)", 
+                         (customer_id, total_amount))
+            order_id = cursor.lastrowid
+            
+            # Mahsulotlar qo'shish
+            for item in items:
+                cursor.execute("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)", 
+                             (order_id, item['product_id'], item['quantity'], item['price']))
+                
+                # Zaxira kamaytirish
+                cursor.execute("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?", 
+                             (item['quantity'], item['product_id']))
+            
+            return order_id
+    
+    def get_sales_report(self, start_date, end_date):
+        """Sotish hisoboti"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            SELECT 
+                o.order_date,
+                c.name as customer,
+                o.total_amount,
+                o.status
+            FROM orders o
+            INNER JOIN customers c ON o.customer_id = c.id
+            WHERE o.order_date BETWEEN ? AND ?
+            ORDER BY o.order_date
+            ''', (start_date, end_date))
+            return cursor.fetchall()
+    
+    def get_product_statistics(self):
+        """Mahsulot statistikasi"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            SELECT 
+                p.name,
+                p.category,
+                p.price,
+                p.stock_quantity,
+                COUNT(oi.id) as order_count,
+                SUM(oi.quantity) as total_sold
+            FROM products p
+            LEFT JOIN order_items oi ON p.id = oi.product_id
+            GROUP BY p.id, p.name, p.category, p.price, p.stock_quantity
+            ''')
+            return cursor.fetchall()
+
+# Foydalanish
+if __name__ == "__main__":
+    ecommerce = ECommerceManager('ecommerce.db')
+    
+    # Mijozlar qo'shish
+    customer1_id = ecommerce.add_customer('Ali Valiyev', 'ali@example.com', '+998901234567')
+    customer2_id = ecommerce.add_customer('Malika Karimova', 'malika@example.com', '+998901234568')
+    
+    # Mahsulotlar qo'shish
+    product1_id = ecommerce.add_product('Laptop', 1000.00, 10, 'Electronics')
+    product2_id = ecommerce.add_product('Phone', 500.00, 25, 'Electronics')
+    product3_id = ecommerce.add_product('Book', 20.00, 100, 'Education')
+    
+    # Buyurtma yaratish
+    items = [
+        {'product_id': product1_id, 'quantity': 1, 'price': 1000.00},
+        {'product_id': product3_id, 'quantity': 2, 'price': 20.00}
+    ]
+    order_id = ecommerce.create_order(customer1_id, items)
+    print(f"Buyurtma yaratildi: {order_id}")
+    
+    # Sotish hisoboti
+    sales_report = ecommerce.get_sales_report('2023-01-01', '2023-12-31')
+    print("\nSotish hisoboti:")
+    for sale in sales_report:
+        print(f"  {sale[0]} - {sale[1]} - {sale[2]} so'm - {sale[3]}")
+    
+    # Mahsulot statistikasi
+    product_stats = ecommerce.get_product_statistics()
+    print("\nMahsulot statistikasi:")
+    for stat in product_stats:
+        print(f"  {stat[0]} ({stat[1]}) - {stat[2]} so'm - {stat[3]} dona - {stat[4]} buyurtma")</code></pre>
+      </div>
+
+      <h2>9. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Context manager ishlatish:</strong> Avtomatik yopish uchun</li>
+        <li>✅ <strong>Error handling:</strong> Xatolarni boshqarish</li>
+        <li>✅ <strong>Prepared statements:</strong> SQL injection dan himoya</li>
+        <li>✅ <strong>Connection pooling:</strong> Performance uchun</li>
+        <li>✅ <strong>Index ishlatish:</strong> Tez so'rovlar uchun</li>
+        <li>✅ <strong>Transaction ishlatish:</strong> Ma'lumotlar yaxlitligi uchun</li>
+      </ul>
+
+      <div class="next-lesson">
+        <a href="../3-dars/">Keyingi dars: Django/Flask da SQLite ishlatish →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

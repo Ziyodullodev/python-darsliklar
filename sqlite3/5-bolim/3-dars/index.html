@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Django/Flask da SQLite ishlatish</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>🌐 Django/Flask da SQLite ishlatish</h1>
+
+    <div class="lesson-content">
+      <h2>Web frameworklarda SQLite</h2>
+      <p>Django va Flask kabi Python web frameworklarida SQLite ma'lumotlar bazasi sifatida ishlatiladi. Bu kichik va o'rta hajmdagi loyihalar uchun ideal yechim.</p>
+
+      <h2>1. Django da SQLite</h2>
+      <div class="code-block">
+        <pre><code># Django loyihasi yaratish
+django-admin startproject myproject
+cd myproject
+
+# Django app yaratish
+python manage.py startapp myapp
+
+# settings.py da SQLite sozlash
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}</code></pre>
+      </div>
+
+      <h2>2. Django Models</h2>
+      <div class="code-block">
+        <pre><code># models.py
+from django.db import models
+from django.contrib.auth.models import User
+
+class Author(models.Model):
+    name = models.CharField(max_length=100)
+    birth_year = models.IntegerField(null=True, blank=True)
+    nationality = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ['name']
+
+class Book(models.Model):
+    title = models.CharField(max_length=200)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    isbn = models.CharField(max_length=20, unique=True)
+    publication_year = models.IntegerField()
+    pages = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.title
+    
+    class Meta:
+        ordering = ['title']
+
+class BookLoan(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    borrower_name = models.CharField(max_length=100)
+    loan_date = models.DateField(auto_now_add=True)
+    return_date = models.DateField(null=True, blank=True)
+    is_returned = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"{self.book.title} - {self.borrower_name}"
+    
+    class Meta:
+        ordering = ['-loan_date']</code></pre>
+      </div>
+
+      <h2>3. Django Migrations</h2>
+      <div class="code-block">
+        <pre><code># Migration yaratish
+python manage.py makemigrations
+
+# Migration bajarish
+python manage.py migrate
+
+# Ma'lumotlar bazasini yaratish
+python manage.py migrate
+
+# Superuser yaratish
+python manage.py createsuperuser</code></pre>
+      </div>
+
+      <h2>4. Django Admin</h2>
+      <div class="code-block">
+        <pre><code># admin.py
+from django.contrib import admin
+from .models import Author, Book, BookLoan
+
+@admin.register(Author)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ['name', 'birth_year', 'nationality', 'created_at']
+    list_filter = ['nationality', 'birth_year']
+    search_fields = ['name']
+    ordering = ['name']
+
+@admin.register(Book)
+class BookAdmin(admin.ModelAdmin):
+    list_display = ['title', 'author', 'publication_year', 'price']
+    list_filter = ['author', 'publication_year']
+    search_fields = ['title', 'author__name']
+    ordering = ['title']
+
+@admin.register(BookLoan)
+class BookLoanAdmin(admin.ModelAdmin):
+    list_display = ['book', 'borrower_name', 'loan_date', 'is_returned']
+    list_filter = ['is_returned', 'loan_date']
+    search_fields = ['book__title', 'borrower_name']
+    ordering = ['-loan_date']</code></pre>
+      </div>
+
+      <h2>5. Django Views</h2>
+        <div class="code-block">
+          <pre><code># views.py
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from django.db.models import Q, Count, Avg
+from .models import Author, Book, BookLoan
+
+def author_list(request):
+    """Mualliflar ro'yxati"""
+    authors = Author.objects.all()
+    return render(request, 'authors.html', {'authors': authors})
+
+def book_list(request):
+    """Kitoblar ro'yxati"""
+    books = Book.objects.select_related('author').all()
+    return render(request, 'books.html', {'books': books})
+
+def book_detail(request, book_id):
+    """Kitob tafsilotlari"""
+    book = get_object_or_404(Book, id=book_id)
+    return render(request, 'book_detail.html', {'book': book})
+
+def search_books(request):
+    """Kitob qidirish"""
+    query = request.GET.get('q', '')
+    if query:
+        books = Book.objects.filter(
+            Q(title__icontains=query) | 
+            Q(author__name__icontains=query)
+        ).select_related('author')
+    else:
+        books = Book.objects.none()
+    
+    return render(request, 'search_results.html', {
+        'books': books,
+        'query': query
+    })
+
+def statistics(request):
+    """Statistika"""
+    stats = {
+        'total_authors': Author.objects.count(),
+        'total_books': Book.objects.count(),
+        'total_loans': BookLoan.objects.count(),
+        'active_loans': BookLoan.objects.filter(is_returned=False).count(),
+        'avg_price': Book.objects.aggregate(avg_price=Avg('price'))['avg_price'],
+        'authors_with_books': Author.objects.annotate(
+            book_count=Count('book')
+        ).filter(book_count__gt=0).count()
+    }
+    
+    return render(request, 'statistics.html', {'stats': stats})
+
+def api_books(request):
+    """API - Kitoblar"""
+    books = Book.objects.select_related('author').all()
+    data = []
+    for book in books:
+        data.append({
+            'id': book.id,
+            'title': book.title,
+            'author': book.author.name,
+            'publication_year': book.publication_year,
+            'price': float(book.price)
+        })
+    
+    return JsonResponse({'books': data})</code></pre>
+        </div>
+
+      <h2>6. Django Templates</h2>
+      <div class="code-block">
+        <pre><code><!-- books.html -->
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Kitoblar</title>
+</head>
+<body>
+    <h1>Kitoblar ro'yxati</h1>
+    
+    <form method="get" action="{% url 'search_books' %}">
+        <input type="text" name="q" placeholder="Kitob yoki muallif qidirish...">
+        <button type="submit">Qidirish</button>
+    </form>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nomi</th>
+                <th>Muallif</th>
+                <th>Nashr yili</th>
+                <th>Narx</th>
+                <th>Harakatlar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author.name }}</td>
+                <td>{{ book.publication_year }}</td>
+                <td>{{ book.price }} so'm</td>
+                <td>
+                    <a href="{% url 'book_detail' book.id %}">Tafsilotlar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <a href="{% url 'statistics' %}">Statistika</a>
+</body>
+</html>
+
+<!-- book_detail.html -->
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ book.title }}</title>
+</head>
+<body>
+    <h1>{{ book.title }}</h1>
+    
+    <p><strong>Muallif:</strong> {{ book.author.name }}</p>
+    <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+    <p><strong>Nashr yili:</strong> {{ book.publication_year }}</p>
+    <p><strong>Sahifalar:</strong> {{ book.pages }}</p>
+    <p><strong>Narx:</strong> {{ book.price }} so'm</p>
+    
+    <h2>Ijara tarixi</h2>
+    <ul>
+        {% for loan in book.bookloan_set.all %}
+        <li>
+            {{ loan.borrower_name }} - 
+            {{ loan.loan_date }} 
+            {% if loan.is_returned %}
+                (Qaytarilgan: {{ loan.return_date }})
+            {% else %}
+                (Faol)
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    
+    <a href="{% url 'book_list' %}">Orqaga</a>
+</body>
+</html></code></pre>
+      </div>
+
+      <h2>7. Flask da SQLite</h2>
+      <div class="code-block">
+        <pre><code># Flask loyihasi
+from flask import Flask, render_template, request, jsonify, redirect, url_for
+import sqlite3
+from datetime import datetime
+
+app = Flask(__name__)
+
+def get_db_connection():
+    """Ma'lumotlar bazasiga ulanish"""
+    conn = sqlite3.connect('library.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_database():
+    """Ma'lumotlar bazasini ishga tushirish"""
+    conn = get_db_connection()
+    
+    # Jadvallar yaratish
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS authors (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        birth_year INTEGER,
+        nationality TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+    
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS books (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        author_id INTEGER,
+        isbn TEXT UNIQUE,
+        publication_year INTEGER,
+        pages INTEGER,
+        price REAL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (author_id) REFERENCES authors(id)
+    )
+    ''')
+    
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS book_loans (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        book_id INTEGER,
+        borrower_name TEXT,
+        loan_date DATE DEFAULT CURRENT_DATE,
+        return_date DATE,
+        is_returned BOOLEAN DEFAULT 0,
+        FOREIGN KEY (book_id) REFERENCES books(id)
+    )
+    ''')
+    
+    conn.commit()
+    conn.close()
+
+@app.route('/')
+def index():
+    """Asosiy sahifa"""
+    return render_template('index.html')
+
+@app.route('/authors')
+def authors():
+    """Mualliflar ro'yxati"""
+    conn = get_db_connection()
+    authors = conn.execute('SELECT * FROM authors ORDER BY name').fetchall()
+    conn.close()
+    return render_template('authors.html', authors=authors)
+
+@app.route('/books')
+def books():
+    """Kitoblar ro'yxati"""
+    conn = get_db_connection()
+    books = conn.execute('''
+        SELECT b.*, a.name as author_name 
+        FROM books b 
+        INNER JOIN authors a ON b.author_id = a.id 
+        ORDER BY b.title
+    ''').fetchall()
+    conn.close()
+    return render_template('books.html', books=books)
+
+@app.route('/book/<int:book_id>')
+def book_detail(book_id):
+    """Kitob tafsilotlari"""
+    conn = get_db_connection()
+    book = conn.execute('''
+        SELECT b.*, a.name as author_name 
+        FROM books b 
+        INNER JOIN authors a ON b.author_id = a.id 
+        WHERE b.id = ?
+    ''', (book_id,)).fetchone()
+    
+    loans = conn.execute('''
+        SELECT * FROM book_loans 
+        WHERE book_id = ? 
+        ORDER BY loan_date DESC
+    ''', (book_id,)).fetchall()
+    
+    conn.close()
+    return render_template('book_detail.html', book=book, loans=loans)
+
+@app.route('/search')
+def search():
+    """Kitob qidirish"""
+    query = request.args.get('q', '')
+    if query:
+        conn = get_db_connection()
+        books = conn.execute('''
+            SELECT b.*, a.name as author_name 
+            FROM books b 
+            INNER JOIN authors a ON b.author_id = a.id 
+            WHERE b.title LIKE ? OR a.name LIKE ?
+            ORDER BY b.title
+        ''', (f'%{query}%', f'%{query}%')).fetchall()
+        conn.close()
+    else:
+        books = []
+    
+    return render_template('search_results.html', books=books, query=query)
+
+@app.route('/statistics')
+def statistics():
+    """Statistika"""
+    conn = get_db_connection()
+    
+    # Statistika ma'lumotlari
+    stats = conn.execute('''
+        SELECT 
+            (SELECT COUNT(*) FROM authors) as total_authors,
+            (SELECT COUNT(*) FROM books) as total_books,
+            (SELECT COUNT(*) FROM book_loans) as total_loans,
+            (SELECT COUNT(*) FROM book_loans WHERE is_returned = 0) as active_loans,
+            (SELECT AVG(price) FROM books) as avg_price
+    ''').fetchone()
+    
+    conn.close()
+    return render_template('statistics.html', stats=stats)
+
+@app.route('/api/books')
+def api_books():
+    """API - Kitoblar"""
+    conn = get_db_connection()
+    books = conn.execute('''
+        SELECT b.id, b.title, a.name as author, b.publication_year, b.price
+        FROM books b 
+        INNER JOIN authors a ON b.author_id = a.id 
+        ORDER BY b.title
+    ''').fetchall()
+    conn.close()
+    
+    return jsonify([dict(book) for book in books])
+
+if __name__ == '__main__':
+    init_database()
+    app.run(debug=True)</code></pre>
+      </div>
+
+      <h2>8. Flask Templates</h2>
+      <div class="code-block">
+        <pre><code><!-- templates/books.html -->
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Kitoblar</title>
+</head>
+<body>
+    <h1>Kitoblar ro'yxati</h1>
+    
+    <form method="get" action="/search">
+        <input type="text" name="q" placeholder="Kitob yoki muallif qidirish...">
+        <button type="submit">Qidirish</button>
+    </form>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nomi</th>
+                <th>Muallif</th>
+                <th>Nashr yili</th>
+                <th>Narx</th>
+                <th>Harakatlar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author_name }}</td>
+                <td>{{ book.publication_year }}</td>
+                <td>{{ book.price }} so'm</td>
+                <td>
+                    <a href="/book/{{ book.id }}">Tafsilotlar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <a href="/statistics">Statistika</a>
+</body>
+</html>
+
+<!-- templates/statistics.html -->
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Statistika</title>
+</head>
+<body>
+    <h1>Kutubxona statistikasi</h1>
+    
+    <div>
+        <h2>Umumiy ma'lumotlar</h2>
+        <p><strong>Mualliflar soni:</strong> {{ stats.total_authors }}</p>
+        <p><strong>Kitoblar soni:</strong> {{ stats.total_books }}</p>
+        <p><strong>Jami ijaralar:</strong> {{ stats.total_loans }}</p>
+        <p><strong>Faol ijaralar:</strong> {{ stats.active_loans }}</p>
+        <p><strong>O'rtacha narx:</strong> {{ "%.2f"|format(stats.avg_price) }} so'm</p>
+    </div>
+    
+    <a href="/books">Kitoblar ro'yxati</a>
+</body>
+</html></code></pre>
+      </div>
+
+      <h2>9. Amaliy loyiha</h2>
+      <div class="code-block">
+        <pre><code># requirements.txt
+Flask==2.3.3
+Django==4.2.7
+
+# Django loyihasi yaratish
+django-admin startproject library_project
+cd library_project
+python manage.py startapp library
+
+# Flask loyihasi yaratish
+mkdir flask_library
+cd flask_library
+touch app.py
+mkdir templates
+mkdir static</code></pre>
+      </div>
+
+      <h2>10. Deployment</h2>
+      <div class="code-block">
+        <pre><code># Django deployment
+# settings.py da production sozlamalari
+DEBUG = False
+ALLOWED_HOSTS = ['yourdomain.com']
+
+# Static fayllar
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media fayllar
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Flask deployment
+# app.py da production sozlamalari
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=False)</code></pre>
+      </div>
+
+      <h2>11. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>ORM ishlatish:</strong> Django ORM yoki SQLAlchemy</li>
+        <li>✅ <strong>Migration ishlatish:</strong> Ma'lumotlar bazasi o'zgarishlari uchun</li>
+        <li>✅ <strong>Admin interface:</strong> Django admin yoki Flask-Admin</li>
+        <li>✅ <strong>API yaratish:</strong> REST API yoki GraphQL</li>
+        <li>✅ <strong>Security:</strong> Xavfsizlik choralari</li>
+        <li>✅ <strong>Performance:</strong> Caching va optimizatsiya</li>
+      </ul>
+
+      <div class="next-lesson">
+        <a href="../4-dars/">Keyingi dars: Backup va eksport - .dump, .import →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

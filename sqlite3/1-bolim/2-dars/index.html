@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>SQLite o'rnatish - Linux, MacOS, Windows</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>📥 SQLite o'rnatish - Linux, MacOS, Windows</h1>
+
+    <div class="lesson-content">
+      <h2>Linux (Ubuntu/Debian) da o'rnatish</h2>
+      <div class="code-block">
+        <pre><code># Ubuntu/Debian da
+sudo apt update
+sudo apt install sqlite3
+
+# Tekshirish
+sqlite3 --version</code></pre>
+      </div>
+
+      <h2>Linux (CentOS/RHEL/Fedora) da o'rnatish</h2>
+      <div class="code-block">
+        <pre><code># CentOS/RHEL da
+sudo yum install sqlite3
+
+# Fedora da
+sudo dnf install sqlite3
+
+# Tekshirish
+sqlite3 --version</code></pre>
+      </div>
+
+      <h2>macOS da o'rnatish</h2>
+      <div class="code-block">
+        <pre><code># Homebrew orqali (tavsiya etiladi)
+brew install sqlite3
+
+# MacPorts orqali
+sudo port install sqlite3
+
+# Tekshirish
+sqlite3 --version</code></pre>
+      </div>
+
+      <h2>Windows da o'rnatish</h2>
+      
+      <h3>1-usul: Ready-to-use binary</h3>
+      <ol>
+        <li><a href="https://www.sqlite.org/download.html" target="_blank">SQLite.org</a> saytiga o'ting</li>
+        <li>"Precompiled Binaries for Windows" bo'limini toping</li>
+        <li>sqlite-tools-win32-x86-*.zip faylini yuklab oling</li>
+        <li>Arxivni oching va sqlite3.exe ni C:\sqlite\ papkasiga ko'chiring</li>
+        <li>Environment Variables ga C:\sqlite\ ni qo'shing</li>
+      </ol>
+
+      <h3>2-usul: Chocolatey orqali</h3>
+      <div class="code-block">
+        <pre><code># Chocolatey o'rnatilgan bo'lsa
+choco install sqlite3
+
+# Tekshirish
+sqlite3 --version</code></pre>
+      </div>
+
+      <h3>3-usul: Scoop orqali</h3>
+      <div class="code-block">
+        <pre><code># Scoop o'rnatilgan bo'lsa
+scoop install sqlite3
+
+# Tekshirish
+sqlite3 --version</code></pre>
+      </div>
+
+      <h2>O'rnatishni tekshirish</h2>
+      <div class="code-block">
+        <pre><code># SQLite versiyasini ko'rish
+sqlite3 --version
+
+# SQLite CLI ni ishga tushirish
+sqlite3
+
+# Chiqish
+.quit</code></pre>
+      </div>
+
+      <h2>Python bilan SQLite</h2>
+      <p>Python da SQLite3 moduli standart kutubxona hisoblanadi:</p>
+      <div class="code-block">
+        <pre><code># Python da SQLite3 modulini import qilish
+import sqlite3
+
+# Versiyani tekshirish
+print(sqlite3.sqlite_version)</code></pre>
+      </div>
+
+      <h2>Node.js bilan SQLite</h2>
+      <div class="code-block">
+        <pre><code># npm orqali sqlite3 paketini o'rnatish
+npm install sqlite3
+
+# Yoki better-sqlite3 (tezroq)
+npm install better-sqlite3</code></pre>
+      </div>
+
+      <h2>Muammolarni hal qilish</h2>
+      
+      <h3>Linux da muammolar:</h3>
+      <ul>
+        <li>Package manager yangilang: <code>sudo apt update</code></li>
+        <li>Permissions muammosi: <code>sudo chmod +x /usr/bin/sqlite3</code></li>
+      </ul>
+
+      <h3>Windows da muammolar:</h3>
+      <ul>
+        <li>PATH environment variable ni tekshiring</li>
+        <li>Command Prompt ni restart qiling</li>
+        <li>Administrator sifatida ishga tushiring</li>
+      </ul>
+
+      <h3>macOS da muammolar:</h3>
+      <ul>
+        <li>Xcode Command Line Tools o'rnating: <code>xcode-select --install</code></li>
+        <li>Homebrew o'rnating: <code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code></li>
+      </ul>
+
+      <div class="example">
+        <h3>O'rnatishni test qilish:</h3>
+        <div class="code-block">
+          <pre><code># SQLite CLI ni ishga tushirish
+sqlite3 test.db
+
+# SQLite prompt da
+.help
+
+# Chiqish
+.quit</code></pre>
+        </div>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../3-dars/">Keyingi dars: Asosiy buyruqlar →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

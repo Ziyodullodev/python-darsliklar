@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Triggers - Avtomatik ishlaydigan kod</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>⚡ Triggers - Avtomatik ishlaydigan kod</h1>
+
+    <div class="lesson-content">
+      <h2>Trigger nima?</h2>
+      <p>Trigger - bu ma'lumotlar bazasida ma'lum hodisa sodir bo'lganda avtomatik ishlaydigan maxsus kod. U INSERT, UPDATE, DELETE operatsiyalari bilan bog'liq bo'lishi mumkin.</p>
+
+      <h2>1. Trigger sintaksisi</h2>
+      <div class="code-block">
+        <pre><code>CREATE TRIGGER trigger_name
+    [BEFORE|AFTER] [INSERT|UPDATE|DELETE] ON table_name
+    [FOR EACH ROW]
+    BEGIN
+        -- Trigger kodi
+    END;</code></pre>
+      </div>
+
+      <h2>2. Trigger turlari</h2>
+
+      <h3>BEFORE Trigger</h3>
+      <div class="code-block">
+        <pre><code>-- BEFORE INSERT trigger
+CREATE TRIGGER before_insert_user
+    BEFORE INSERT ON users
+    BEGIN
+        -- Ma'lumot kiritishdan oldin ishlaydi
+        UPDATE user_stats SET total_users = total_users + 1;
+    END;
+
+-- BEFORE UPDATE trigger
+CREATE TRIGGER before_update_user
+    BEFORE UPDATE ON users
+    BEGIN
+        -- Ma'lumot yangilanishdan oldin ishlaydi
+        INSERT INTO user_changes (user_id, old_name, new_name, change_date)
+        VALUES (NEW.id, OLD.name, NEW.name, CURRENT_TIMESTAMP);
+    END;</code></pre>
+      </div>
+
+      <h3>AFTER Trigger</h3>
+      <div class="code-block">
+        <pre><code>-- AFTER INSERT trigger
+CREATE TRIGGER after_insert_user
+    AFTER INSERT ON users
+    BEGIN
+        -- Ma'lumot kiritilgandan keyin ishlaydi
+        INSERT INTO user_activity (user_id, activity, created_at)
+        VALUES (NEW.id, 'User created', CURRENT_TIMESTAMP);
+    END;
+
+-- AFTER DELETE trigger
+CREATE TRIGGER after_delete_user
+    AFTER DELETE ON users
+    BEGIN
+        -- Ma'lumot o'chirilgandan keyin ishlaydi
+        INSERT INTO user_activity (user_id, activity, created_at)
+        VALUES (OLD.id, 'User deleted', CURRENT_TIMESTAMP);
+    END;</code></pre>
+      </div>
+
+      <h2>3. OLD va NEW</h2>
+      <div class="code-block">
+        <pre><code>-- OLD - eski qiymatlar (UPDATE va DELETE da)
+-- NEW - yangi qiymatlar (INSERT va UPDATE da)
+
+-- UPDATE trigger misoli
+CREATE TRIGGER update_user_log
+    AFTER UPDATE ON users
+    BEGIN
+        INSERT INTO user_logs (user_id, field_name, old_value, new_value, change_date)
+        VALUES (NEW.id, 'name', OLD.name, NEW.name, CURRENT_TIMESTAMP);
+        
+        INSERT INTO user_logs (user_id, field_name, old_value, new_value, change_date)
+        VALUES (NEW.id, 'email', OLD.email, NEW.email, CURRENT_TIMESTAMP);
+    END;</code></pre>
+      </div>
+
+      <h2>4. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code>-- Kutubxona tizimi
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    isbn TEXT UNIQUE,
+    price REAL,
+    stock_quantity INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE book_loans (
+    id INTEGER PRIMARY KEY,
+    book_id INTEGER,
+    borrower_name TEXT,
+    loan_date DATE DEFAULT CURRENT_DATE,
+    return_date DATE,
+    is_returned BOOLEAN DEFAULT 0,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+CREATE TABLE book_activity (
+    id INTEGER PRIMARY KEY,
+    book_id INTEGER,
+    activity TEXT,
+    details TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ma'lumotlar
+INSERT INTO books (title, author, isbn, price, stock_quantity) VALUES 
+('Python Programming', 'John Doe', '978-1234567890', 45.99, 10),
+('JavaScript Guide', 'Jane Smith', '978-1234567891', 35.50, 5),
+('History of Uzbekistan', 'Ahmad Karimov', '978-1234567892', 25.00, 8);</code></pre>
+      </div>
+
+      <h2>5. Trigger misollari</h2>
+      <div class="code-block">
+        <pre><code>-- 1. Kitob qo'shilganda faoliyat yozish
+CREATE TRIGGER after_insert_book
+    AFTER INSERT ON books
+    BEGIN
+        INSERT INTO book_activity (book_id, activity, details)
+        VALUES (NEW.id, 'Book added', 'New book: ' || NEW.title);
+    END;
+
+-- 2. Kitob yangilanganda faoliyat yozish
+CREATE TRIGGER after_update_book
+    AFTER UPDATE ON books
+    BEGIN
+        INSERT INTO book_activity (book_id, activity, details)
+        VALUES (NEW.id, 'Book updated', 'Title: ' || OLD.title || ' -> ' || NEW.title);
+    END;
+
+-- 3. Kitob o'chirilganda faoliyat yozish
+CREATE TRIGGER after_delete_book
+    AFTER DELETE ON books
+    BEGIN
+        INSERT INTO book_activity (book_id, activity, details)
+        VALUES (OLD.id, 'Book deleted', 'Deleted book: ' || OLD.title);
+    END;
+
+-- 4. Kitob ijaraga berilganda zaxira kamaytirish
+CREATE TRIGGER after_insert_loan
+    AFTER INSERT ON book_loans
+    BEGIN
+        UPDATE books 
+        SET stock_quantity = stock_quantity - 1,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = NEW.book_id;
+        
+        INSERT INTO book_activity (book_id, activity, details)
+        VALUES (NEW.book_id, 'Book loaned', 'Borrower: ' || NEW.borrower_name);
+    END;
+
+-- 5. Kitob qaytarilganda zaxira oshirish
+CREATE TRIGGER after_update_loan
+    AFTER UPDATE ON book_loans
+    WHEN NEW.is_returned = 1 AND OLD.is_returned = 0
+    BEGIN
+        UPDATE books 
+        SET stock_quantity = stock_quantity + 1,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = NEW.book_id;
+        
+        INSERT INTO book_activity (book_id, activity, details)
+        VALUES (NEW.book_id, 'Book returned', 'Borrower: ' || NEW.borrower_name);
+    END;</code></pre>
+      </div>
+
+      <h2>6. Murakkab trigger misollar</h2>
+      <div class="code-block">
+        <pre><code>-- E-commerce tizimi
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    price REAL,
+    stock_quantity INTEGER DEFAULT 0,
+    min_stock_level INTEGER DEFAULT 5,
+    is_active BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY,
+    customer_id INTEGER,
+    order_date DATE DEFAULT CURRENT_DATE,
+    total_amount REAL,
+    status TEXT DEFAULT 'pending'
+);
+
+CREATE TABLE order_items (
+    id INTEGER PRIMARY KEY,
+    order_id INTEGER,
+    product_id INTEGER,
+    quantity INTEGER,
+    price REAL,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+CREATE TABLE inventory_logs (
+    id INTEGER PRIMARY KEY,
+    product_id INTEGER,
+    change_type TEXT,
+    old_quantity INTEGER,
+    new_quantity INTEGER,
+    reason TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ma'lumotlar
+INSERT INTO products (name, price, stock_quantity, min_stock_level) VALUES 
+('Laptop', 1000.00, 10, 5),
+('Phone', 500.00, 25, 10),
+('Book', 20.00, 100, 20);
+
+-- Murakkab trigger misollari
+-- 1. Mahsulot qo'shilganda log yozish
+CREATE TRIGGER after_insert_product
+    AFTER INSERT ON products
+    BEGIN
+        INSERT INTO inventory_logs (product_id, change_type, old_quantity, new_quantity, reason)
+        VALUES (NEW.id, 'INSERT', 0, NEW.stock_quantity, 'New product added');
+    END;
+
+-- 2. Mahsulot yangilanganda log yozish
+CREATE TRIGGER after_update_product
+    AFTER UPDATE ON products
+    BEGIN
+        INSERT INTO inventory_logs (product_id, change_type, old_quantity, new_quantity, reason)
+        VALUES (NEW.id, 'UPDATE', OLD.stock_quantity, NEW.stock_quantity, 'Product updated');
+    END;
+
+-- 3. Buyurtma qo'shilganda zaxira kamaytirish
+CREATE TRIGGER after_insert_order_item
+    AFTER INSERT ON order_items
+    BEGIN
+        UPDATE products 
+        SET stock_quantity = stock_quantity - NEW.quantity,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = NEW.product_id;
+        
+        INSERT INTO inventory_logs (product_id, change_type, old_quantity, new_quantity, reason)
+        VALUES (NEW.product_id, 'ORDER', 
+                (SELECT stock_quantity + NEW.quantity FROM products WHERE id = NEW.product_id),
+                (SELECT stock_quantity FROM products WHERE id = NEW.product_id),
+                'Order placed');
+    END;
+
+-- 4. Zaxira kam bo'lganda ogohlantirish
+CREATE TRIGGER after_update_product_low_stock
+    AFTER UPDATE ON products
+    WHEN NEW.stock_quantity <= NEW.min_stock_level AND OLD.stock_quantity > OLD.min_stock_level
+    BEGIN
+        INSERT INTO inventory_logs (product_id, change_type, old_quantity, new_quantity, reason)
+        VALUES (NEW.id, 'LOW_STOCK', OLD.stock_quantity, NEW.stock_quantity, 'Stock level below minimum');
+    END;</code></pre>
+      </div>
+
+      <h2>7. Trigger boshqaruvi</h2>
+      <div class="code-block">
+        <pre><code>-- Triggerlarni ko'rish
+SELECT name, sql FROM sqlite_master WHERE type = 'trigger';
+
+-- Trigger o'chirish
+DROP TRIGGER trigger_name;
+
+-- Trigger yangilash (eski triggerni o'chirish, yangisini yaratish)
+DROP TRIGGER IF EXISTS after_insert_user;
+CREATE TRIGGER after_insert_user
+    AFTER INSERT ON users
+    BEGIN
+        -- Yangi trigger kodi
+    END;</code></pre>
+      </div>
+
+      <h2>8. Trigger xatolari</h2>
+      <div class="code-block">
+        <pre><code>-- Xato: Trigger allaqachon mavjud
+CREATE TRIGGER after_insert_user
+    AFTER INSERT ON users
+    BEGIN
+        -- Trigger kodi
+    END;
+-- Xato: trigger after_insert_user already exists
+
+-- To'g'ri:
+CREATE TRIGGER IF NOT EXISTS after_insert_user
+    AFTER INSERT ON users
+    BEGIN
+        -- Trigger kodi
+    END;
+
+-- Xato: Mavjud bo'lmagan jadval
+CREATE TRIGGER after_insert_wrong
+    AFTER INSERT ON wrong_table
+    BEGIN
+        -- Trigger kodi
+    END;
+-- Xato: no such table: wrong_table</code></pre>
+      </div>
+
+      <h2>9. Performance optimizatsiya</h2>
+      <div class="code-block">
+        <pre><code>-- Trigger performance
+-- 1. Triggerlarni kam ishlatish
+-- 2. Murakkab triggerlarni soddalashtirish
+-- 3. Index ishlatish
+-- 4. Triggerlarni tekshirish
+
+-- Trigger performance test
+EXPLAIN QUERY PLAN
+SELECT * FROM inventory_logs WHERE product_id = 1;
+
+-- Triggerlarni monitoring qilish
+SELECT 
+    name,
+    sql,
+    (SELECT COUNT(*) FROM sqlite_master WHERE type = 'trigger') as total_triggers
+FROM sqlite_master 
+WHERE type = 'trigger';</code></pre>
+      </div>
+
+      <h2>10. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Triggerlarni kam ishlatish:</strong> Faqat zarur joylarda</li>
+        <li>✅ <strong>Oddiy triggerlar:</strong> Murakkab logikani oldini olish</li>
+        <li>✅ <strong>Error handling:</strong> Xatolarni boshqarish</li>
+        <li>✅ <strong>Performance test:</strong> Triggerlarni tekshirish</li>
+        <li>✅ <strong>Documentation:</strong> Triggerlarni hujjatlashtirish</li>
+        <li>✅ <strong>Testing:</strong> Triggerlarni sinash</li>
+      </ul>
+
+      <h2>11. Real-world misollar</h2>
+      <div class="code-block">
+        <pre><code>-- Blog tizimi
+CREATE TRIGGER after_insert_post
+    AFTER INSERT ON posts
+    BEGIN
+        UPDATE user_stats SET post_count = post_count + 1 WHERE user_id = NEW.author_id;
+        INSERT INTO activity_logs (user_id, activity, details, created_at)
+        VALUES (NEW.author_id, 'Post created', 'New post: ' || NEW.title, CURRENT_TIMESTAMP);
+    END;
+
+-- E-commerce tizimi
+CREATE TRIGGER after_update_order
+    AFTER UPDATE ON orders
+    WHEN NEW.status = 'completed' AND OLD.status != 'completed'
+    BEGIN
+        UPDATE customer_stats SET total_orders = total_orders + 1, total_spent = total_spent + NEW.total_amount WHERE customer_id = NEW.customer_id;
+        INSERT INTO order_logs (order_id, status_change, old_status, new_status, change_date)
+        VALUES (NEW.id, 'Order completed', OLD.status, NEW.status, CURRENT_TIMESTAMP);
+    END;
+
+-- Inventory management
+CREATE TRIGGER after_update_stock
+    AFTER UPDATE ON products
+    WHEN NEW.stock_quantity != OLD.stock_quantity
+    BEGIN
+        INSERT INTO stock_movements (product_id, movement_type, quantity_change, old_quantity, new_quantity, created_at)
+        VALUES (NEW.id, 'STOCK_UPDATE', NEW.stock_quantity - OLD.stock_quantity, OLD.stock_quantity, NEW.stock_quantity, CURRENT_TIMESTAMP);
+    END;</code></pre>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../4-dars/">Keyingi dars: Views - Saqlangan so'rovlar →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>WHERE shartlari - =, <, >, !=, BETWEEN, LIKE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>🔍 WHERE shartlari - =, <, >, !=, BETWEEN, LIKE</h1>
+
+    <div class="lesson-content">
+      <h2>WHERE shartlari nima?</h2>
+      <p>WHERE shartlari ma'lumotlarni filtrlash uchun ishlatiladi. Faqat shartga mos keladigan qatorlar qaytariladi.</p>
+
+      <h2>1. Tenglik operatorlari</h2>
+
+      <h3>= (Teng)</h3>
+      <div class="code-block">
+        <pre><code>-- Aniq qiymat qidirish
+SELECT * FROM users WHERE age = 25;
+SELECT * FROM users WHERE name = 'Ali Valiyev';
+SELECT * FROM users WHERE email = 'ali@example.com';</code></pre>
+      </div>
+
+      <h3>!= yoki <> (Teng emas)</h3>
+      <div class="code-block">
+        <pre><code>-- Teng bo'lmagan qiymatlar
+SELECT * FROM users WHERE age != 25;
+SELECT * FROM users WHERE age <> 25;  -- Bir xil natija
+SELECT * FROM users WHERE name != 'Ali Valiyev';</code></pre>
+      </div>
+
+      <h2>2. Solishtirish operatorlari</h2>
+
+      <h3>< (Kichik)</h3>
+      <div class="code-block">
+        <pre><code>-- 25 dan kichik yosh
+SELECT * FROM users WHERE age < 25;
+
+-- Belgili narxdan arzon
+SELECT * FROM products WHERE price < 100.0;</code></pre>
+      </div>
+
+      <h3>> (Katta)</h3>
+      <div class="code-block">
+        <pre><code>-- 25 dan katta yosh
+SELECT * FROM users WHERE age > 25;
+
+-- Belgili narxdan qimmat
+SELECT * FROM products WHERE price > 50.0;</code></pre>
+      </div>
+
+      <h3><= (Kichik yoki teng)</h3>
+      <div class="code-block">
+        <pre><code>-- 25 yosh va undan kichik
+SELECT * FROM users WHERE age <= 25;
+
+-- 100 dan arzon yoki teng
+SELECT * FROM products WHERE price <= 100.0;</code></pre>
+      </div>
+
+      <h3>>= (Katta yoki teng)</h3>
+      <div class="code-block">
+        <pre><code>-- 25 yosh va undan katta
+SELECT * FROM users WHERE age >= 25;
+
+-- 50 dan qimmat yoki teng
+SELECT * FROM products WHERE price >= 50.0;</code></pre>
+      </div>
+
+      <h2>3. BETWEEN - Oraliq</h2>
+      <div class="code-block">
+        <pre><code>-- 25 va 35 yosh orasida
+SELECT * FROM users WHERE age BETWEEN 25 AND 35;
+
+-- 100 va 500 narx orasida
+SELECT * FROM products WHERE price BETWEEN 100 AND 500;
+
+-- BETWEEN = >= AND <=
+SELECT * FROM users WHERE age >= 25 AND age <= 35;  -- Bir xil natija</code></pre>
+      </div>
+
+      <h2>4. LIKE - Matn qidiruv</h2>
+
+      <h3>% (Nol yoki ko'p belgi)</h3>
+      <div class="code-block">
+        <pre><code>-- 'Ali' bilan boshlanadigan
+SELECT * FROM users WHERE name LIKE 'Ali%';
+
+-- 'Ali' bilan tugagan
+SELECT * FROM users WHERE name LIKE '%Ali';
+
+-- 'Ali' ni o'z ichiga olgan
+SELECT * FROM users WHERE name LIKE '%Ali%';
+
+-- 'a' bilan boshlanadigan (katta-kichik harf)
+SELECT * FROM users WHERE name LIKE 'a%';</code></pre>
+      </div>
+
+      <h3>_ (Bitta belgi)</h3>
+      <div class="code-block">
+        <pre><code>-- 3 harfli ism
+SELECT * FROM users WHERE name LIKE '___';
+
+-- 'A' bilan boshlanadigan 4 harfli ism
+SELECT * FROM users WHERE name LIKE 'A___';
+
+-- Telefon raqami pattern
+SELECT * FROM users WHERE phone LIKE '+998__-___-__-__';</code></pre>
+      </div>
+
+      <h3>LIKE xususiyatlari</h3>
+      <div class="code-block">
+        <pre><code>-- Katta-kichik harf farqi
+SELECT * FROM users WHERE name LIKE 'ali%';  -- 'ali' bilan boshlanadigan
+SELECT * FROM users WHERE name LIKE 'Ali%';  -- 'Ali' bilan boshlanadigan
+
+-- ESCAPE belgisi
+SELECT * FROM products WHERE name LIKE '50%';  -- 50% ni qidirish
+SELECT * FROM products WHERE name LIKE '50\%' ESCAPE '\';  -- 50% ni qidirish</code></pre>
+      </div>
+
+      <h2>5. IN - Ro'yxat ichida</h2>
+      <div class="code-block">
+        <pre><code>-- Belgili qiymatlar ro'yxatida
+SELECT * FROM users WHERE age IN (25, 30, 35);
+
+-- Belgili ismlar ro'yxatida
+SELECT * FROM users WHERE name IN ('Ali', 'Malika', 'Bobur');
+
+-- IN = OR
+SELECT * FROM users WHERE age = 25 OR age = 30 OR age = 35;  -- Bir xil natija</code></pre>
+      </div>
+
+      <h2>6. NOT - Inkor</h2>
+      <div class="code-block">
+        <pre><code>-- 25 yosh emas
+SELECT * FROM users WHERE age != 25;
+SELECT * FROM users WHERE age <> 25;
+SELECT * FROM users WHERE NOT age = 25;
+
+-- Belgili ismlar ro'yxatida emas
+SELECT * FROM users WHERE name NOT IN ('Ali', 'Malika');
+
+-- Belgili pattern ga mos kelmaydi
+SELECT * FROM users WHERE name NOT LIKE 'A%';
+
+-- Oraliqda emas
+SELECT * FROM users WHERE age NOT BETWEEN 25 AND 35;</code></pre>
+      </div>
+
+      <h2>7. NULL qiymatlar bilan ishlash</h2>
+      <div class="code-block">
+        <pre><code>-- NULL qiymatlar
+SELECT * FROM users WHERE phone IS NULL;
+
+-- NULL bo'lmagan qiymatlar
+SELECT * FROM users WHERE phone IS NOT NULL;
+
+-- Xato: NULL bilan = ishlatish
+SELECT * FROM users WHERE phone = NULL;  -- Hech qachon ishlamaydi
+
+-- To'g'ri:
+SELECT * FROM users WHERE phone IS NULL;</code></pre>
+      </div>
+
+      <h2>8. Mantiqiy operatorlar</h2>
+
+      <h3>AND (va)</h3>
+      <div class="code-block">
+        <pre><code>-- Ikkala shart ham bajarilishi kerak
+SELECT * FROM users WHERE age > 25 AND age < 35;
+SELECT * FROM users WHERE name LIKE 'A%' AND age > 20;</code></pre>
+      </div>
+
+      <h3>OR (yoki)</h3>
+      <div class="code-block">
+        <pre><code>-- Kamida bitta shart bajarilishi kerak
+SELECT * FROM users WHERE age = 25 OR age = 30;
+SELECT * FROM users WHERE name LIKE 'A%' OR name LIKE 'M%';</code></pre>
+      </div>
+
+      <h3>Murakkab shartlar</h3>
+      <div class="code-block">
+        <pre><code>-- Qavs bilan guruhlash
+SELECT * FROM users 
+WHERE (age > 25 AND age < 35) OR (name LIKE 'A%');
+
+-- Murakkab mantiq
+SELECT * FROM products 
+WHERE (price > 100 AND category = 'Electronics') 
+   OR (price < 50 AND category = 'Books');</code></pre>
+      </div>
+
+      <h2>9. Amaliy misollar</h2>
+
+      <h3>Kutubxona tizimi</h3>
+      <div class="code-block">
+        <pre><code>-- Jadvallar
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    category TEXT
+);
+
+-- Ma'lumotlar
+INSERT INTO books (title, author, publication_year, pages, price, category) VALUES 
+('Python Programming', 'John Doe', 2020, 300, 45.99, 'Programming'),
+('JavaScript Guide', 'Jane Smith', 2019, 250, 35.50, 'Programming'),
+('History of Uzbekistan', 'Ahmad Karimov', 2018, 400, 25.00, 'History'),
+('O''zbek tili', 'Malika Toshmatova', 2021, 200, 15.75, 'Language'),
+('Data Science', 'Bobur Valiyev', 2022, 350, 55.00, 'Programming');
+
+-- So'rovlar
+-- 2020 yildan keyin nashr etilgan kitoblar
+SELECT * FROM books WHERE publication_year > 2020;
+
+-- 30 dan qimmat kitoblar
+SELECT * FROM books WHERE price > 30;
+
+-- 200-300 sahifa orasidagi kitoblar
+SELECT * FROM books WHERE pages BETWEEN 200 AND 300;
+
+-- 'Python' so'zini o'z ichiga olgan kitoblar
+SELECT * FROM books WHERE title LIKE '%Python%';
+
+-- 'Programming' kategoriyasi
+SELECT * FROM books WHERE category = 'Programming';
+
+-- 2020 yildan keyin va 40 dan qimmat
+SELECT * FROM books WHERE publication_year > 2020 AND price > 40;
+
+-- 'O''zbek' yoki 'Uzbekistan' so'zini o'z ichiga olgan
+SELECT * FROM books WHERE title LIKE '%O''zbek%' OR title LIKE '%Uzbekistan%';
+
+-- 300 sahifadan ko'p yoki 50 dan qimmat
+SELECT * FROM books WHERE pages > 300 OR price > 50;</code></pre>
+      </div>
+
+      <h2>10. Performance masalalari</h2>
+
+      <h3>Indekslardan foydalanish</h3>
+      <div class="code-block">
+        <pre><code>-- Indeks yaratish
+CREATE INDEX idx_books_price ON books(price);
+CREATE INDEX idx_books_category ON books(category);
+CREATE INDEX idx_books_year ON books(publication_year);
+
+-- Tez ishlaydigan so'rovlar
+SELECT * FROM books WHERE price > 30;  -- Indeks ishlatiladi
+SELECT * FROM books WHERE category = 'Programming';  -- Indeks ishlatiladi
+
+-- Sekin ishlaydigan so'rovlar
+SELECT * FROM books WHERE title LIKE '%Python%';  -- Indeks ishlatilmaydi
+SELECT * FROM books WHERE pages > 200 AND price < 50;  -- Murakkab</code></pre>
+      </div>
+
+      <h2>11. Xatolar va ularni hal qilish</h2>
+
+      <h3>Keng tarqalgan xatolar</h3>
+      <div class="code-block">
+        <pre><code>-- Xato: Mavjud bo'lmagan ustun
+SELECT * FROM books WHERE wrong_column = 'value';
+-- Xato: no such column: wrong_column
+
+-- Xato: Ma'lumot turi mos kelmaydi
+SELECT * FROM books WHERE price = 'not_a_number';
+-- Xato: no such column: not_a_number
+
+-- Xato: NULL bilan = ishlatish
+SELECT * FROM books WHERE price = NULL;  -- Hech qachon ishlamaydi
+-- To'g'ri:
+SELECT * FROM books WHERE price IS NULL;</code></pre>
+      </div>
+
+      <h2>12. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Indekslardan foydalaning:</strong> Tez qidiruv uchun</li>
+        <li>✅ <strong>LIKE o'rniga = ishlatish:</strong> Aniq qidiruv uchun</li>
+        <li>✅ <strong>BETWEEN ishlatish:</strong> Oraliq qidiruv uchun</li>
+        <li>✅ <strong>NULL tekshirish:</strong> IS NULL/IS NOT NULL</li>
+        <li>✅ <strong>Qavs ishlatish:</strong> Murakkab mantiq uchun</li>
+        <li>✅ <strong>Performance tekshirish:</strong> EXPLAIN QUERY PLAN</li>
+      </ul>
+
+      <div class="next-lesson">
+        <a href="../5-dars/">Keyingi dars: UPDATE - Ma'lumotlarni yangilash →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

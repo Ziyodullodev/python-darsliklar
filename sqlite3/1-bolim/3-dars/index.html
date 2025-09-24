@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Asosiy buyruqlar - .open, .tables, .schema, .help</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>⚡ Asosiy buyruqlar - .open, .tables, .schema, .help</h1>
+
+    <div class="lesson-content">
+      <h2>SQLite CLI buyruqlari</h2>
+      <p>SQLite CLI da nuqta (.) bilan boshlanadigan buyruqlar "dot commands" deb ataladi.</p>
+
+      <h3>.help - Yordam</h3>
+      <div class="code-block">
+        <pre><code>sqlite3
+.help</code></pre>
+      </div>
+      <p>Bu buyruq barcha mavjud dot commands ro'yxatini ko'rsatadi.</p>
+
+      <h3>.open - Ma'lumotlar bazasini ochish</h3>
+      <div class="code-block">
+        <pre><code># Yangi ma'lumotlar bazasi yaratish
+.open mydatabase.db
+
+# Mavjud ma'lumotlar bazasini ochish
+.open existing_database.db
+
+# Xotira bazasini ochish (vaqtinchalik)
+.open :memory:</code></pre>
+      </div>
+
+      <h3>.tables - Jadvallarni ko'rish</h3>
+      <div class="code-block">
+        <pre><code># Barcha jadvallarni ko'rish
+.tables
+
+# Belgili pattern bo'yicha qidirish
+.tables user*
+.tables *log*</code></pre>
+      </div>
+
+      <h3>.schema - Jadval strukturasi</h3>
+      <div class="code-block">
+        <pre><code># Barcha jadvallar strukturasi
+.schema
+
+# Belgili jadval strukturasi
+.schema users
+.schema products
+
+# Indekslarni ham ko'rish
+.schema --indices</code></pre>
+      </div>
+
+      <h3>.quit / .exit - Chiqish</h3>
+      <div class="code-block">
+        <pre><code>.quit
+# yoki
+.exit</code></pre>
+      </div>
+
+      <h2>Boshqa foydali buyruqlar</h2>
+
+      <h3>.databases - Ma'lumotlar bazalarini ko'rish</h3>
+      <div class="code-block">
+        <pre><code>.databases</code></pre>
+      </div>
+
+      <h3>.headers - Sarlavhalarni ko'rsatish</h3>
+      <div class="code-block">
+        <pre><code># Sarlavhalarni yoqish
+.headers on
+
+# Sarlavhalarni o'chirish
+.headers off</code></pre>
+      </div>
+
+      <h3>.mode - Natija formati</h3>
+      <div class="code-block">
+        <pre><code># Jadval formatida
+.mode table
+
+# CSV formatida
+.mode csv
+
+# HTML formatida
+.mode html
+
+# JSON formatida
+.mode json
+
+# List formatida
+.mode list</code></pre>
+      </div>
+
+      <h3>.output - Natijani faylga saqlash</h3>
+      <div class="code-block">
+        <pre><code># Natijani faylga saqlash
+.output results.txt
+SELECT * FROM users;
+.output stdout
+
+# Ekranga qaytarish
+.output stdout</code></pre>
+      </div>
+
+      <h3>.show - Hozirgi sozlamalarni ko'rish</h3>
+      <div class="code-block">
+        <pre><code>.show</code></pre>
+      </div>
+
+      <h2>Amaliy misol</h2>
+      <div class="code-block">
+        <pre><code># SQLite ni ishga tushirish
+sqlite3
+
+# Ma'lumotlar bazasini ochish
+.open test.db
+
+# Sarlavhalarni yoqish
+.headers on
+
+# Jadval formatini tanlash
+.mode table
+
+# Yordam olish
+.help
+
+# Ma'lumotlar bazasini yaratish
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE
+);
+
+# Jadvallarni ko'rish
+.tables
+
+# Jadval strukturasi
+.schema users
+
+# Ma'lumot qo'shish
+INSERT INTO users (name, email) VALUES ('Ali', 'ali@example.com');
+
+# Ma'lumotlarni ko'rish
+SELECT * FROM users;
+
+# Chiqish
+.quit</code></pre>
+      </div>
+
+      <h2>Tezkor buyruqlar</h2>
+      <table>
+        <tr>
+          <th>Buyruq</th>
+          <th>Tavsif</th>
+        </tr>
+        <tr>
+          <td><code>.help</code></td>
+          <td>Yordam</td>
+        </tr>
+        <tr>
+          <td><code>.open</code></td>
+          <td>Ma'lumotlar bazasini ochish</td>
+        </tr>
+        <tr>
+          <td><code>.tables</code></td>
+          <td>Jadvallarni ko'rish</td>
+        </tr>
+        <tr>
+          <td><code>.schema</code></td>
+          <td>Jadval strukturasi</td>
+        </tr>
+        <tr>
+          <td><code>.quit</code></td>
+          <td>Chiqish</td>
+        </tr>
+        <tr>
+          <td><code>.headers on</code></td>
+          <td>Sarlavhalarni ko'rsatish</td>
+        </tr>
+        <tr>
+          <td><code>.mode table</code></td>
+          <td>Jadval formatida ko'rsatish</td>
+        </tr>
+      </table>
+
+      <div class="next-lesson">
+        <a href="../4-dars/">Keyingi dars: SQLite CLI bilan ishlash →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

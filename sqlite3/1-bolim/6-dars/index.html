@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>SQLite vs MySQL vs PostgreSQL taqqoslash</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>⚖️ SQLite vs MySQL vs PostgreSQL taqqoslash</h1>
+
+    <div class="lesson-content">
+      <h2>Umumiy taqqoslash</h2>
+
+      <table>
+        <tr>
+          <th>Xususiyat</th>
+          <th>SQLite</th>
+          <th>MySQL</th>
+          <th>PostgreSQL</th>
+        </tr>
+        <tr>
+          <td><strong>Server</strong></td>
+          <td>❌ Yo'q</td>
+          <td>✅ Ha</td>
+          <td>✅ Ha</td>
+        </tr>
+        <tr>
+          <td><strong>O'rnatish</strong></td>
+          <td>🟢 Oddiy</td>
+          <td>🟡 O'rta</td>
+          <td>🔴 Murakkab</td>
+        </tr>
+        <tr>
+          <td><strong>Fayl hajmi</strong></td>
+          <td>🟢 Kichik (~1MB)</td>
+          <td>🟡 O'rta (~100MB)</td>
+          <td>🔴 Katta (~200MB)</td>
+        </tr>
+        <tr>
+          <td><strong>Concurrent users</strong></td>
+          <td>🔴 Cheklangan</td>
+          <td>🟡 O'rta</td>
+          <td>🟢 Ko'p</td>
+        </tr>
+        <tr>
+          <td><strong>ACID</strong></td>
+          <td>✅ Ha</td>
+          <td>🟡 Cheklangan</td>
+          <td>✅ To'liq</td>
+        </tr>
+        <tr>
+          <td><strong>JSON support</strong></td>
+          <td>✅ Ha</td>
+          <td>✅ Ha</td>
+          <td>✅ Keng</td>
+        </tr>
+      </table>
+
+      <h2>SQLite xususiyatlari</h2>
+
+      <h3>Afzalliklari</h3>
+      <ul>
+        <li>✅ <strong>Zero-configuration:</strong> O'rnatish va sozlash talab qilmaydi</li>
+        <li>✅ <strong>Server-siz:</strong> Alohida server talab qilmaydi</li>
+        <li>✅ <strong>Self-contained:</strong> Bitta fayl sifatida saqlanadi</li>
+        <li>✅ <strong>Cross-platform:</strong> Barcha OS larda ishlaydi</li>
+        <li>✅ <strong>ACID-compliant:</strong> Ma'lumotlar yaxlitligini ta'minlaydi</li>
+        <li>✅ <strong>Public domain:</strong> Bepul va ochiq kod</li>
+        <li>✅ <strong>Kichik hajm:</strong> ~1MB</li>
+        <li>✅ <strong>Tez ishlash:</strong> Kichik loyihalar uchun juda tez</li>
+      </ul>
+
+      <h3>Cheklovlari</h3>
+      <ul>
+        <li>❌ <strong>Concurrent writes:</strong> Bir vaqtda faqat bitta yozish</li>
+        <li>❌ <strong>Network access:</strong> Tarmoq orqali ulanish yo'q</li>
+        <li>❌ <strong>User management:</strong> Foydalanuvchi boshqaruvi yo'q</li>
+        <li>❌ <strong>Stored procedures:</strong> Saqlangan protseduralar yo'q</li>
+        <li>❌ <strong>Advanced features:</strong> Ba'zi ilg'or funksiyalar yo'q</li>
+      </ul>
+
+      <h2>MySQL xususiyatlari</h2>
+
+      <h3>Afzalliklari</h3>
+      <ul>
+        <li>✅ <strong>Web-friendly:</strong> Web ilovalar uchun optimallashtirilgan</li>
+        <li>✅ <strong>High performance:</strong> Ko'p foydalanuvchi bilan ishlash</li>
+        <li>✅ <strong>Replication:</strong> Ma'lumotlarni nusxalash</li>
+        <li>✅ <strong>Partitioning:</strong> Katta jadvallarni bo'lish</li>
+        <li>✅ <strong>Full-text search:</strong> To'liq matn qidiruv</li>
+        <li>✅ <strong>Triggers:</strong> Avtomatik hodisalar</li>
+        <li>✅ <strong>Views:</strong> Saqlangan so'rovlar</li>
+      </ul>
+
+      <h3>Cheklovlari</h3>
+      <ul>
+        <li>❌ <strong>Complex setup:</strong> Murakkab o'rnatish</li>
+        <li>❌ <strong>Resource intensive:</strong> Ko'p resurs talab qiladi</li>
+        <li>❌ <strong>ACID limitations:</strong> Ba'zi ACID cheklovlari</li>
+        <li>❌ <strong>JSON support:</strong> Cheklangan JSON qo'llab-quvvatlash</li>
+      </ul>
+
+      <h2>PostgreSQL xususiyatlari</h2>
+
+      <h3>Afzalliklari</h3>
+      <ul>
+        <li>✅ <strong>Advanced features:</strong> Eng ilg'or funksiyalar</li>
+        <li>✅ <strong>Full ACID:</strong> To'liq ACID qo'llab-quvvatlash</li>
+        <li>✅ <strong>JSON/JSONB:</strong> Keng JSON qo'llab-quvvatlash</li>
+        <li>✅ <strong>Custom types:</strong> Maxsus ma'lumot turlari</li>
+        <li>✅ <strong>Extensions:</strong> Kengaytirilgan funksiyalar</li>
+        <li>✅ <strong>Complex queries:</strong> Murakkab so'rovlar</li>
+        <li>✅ <strong>Geographic data:</strong> Geografik ma'lumotlar</li>
+        <li>✅ <strong>Full-text search:</strong> To'liq matn qidiruv</li>
+      </ul>
+
+      <h3>Cheklovlari</h3>
+      <ul>
+        <li>❌ <strong>Complex setup:</strong> Eng murakkab o'rnatish</li>
+        <li>❌ <strong>Resource intensive:</strong> Ko'p resurs talab qiladi</li>
+        <li>❌ <strong>Learning curve:</strong> O'rganish qiyin</li>
+        <li>❌ <strong>Overkill:</strong> Oddiy loyihalar uchun ortiqcha</li>
+      </ul>
+
+      <h2>Qachon qaysi DBMS ni ishlatish</h2>
+
+      <h3>SQLite ishlatish kerak:</h3>
+      <ul>
+        <li>📱 Mobile ilovalar</li>
+        <li>💻 Desktop dasturlar</li>
+        <li>🧪 Prototyping va testing</li>
+        <li>📊 Kichik loyihalar</li>
+        <li>🔧 Embedded tizimlar</li>
+        <li>📚 O'quv loyihalari</li>
+      </ul>
+
+      <h3>MySQL ishlatish kerak:</h3>
+      <ul>
+        <li>🌐 Web ilovalar</li>
+        <li>📈 O'rta hajmdagi loyihalar</li>
+        <li>👥 Ko'p foydalanuvchi</li>
+        <li>⚡ Tez ishlash talab qilinadi</li>
+        <li>💰 Arzon yechim kerak</li>
+      </ul>
+
+      <h3>PostgreSQL ishlatish kerak:</h3>
+      <ul>
+        <li>🏢 Enterprise loyihalar</li>
+        <li>📊 Katta hajmdagi ma'lumotlar</li>
+        <li>🔬 Ilmiy loyihalar</li>
+        <li>🗺️ Geografik ma'lumotlar</li>
+        <li>🔍 Murakkab qidiruv</li>
+        <li>📈 Analytics va reporting</li>
+      </ul>
+
+      <h2>Performance taqqoslash</h2>
+
+      <table>
+        <tr>
+          <th>Operatsiya</th>
+          <th>SQLite</th>
+          <th>MySQL</th>
+          <th>PostgreSQL</th>
+        </tr>
+        <tr>
+          <td><strong>Read (kichik)</strong></td>
+          <td>🟢 Eng tez</td>
+          <td>🟡 O'rta</td>
+          <td>🔴 Sekin</td>
+        </tr>
+        <tr>
+          <td><strong>Write (kichik)</strong></td>
+          <td>🟢 Tez</td>
+          <td>🟡 O'rta</td>
+          <td>🔴 Sekin</td>
+        </tr>
+        <tr>
+          <td><strong>Concurrent reads</strong></td>
+          <td>🟡 O'rta</td>
+          <td>🟢 Tez</td>
+          <td>🟢 Tez</td>
+        </tr>
+        <tr>
+          <td><strong>Complex queries</strong></td>
+          <td>🔴 Cheklangan</td>
+          <td>🟡 O'rta</td>
+          <td>🟢 Eng tez</td>
+        </tr>
+      </table>
+
+      <h2>Xulosa</h2>
+      <div class="conclusion">
+        <p><strong>SQLite:</strong> Kichik loyihalar, mobile ilovalar, prototyping uchun ideal</p>
+        <p><strong>MySQL:</strong> Web ilovalar, o'rta hajmdagi loyihalar uchun yaxshi</p>
+        <p><strong>PostgreSQL:</strong> Katta loyihalar, enterprise, murakkab ma'lumotlar uchun eng yaxshi</p>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../7-dars/">Keyingi dars: SQLite afzalliklari va cheklovlari →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

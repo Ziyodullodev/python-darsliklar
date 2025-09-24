@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Ma'lumot turlari - TEXT, INTEGER, REAL, BLOB, NULL</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>📊 Ma'lumot turlari - TEXT, INTEGER, REAL, BLOB, NULL</h1>
+
+    <div class="lesson-content">
+      <h2>SQLite ma'lumot turlari</h2>
+      <p>SQLite da 5 ta asosiy ma'lumot turi mavjud. Boshqa ma'lumotlar bazalaridan farqli o'laroq, SQLite "dynamic typing" ishlatadi.</p>
+
+      <h2>1. TEXT - Matn ma'lumotlari</h2>
+      <div class="code-block">
+        <pre><code>-- TEXT ma'lumot turi
+CREATE TABLE users (
+    name TEXT,
+    email TEXT,
+    description TEXT
+);
+
+-- Ma'lumot qo'shish
+INSERT INTO users (name, email, description) VALUES 
+('Ali Valiyev', 'ali@example.com', 'Dasturchi'),
+('Malika Karimova', 'malika@example.com', 'Dizayner');
+
+-- TEXT xususiyatlari
+-- - UTF-8 encoding
+-- - Cheksiz uzunlik
+-- - Unicode qo'llab-quvvatlash
+-- - Pattern matching (LIKE)</code></pre>
+      </div>
+
+      <h3>TEXT bilan ishlash</h3>
+      <div class="code-block">
+        <pre><code>-- Matn funksiyalari
+SELECT UPPER(name) FROM users;  -- Katta harflar
+SELECT LOWER(email) FROM users;  -- Kichik harflar
+SELECT LENGTH(name) FROM users;  -- Uzunlik
+SELECT SUBSTR(name, 1, 3) FROM users;  -- Qism matn
+
+-- Pattern matching
+SELECT * FROM users WHERE name LIKE 'A%';  -- A bilan boshlanadigan
+SELECT * FROM users WHERE email LIKE '%@gmail.com';  -- Gmail manzillar</code></pre>
+      </div>
+
+      <h2>2. INTEGER - Butun sonlar</h2>
+      <div class="code-block">
+        <pre><code>-- INTEGER ma'lumot turi
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY,
+    price INTEGER,
+    quantity INTEGER,
+    age INTEGER
+);
+
+-- Ma'lumot qo'shish
+INSERT INTO products (price, quantity, age) VALUES 
+(1000, 50, 25),
+(2500, 30, 30),
+(500, 100, 18);
+
+-- INTEGER xususiyatlari
+-- - 64-bit butun sonlar
+-- - -9,223,372,036,854,775,808 dan 9,223,372,036,854,775,807 gacha
+-- - Arifmetik amallar
+-- - Solishtirish amallari</code></pre>
+      </div>
+
+      <h3>INTEGER bilan ishlash</h3>
+      <div class="code-block">
+        <pre><code>-- Arifmetik amallar
+SELECT price * 1.1 FROM products;  -- 10% oshirish
+SELECT price + 100 FROM products;  -- 100 qo'shish
+SELECT price - 50 FROM products;  -- 50 ayirish
+SELECT price / 2 FROM products;  -- 2 ga bo'lish
+
+-- Solishtirish
+SELECT * FROM products WHERE price > 1000;
+SELECT * FROM products WHERE quantity BETWEEN 20 AND 80;
+SELECT * FROM products WHERE age >= 18;
+
+-- Aggregation funksiyalari
+SELECT COUNT(*) FROM products;
+SELECT SUM(price) FROM products;
+SELECT AVG(price) FROM products;
+SELECT MIN(price) FROM products;
+SELECT MAX(price) FROM products;</code></pre>
+      </div>
+
+      <h2>3. REAL - O'nlik sonlar</h2>
+      <div class="code-block">
+        <pre><code>-- REAL ma'lumot turi
+CREATE TABLE measurements (
+    id INTEGER PRIMARY KEY,
+    temperature REAL,
+    weight REAL,
+    height REAL,
+    price REAL
+);
+
+-- Ma'lumot qo'shish
+INSERT INTO measurements (temperature, weight, height, price) VALUES 
+(36.5, 70.5, 175.2, 99.99),
+(37.2, 65.3, 168.7, 149.50),
+(35.8, 80.1, 182.3, 75.25);
+
+-- REAL xususiyatlari
+-- - 64-bit floating point
+-- - O'nlik sonlar
+-- - Ilmiy notation qo'llab-quvvatlash
+-- - Aniqlik cheklovlari</code></pre>
+      </div>
+
+      <h3>REAL bilan ishlash</h3>
+      <div class="code-block">
+        <pre><code>-- O'nlik sonlar bilan ishlash
+SELECT ROUND(price, 2) FROM measurements;  -- 2 xona aniqlik
+SELECT CEIL(price) FROM measurements;  -- Yuqoriga yaxlitlash
+SELECT FLOOR(price) FROM measurements;  -- Pastga yaxlitlash
+SELECT ABS(temperature - 36.5) FROM measurements;  -- Mutlaq qiymat
+
+-- Solishtirish
+SELECT * FROM measurements WHERE price > 100.0;
+SELECT * FROM measurements WHERE weight BETWEEN 60.0 AND 80.0;
+
+-- Aggregation
+SELECT AVG(temperature) FROM measurements;
+SELECT SUM(price) FROM measurements;</code></pre>
+      </div>
+
+      <h2>4. BLOB - Binary ma'lumotlar</h2>
+      <div class="code-block">
+        <pre><code>-- BLOB ma'lumot turi
+CREATE TABLE files (
+    id INTEGER PRIMARY KEY,
+    filename TEXT,
+    file_data BLOB,
+    file_size INTEGER
+);
+
+-- BLOB xususiyatlari
+-- - Binary ma'lumotlar
+-- - Rasm, video, audio fayllar
+-- - Cheksiz hajm
+-- - Hex formatida saqlash</code></pre>
+      </div>
+
+      <h3>BLOB bilan ishlash</h3>
+      <div class="code-block">
+        <pre><code>-- BLOB ma'lumot qo'shish (Python misoli)
+import sqlite3
+import base64
+
+# Rasm faylini o'qish
+with open('image.jpg', 'rb') as f:
+    image_data = f.read()
+
+# Ma'lumotlar bazasiga saqlash
+conn = sqlite3.connect('database.db')
+cursor = conn.cursor()
+cursor.execute("INSERT INTO files (filename, file_data, file_size) VALUES (?, ?, ?)", 
+               ('image.jpg', image_data, len(image_data)))
+conn.commit()
+
+# BLOB ma'lumotni olish
+cursor.execute("SELECT file_data FROM files WHERE filename = ?", ('image.jpg',))
+blob_data = cursor.fetchone()[0]
+
+# Faylga yozish
+with open('restored_image.jpg', 'wb') as f:
+    f.write(blob_data)</code></pre>
+      </div>
+
+      <h2>5. NULL - Bo'sh qiymat</h2>
+      <div class="code-block">
+        <pre><code>-- NULL ma'lumot turi
+CREATE TABLE contacts (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    phone TEXT,
+    email TEXT,
+    address TEXT
+);
+
+-- Ma'lumot qo'shish
+INSERT INTO contacts (name, phone, email) VALUES 
+('Ali Valiyev', '+998901234567', 'ali@example.com'),
+('Malika Karimova', NULL, 'malika@example.com'),
+('Bobur Toshmatov', '+998901234568', NULL);
+
+-- NULL xususiyatlari
+-- - Bo'sh qiymat
+-- - Barcha ma'lumot turlarida bo'lishi mumkin
+-- - IS NULL / IS NOT NULL tekshirish
+-- - Arifmetik amallarda NULL natija</code></pre>
+      </div>
+
+      <h3>NULL bilan ishlash</h3>
+      <div class="code-block">
+        <pre><code>-- NULL qiymatlarni topish
+SELECT * FROM contacts WHERE phone IS NULL;
+SELECT * FROM contacts WHERE email IS NULL;
+
+-- NULL bo'lmagan qiymatlar
+SELECT * FROM contacts WHERE phone IS NOT NULL;
+SELECT * FROM contacts WHERE email IS NOT NULL;
+
+-- NULL qiymatni almashtirish
+SELECT name, COALESCE(phone, 'Telefon yo''q') AS telefon FROM contacts;
+SELECT name, IFNULL(phone, 'Noma''lum') AS telefon FROM contacts;
+
+-- NULL bilan arifmetik amallar
+SELECT name, phone, phone + 1 FROM contacts;  -- NULL + 1 = NULL</code></pre>
+      </div>
+
+      <h2>6. Dynamic Typing</h2>
+      <div class="code-block">
+        <pre><code>-- SQLite da dynamic typing
+CREATE TABLE flexible_data (
+    id INTEGER PRIMARY KEY,
+    value TEXT  -- Har qanday ma'lumot turi saqlash mumkin
+);
+
+-- Turli ma'lumot turlarini saqlash
+INSERT INTO flexible_data (value) VALUES 
+('123'),        -- Matn sifatida
+(456),          -- Son sifatida
+('2023-12-25'), -- Sana sifatida
+('true'),       -- Boolean sifatida
+(NULL);         -- NULL
+
+-- Ma'lumot turini tekshirish
+SELECT value, TYPEOF(value) FROM flexible_data;</code></pre>
+      </div>
+
+      <h2>7. Ma'lumot turlarini o'zgartirish</h2>
+      <div class="code-block">
+        <pre><code>-- CAST funksiyasi
+SELECT CAST('123' AS INTEGER) + 1;  -- 124
+SELECT CAST(123 AS TEXT) || ' son';  -- '123 son'
+SELECT CAST('123.45' AS REAL) * 2;  -- 246.9
+
+-- Ma'lumot turini tekshirish
+SELECT TYPEOF('123');  -- 'text'
+SELECT TYPEOF(123);    -- 'integer'
+SELECT TYPEOF(123.45); -- 'real'
+SELECT TYPEOF(NULL);   -- 'null'</code></pre>
+      </div>
+
+      <h2>8. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code>-- Kutubxona tizimi
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    isbn TEXT UNIQUE,
+    cover_image BLOB,
+    description TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ma'lumotlar
+INSERT INTO books (title, author, publication_year, pages, price, isbn, description) VALUES 
+('Python Programming', 'John Doe', 2020, 300, 45.99, '978-1234567890', 'Python dasturlash tili haqida'),
+('JavaScript Guide', 'Jane Smith', 2019, 250, 35.50, '978-1234567891', 'JavaScript dasturlash tili'),
+('History of Uzbekistan', 'Ahmad Karimov', 2018, 400, 25.00, '978-1234567892', 'O''zbekiston tarixi'),
+('O''zbek tili', 'Malika Toshmatova', 2021, 200, 15.75, '978-1234567893', 'O''zbek tili grammatikasi');
+
+-- Ma'lumot turlari bilan ishlash
+-- TEXT funksiyalari
+SELECT UPPER(title) FROM books;
+SELECT LENGTH(description) FROM books;
+SELECT SUBSTR(author, 1, 5) FROM books;
+
+-- INTEGER funksiyalari
+SELECT publication_year + 1 FROM books;
+SELECT pages * 2 FROM books;
+SELECT COUNT(*) FROM books WHERE pages > 250;
+
+-- REAL funksiyalari
+SELECT ROUND(price, 1) FROM books;
+SELECT AVG(price) FROM books;
+SELECT MAX(price) FROM books;
+
+-- NULL bilan ishlash
+SELECT title, COALESCE(description, 'Tavsif yo''q') FROM books;
+SELECT * FROM books WHERE description IS NULL;</code></pre>
+      </div>
+
+      <h2>9. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>TEXT uchun:</strong> UTF-8 encoding ishlatish</li>
+        <li>✅ <strong>INTEGER uchun:</strong> PRIMARY KEY uchun INTEGER ishlatish</li>
+        <li>✅ <strong>REAL uchun:</strong> Aniqlikni hisobga olish</li>
+        <li>✅ <strong>BLOB uchun:</strong> Kichik fayllar uchun ishlatish</li>
+        <li>✅ <strong>NULL uchun:</strong> NOT NULL constraint qo'shish</li>
+        <li>✅ <strong>Dynamic typing:</strong> Ehtiyotkorlik bilan ishlatish</li>
+      </ul>
+
+      <h2>10. Cheklovlar va xatolar</h2>
+      <div class="code-block">
+        <pre><code>-- Ma'lumot turi mos kelmasligi
+INSERT INTO books (title, author, publication_year) VALUES 
+('Test Book', 'Test Author', 'not_a_number');  -- Xato: INTEGER kutilgan
+
+-- NULL constraint
+CREATE TABLE users (name TEXT NOT NULL);
+INSERT INTO users (name) VALUES (NULL);  -- Xato: NOT NULL constraint failed
+
+-- Ma'lumot turini tekshirish
+SELECT TYPEOF(publication_year) FROM books;
+SELECT TYPEOF(price) FROM books;</code></pre>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../2-dars/">Keyingi dars: Constraint-lar - PRIMARY KEY, UNIQUE, NOT NULL, DEFAULT →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

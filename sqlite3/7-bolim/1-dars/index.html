@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Todo App - SQLite bilan to'liq loyiha</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>📝 Todo App - SQLite bilan to'liq loyiha</h1>
+
+    <div class="lesson-content">
+      <h2>Todo App loyihasi</h2>
+      <p>Bu darsda SQLite3 ishlatgan holda to'liq Todo App loyihasini yaratamiz. Bu loyiha barcha o'rganilgan SQLite3 texnikalarini qo'llaydi.</p>
+
+      <h2>1. Loyiha struktura</h2>
+      <div class="code-block">
+        <pre><code>todo_app/
+├── app.py              # Asosiy Flask app
+├── database.py         # Ma'lumotlar bazasi funksiyalari
+├── models.py           # Data modellar
+├── templates/          # HTML template-lar
+│   ├── base.html
+│   ├── index.html
+│   ├── add_task.html
+│   └── edit_task.html
+├── static/            # CSS va JS fayllar
+│   ├── style.css
+│   └── script.js
+├── requirements.txt   # Dependencies
+└── todo.db           # SQLite ma'lumotlar bazasi</code></pre>
+      </div>
+
+      <h2>2. Ma'lumotlar bazasi dizayni</h2>
+      <div class="code-block">
+        <pre><code># database.py
+import sqlite3
+from datetime import datetime
+
+class TodoDatabase:
+    def __init__(self, db_path='todo.db'):
+        self.db_path = db_path
+        self.init_database()
+    
+    def init_database(self):
+        """Ma'lumotlar bazasini ishga tushirish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Tasks jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                description TEXT,
+                priority TEXT DEFAULT 'medium',
+                status TEXT DEFAULT 'pending',
+                due_date DATE,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+            
+            # Categories jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS categories (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT UNIQUE NOT NULL,
+                color TEXT DEFAULT '#007bff',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+            
+            # Task categories jadvali
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS task_categories (
+                task_id INTEGER,
+                category_id INTEGER,
+                PRIMARY KEY (task_id, category_id),
+                FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+                FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+            )
+            ''')
+            
+            # Foreign Key yoqish
+            cursor.execute('PRAGMA foreign_keys = ON')
+            
+            # Default categories qo'shish
+            cursor.execute('''
+            INSERT OR IGNORE INTO categories (name, color) VALUES 
+            ('Work', '#28a745'),
+            ('Personal', '#007bff'),
+            ('Shopping', '#ffc107'),
+            ('Health', '#dc3545')
+            ''')
+            
+            conn.commit()
+    
+    def create_task(self, title, description=None, priority='medium', due_date=None, category_ids=None):
+        """Yangi task yaratish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            INSERT INTO tasks (title, description, priority, due_date) 
+            VALUES (?, ?, ?, ?)
+            ''', (title, description, priority, due_date))
+            
+            task_id = cursor.lastrowid
+            
+            # Categories qo'shish
+            if category_ids:
+                for category_id in category_ids:
+                    cursor.execute('''
+                    INSERT INTO task_categories (task_id, category_id) 
+                    VALUES (?, ?)
+                    ''', (task_id, category_id))
+            
+            conn.commit()
+            return task_id
+    
+    def get_all_tasks(self, status=None, priority=None, category_id=None):
+        """Barcha tasklarni olish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            query = '''
+            SELECT t.id, t.title, t.description, t.priority, t.status, 
+                   t.due_date, t.created_at, t.updated_at,
+                   GROUP_CONCAT(c.name) as categories
+            FROM tasks t
+            LEFT JOIN task_categories tc ON t.id = tc.task_id
+            LEFT JOIN categories c ON tc.category_id = c.id
+            WHERE 1=1
+            '''
+            
+            params = []
+            
+            if status:
+                query += ' AND t.status = ?'
+                params.append(status)
+            
+            if priority:
+                query += ' AND t.priority = ?'
+                params.append(priority)
+            
+            if category_id:
+                query += ' AND t.id IN (SELECT task_id FROM task_categories WHERE category_id = ?)'
+                params.append(category_id)
+            
+            query += ' GROUP BY t.id ORDER BY t.created_at DESC'
+            
+            cursor.execute(query, params)
+            return cursor.fetchall()
+    
+    def get_task_by_id(self, task_id):
+        """Task ma'lumotlarini olish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            SELECT t.id, t.title, t.description, t.priority, t.status, 
+                   t.due_date, t.created_at, t.updated_at
+            FROM tasks t
+            WHERE t.id = ?
+            ''', (task_id,))
+            
+            task = cursor.fetchone()
+            
+            if task:
+                # Categories olish
+                cursor.execute('''
+                SELECT c.id, c.name, c.color
+                FROM categories c
+                INNER JOIN task_categories tc ON c.id = tc.category_id
+                WHERE tc.task_id = ?
+                ''', (task_id,))
+                
+                categories = cursor.fetchall()
+                return task, categories
+            
+            return None, []
+    
+    def update_task(self, task_id, title=None, description=None, priority=None, 
+                   status=None, due_date=None, category_ids=None):
+        """Task ma'lumotlarini yangilash"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Yangilanish maydonlarini aniqlash
+            updates = []
+            params = []
+            
+            if title is not None:
+                updates.append('title = ?')
+                params.append(title)
+            
+            if description is not None:
+                updates.append('description = ?')
+                params.append(description)
+            
+            if priority is not None:
+                updates.append('priority = ?')
+                params.append(priority)
+            
+            if status is not None:
+                updates.append('status = ?')
+                params.append(status)
+            
+            if due_date is not None:
+                updates.append('due_date = ?')
+                params.append(due_date)
+            
+            if updates:
+                updates.append('updated_at = CURRENT_TIMESTAMP')
+                params.append(task_id)
+                
+                query = f"UPDATE tasks SET {', '.join(updates)} WHERE id = ?"
+                cursor.execute(query, params)
+            
+            # Categories yangilash
+            if category_ids is not None:
+                # Eski categories o'chirish
+                cursor.execute('DELETE FROM task_categories WHERE task_id = ?', (task_id,))
+                
+                # Yangi categories qo'shish
+                for category_id in category_ids:
+                    cursor.execute('''
+                    INSERT INTO task_categories (task_id, category_id) 
+                    VALUES (?, ?)
+                    ''', (task_id, category_id))
+            
+            conn.commit()
+            return cursor.rowcount > 0
+    
+    def delete_task(self, task_id):
+        """Task o'chirish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('DELETE FROM tasks WHERE id = ?', (task_id,))
+            conn.commit()
+            return cursor.rowcount > 0
+    
+    def get_categories(self):
+        """Barcha categories olish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM categories ORDER BY name')
+            return cursor.fetchall()
+    
+    def create_category(self, name, color):
+        """Yangi category yaratish"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+            INSERT INTO categories (name, color) VALUES (?, ?)
+            ''', (name, color))
+            conn.commit()
+            return cursor.lastrowid
+    
+    def get_task_statistics(self):
+        """Task statistikasi"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Umumiy statistika
+            cursor.execute('''
+            SELECT 
+                COUNT(*) as total_tasks,
+                SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending_tasks,
+                SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_tasks,
+                SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled_tasks
+            FROM tasks
+            ''')
+            
+            stats = cursor.fetchone()
+            
+            # Priority bo'yicha statistika
+            cursor.execute('''
+            SELECT priority, COUNT(*) as count
+            FROM tasks
+            GROUP BY priority
+            ''')
+            
+            priority_stats = cursor.fetchall()
+            
+            # Category bo'yicha statistika
+            cursor.execute('''
+            SELECT c.name, COUNT(tc.task_id) as count
+            FROM categories c
+            LEFT JOIN task_categories tc ON c.id = tc.category_id
+            GROUP BY c.id, c.name
+            ORDER BY count DESC
+            ''')
+            
+            category_stats = cursor.fetchall()
+            
+            return {
+                'total': stats[0],
+                'pending': stats[1],
+                'completed': stats[2],
+                'cancelled': stats[3],
+                'priority_stats': priority_stats,
+                'category_stats': category_stats
+            }</code></pre>
+      </div>
+
+      <h2>3. Flask App</h2>
+      <div class="code-block">
+        <pre><code># app.py
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from database import TodoDatabase
+from datetime import datetime
+
+app = Flask(__name__)
+app.secret_key = 'your-secret-key-here'
+
+# Database instance
+db = TodoDatabase()
+
+@app.route('/')
+def index():
+    """Asosiy sahifa"""
+    # Filter parametrlari
+    status = request.args.get('status')
+    priority = request.args.get('priority')
+    category_id = request.args.get('category_id')
+    
+    # Tasklarni olish
+    tasks = db.get_all_tasks(status=status, priority=priority, category_id=category_id)
+    
+    # Categories olish
+    categories = db.get_categories()
+    
+    # Statistika
+    stats = db.get_task_statistics()
+    
+    return render_template('index.html', 
+                         tasks=tasks, 
+                         categories=categories, 
+                         stats=stats,
+                         current_filters={
+                             'status': status,
+                             'priority': priority,
+                             'category_id': category_id
+                         })
+
+@app.route('/add', methods=['GET', 'POST'])
+def add_task():
+    """Yangi task qo'shish"""
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form.get('description', '')
+        priority = request.form.get('priority', 'medium')
+        due_date = request.form.get('due_date')
+        category_ids = request.form.getlist('categories')
+        
+        # Category IDs ni integer ga o'tkazish
+        category_ids = [int(cid) for cid in category_ids if cid]
+        
+        # Task yaratish
+        task_id = db.create_task(
+            title=title,
+            description=description,
+            priority=priority,
+            due_date=due_date,
+            category_ids=category_ids
+        )
+        
+        flash('Task muvaffaqiyatli yaratildi!', 'success')
+        return redirect(url_for('index'))
+    
+    # Categories olish
+    categories = db.get_categories()
+    return render_template('add_task.html', categories=categories)
+
+@app.route('/edit/<int:task_id>', methods=['GET', 'POST'])
+def edit_task(task_id):
+    """Task tahrirlash"""
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form.get('description', '')
+        priority = request.form.get('priority', 'medium')
+        status = request.form.get('status', 'pending')
+        due_date = request.form.get('due_date')
+        category_ids = request.form.getlist('categories')
+        
+        # Category IDs ni integer ga o'tkazish
+        category_ids = [int(cid) for cid in category_ids if cid]
+        
+        # Task yangilash
+        success = db.update_task(
+            task_id=task_id,
+            title=title,
+            description=description,
+            priority=priority,
+            status=status,
+            due_date=due_date,
+            category_ids=category_ids
+        )
+        
+        if success:
+            flash('Task muvaffaqiyatli yangilandi!', 'success')
+        else:
+            flash('Task yangilanmadi!', 'error')
+        
+        return redirect(url_for('index'))
+    
+    # Task ma'lumotlarini olish
+    task_data = db.get_task_by_id(task_id)
+    if not task_data:
+        flash('Task topilmadi!', 'error')
+        return redirect(url_for('index'))
+    
+    task, task_categories = task_data
+    
+    # Categories olish
+    categories = db.get_categories()
+    
+    return render_template('edit_task.html', 
+                         task=task, 
+                         categories=categories,
+                         task_categories=task_categories)
+
+@app.route('/delete/<int:task_id>')
+def delete_task(task_id):
+    """Task o'chirish"""
+    success = db.delete_task(task_id)
+    
+    if success:
+        flash('Task muvaffaqiyatli o''chirildi!', 'success')
+    else:
+        flash('Task o''chirilmadi!', 'error')
+    
+    return redirect(url_for('index'))
+
+@app.route('/complete/<int:task_id>')
+def complete_task(task_id):
+    """Task ni tugatish"""
+    success = db.update_task(task_id, status='completed')
+    
+    if success:
+        flash('Task tugatildi!', 'success')
+    else:
+        flash('Task tugatilmadi!', 'error')
+    
+    return redirect(url_for('index'))
+
+@app.route('/api/tasks')
+def api_tasks():
+    """API - Tasklar"""
+    status = request.args.get('status')
+    priority = request.args.get('priority')
+    category_id = request.args.get('category_id')
+    
+    tasks = db.get_all_tasks(status=status, priority=priority, category_id=category_id)
+    
+    # JSON formatga o'tkazish
+    tasks_data = []
+    for task in tasks:
+        tasks_data.append({
+            'id': task[0],
+            'title': task[1],
+            'description': task[2],
+            'priority': task[3],
+            'status': task[4],
+            'due_date': task[5],
+            'created_at': task[6],
+            'updated_at': task[7],
+            'categories': task[8] if task[8] else ''
+        })
+    
+    return jsonify(tasks_data)
+
+@app.route('/api/statistics')
+def api_statistics():
+    """API - Statistika"""
+    stats = db.get_task_statistics()
+    return jsonify(stats)
+
+if __name__ == '__main__':
+    app.run(debug=True)</code></pre>
+      </div>
+
+      <h2>4. HTML Templates</h2>
+      <div class="code-block">
+        <pre><code><!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Todo App{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .priority-high { color: #dc3545; }
+        .priority-medium { color: #ffc107; }
+        .priority-low { color: #28a745; }
+        .status-pending { color: #ffc107; }
+        .status-completed { color: #28a745; }
+        .status-cancelled { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-tasks"></i> Todo App
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{{ url_for('index') }}">
+                    <i class="fas fa-home"></i> Bosh sahifa
+                </a>
+                <a class="nav-link" href="{{ url_for('add_task') }}">
+                    <i class="fas fa-plus"></i> Yangi task
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+
+<!-- templates/index.html -->
+{% extends "base.html" %}
+
+{% block title %}Todo App - Bosh sahifa{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-tasks"></i> Mening tasklarim</h2>
+            <a href="{{ url_for('add_task') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Yangi task
+            </a>
+        </div>
+
+        <!-- Filter -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Holat</label>
+                        <select name="status" class="form-select">
+                            <option value="">Barchasi</option>
+                            <option value="pending" {{ 'selected' if current_filters.status == 'pending' }}>Kutilmoqda</option>
+                            <option value="completed" {{ 'selected' if current_filters.status == 'completed' }}>Tugatilgan</option>
+                            <option value="cancelled" {{ 'selected' if current_filters.status == 'cancelled' }}>Bekor qilingan</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Prioritet</label>
+                        <select name="priority" class="form-select">
+                            <option value="">Barchasi</option>
+                            <option value="high" {{ 'selected' if current_filters.priority == 'high' }}>Yuqori</option>
+                            <option value="medium" {{ 'selected' if current_filters.priority == 'medium' }}>O'rta</option>
+                            <option value="low" {{ 'selected' if current_filters.priority == 'low' }}>Past</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Kategoriya</label>
+                        <select name="category_id" class="form-select">
+                            <option value="">Barchasi</option>
+                            {% for category in categories %}
+                            <option value="{{ category[0] }}" {{ 'selected' if current_filters.category_id == category[0]|string }}>
+                                {{ category[1] }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-outline-primary d-block w-100">
+                            <i class="fas fa-filter"></i> Filtr
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tasks -->
+        {% if tasks %}
+            {% for task in tasks %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title">
+                                {{ task[1] }}
+                                <span class="badge bg-{{ 'danger' if task[3] == 'high' else 'warning' if task[3] == 'medium' else 'success' }}">
+                                    {{ task[3].title() }}
+                                </span>
+                                <span class="badge bg-{{ 'warning' if task[4] == 'pending' else 'success' if task[4] == 'completed' else 'danger' }}">
+                                    {{ task[4].title() }}
+                                </span>
+                            </h5>
+                            {% if task[2] %}
+                            <p class="card-text">{{ task[2] }}</p>
+                            {% endif %}
+                            {% if task[8] %}
+                            <p class="text-muted">
+                                <i class="fas fa-tags"></i> {{ task[8] }}
+                            </p>
+                            {% endif %}
+                            {% if task[5] %}
+                            <p class="text-muted">
+                                <i class="fas fa-calendar"></i> {{ task[5] }}
+                            </p>
+                            {% endif %}
+                        </div>
+                        <div class="btn-group">
+                            {% if task[4] != 'completed' %}
+                            <a href="{{ url_for('complete_task', task_id=task[0]) }}" class="btn btn-success btn-sm">
+                                <i class="fas fa-check"></i>
+                            </a>
+                            {% endif %}
+                            <a href="{{ url_for('edit_task', task_id=task[0]) }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{{ url_for('delete_task', task_id=task[0]) }}" class="btn btn-danger btn-sm" 
+                               onclick="return confirm('Task o''chirilsinmi?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">Hozircha task yo'q</h4>
+                <p class="text-muted">Yangi task qo'shish uchun tugmani bosing</p>
+                <a href="{{ url_for('add_task') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Yangi task
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <!-- Statistika -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Statistika</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <h4 class="text-primary">{{ stats.total }}</h4>
+                        <small class="text-muted">Jami</small>
+                    </div>
+                    <div class="col-4">
+                        <h4 class="text-warning">{{ stats.pending }}</h4>
+                        <small class="text-muted">Kutilmoqda</small>
+                    </div>
+                    <div class="col-4">
+                        <h4 class="text-success">{{ stats.completed }}</h4>
+                        <small class="text-muted">Tugatilgan</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kategoriyalar -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-tags"></i> Kategoriyalar</h5>
+            </div>
+            <div class="card-body">
+                {% for category in categories %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge" style="background-color: {{ category[2] }}">{{ category[1] }}</span>
+                    <small class="text-muted">{{ category[3] if category[3] else 0 }} task</small>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}</code></pre>
+      </div>
+
+      <h2>5. Loyihani ishga tushirish</h2>
+      <div class="code-block">
+        <pre><code># requirements.txt
+Flask==2.3.3
+Werkzeug==2.3.7
+
+# Loyihani ishga tushirish
+pip install -r requirements.txt
+python app.py
+
+# Brauzerda ochish
+# http://localhost:5000</code></pre>
+      </div>
+
+      <h2>6. Loyiha xususiyatlari</h2>
+      <ul>
+        <li>✅ <strong>CRUD operatsiyalar:</strong> Yaratish, o'qish, yangilash, o'chirish</li>
+        <li>✅ <strong>Filter va qidiruv:</strong> Holat, prioritet, kategoriya bo'yicha</li>
+        <li>✅ <strong>Kategoriyalar:</strong> Tasklarni guruhlash</li>
+        <li>✅ <strong>Statistika:</strong> Tasklar haqida ma'lumot</li>
+        <li>✅ <strong>Responsive dizayn:</strong> Mobil qurilmalar uchun</li>
+        <li>✅ <strong>API:</strong> JSON formatda ma'lumotlar</li>
+      </ul>
+
+      <div class="next-lesson">
+        <a href="../2-dars/">Keyingi dars: Contacts Manager - Murakkab loyiha →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

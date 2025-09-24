@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>SQLite CLI bilan ishlash</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>💻 SQLite CLI bilan ishlash</h1>
+
+    <div class="lesson-content">
+      <h2>SQLite CLI ni ishga tushirish</h2>
+      
+      <h3>1. Ma'lumotlar bazasini ochish</h3>
+      <div class="code-block">
+        <pre><code># Yangi ma'lumotlar bazasi yaratish
+sqlite3 mydatabase.db
+
+# Mavjud ma'lumotlar bazasini ochish
+sqlite3 existing_database.db
+
+# Xotira bazasini ochish (vaqtinchalik)
+sqlite3 :memory:</code></pre>
+      </div>
+
+      <h3>2. SQLite prompt</h3>
+      <p>SQLite CLI ishga tushganda siz quyidagicha prompt ko'rasiz:</p>
+      <div class="code-block">
+        <pre><code>SQLite version 3.39.0 2022-06-25 14:57:56
+Enter ".help" for usage hints.
+sqlite></code></pre>
+      </div>
+
+      <h2>Asosiy ishlar</h2>
+
+      <h3>Jadval yaratish</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    age INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+      </div>
+
+      <h3>Ma'lumot qo'shish</h3>
+      <div class="code-block">
+        <pre><code>INSERT INTO users (name, email, age) VALUES 
+('Ali Valiyev', 'ali@example.com', 25),
+('Malika Karimova', 'malika@example.com', 30),
+('Bobur Toshmatov', 'bobur@example.com', 28);</code></pre>
+      </div>
+
+      <h3>Ma'lumotlarni ko'rish</h3>
+      <div class="code-block">
+        <pre><code># Barcha ma'lumotlar
+SELECT * FROM users;
+
+# Belgili ustunlar
+SELECT name, email FROM users;
+
+# Shart bilan
+SELECT * FROM users WHERE age > 25;</code></pre>
+      </div>
+
+      <h2>CLI sozlamalari</h2>
+
+      <h3>Ko'rinish sozlamalari</h3>
+      <div class="code-block">
+        <pre><code># Sarlavhalarni yoqish
+.headers on
+
+# Jadval formatida ko'rsatish
+.mode table
+
+# CSV formatida
+.mode csv
+
+# JSON formatida
+.mode json</code></pre>
+      </div>
+
+      <h3>Natijani faylga saqlash</h3>
+      <div class="code-block">
+        <pre><code># Natijani faylga saqlash
+.output results.txt
+SELECT * FROM users;
+.output stdout
+
+# Ekranga qaytarish
+.output stdout</code></pre>
+      </div>
+
+      <h2>Foydali buyruqlar</h2>
+
+      <h3>Ma'lumotlar bazasi haqida ma'lumot</h3>
+      <div class="code-block">
+        <pre><code># Ma'lumotlar bazalari
+.databases
+
+# Jadvallar
+.tables
+
+# Jadval strukturasi
+.schema users
+
+# Hozirgi sozlamalar
+.show</code></pre>
+      </div>
+
+      <h3>Ma'lumotlarni yangilash va o'chirish</h3>
+      <div class="code-block">
+        <pre><code># Ma'lumotni yangilash
+UPDATE users SET age = 26 WHERE name = 'Ali Valiyev';
+
+# Ma'lumotni o'chirish
+DELETE FROM users WHERE age < 25;
+
+# Barcha ma'lumotlarni o'chirish
+DELETE FROM users;</code></pre>
+      </div>
+
+      <h2>Amaliy misol</h2>
+      <div class="code-block">
+        <pre><code># SQLite ni ishga tushirish
+sqlite3 company.db
+
+# Sozlamalarni o'rnatish
+.headers on
+.mode table
+
+# Jadvallar yaratish
+CREATE TABLE employees (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    position TEXT,
+    salary REAL,
+    department_id INTEGER
+);
+
+CREATE TABLE departments (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    location TEXT
+);
+
+# Ma'lumotlar qo'shish
+INSERT INTO departments (name, location) VALUES 
+('IT', 'Toshkent'),
+('Marketing', 'Samarqand'),
+('Sales', 'Buxoro');
+
+INSERT INTO employees (name, position, salary, department_id) VALUES 
+('Ahmad Karimov', 'Developer', 5000, 1),
+('Malika Toshmatova', 'Designer', 4500, 1),
+('Bobur Valiyev', 'Manager', 6000, 2);
+
+# Ma'lumotlarni ko'rish
+SELECT * FROM employees;
+SELECT * FROM departments;
+
+# JOIN so'rov
+SELECT e.name, e.position, d.name as department 
+FROM employees e 
+JOIN departments d ON e.department_id = d.id;
+
+# Chiqish
+.quit</code></pre>
+      </div>
+
+      <h2>CLI afzalliklari</h2>
+      <ul>
+        <li>✅ Tez va oson</li>
+        <li>✅ Server talab qilmaydi</li>
+        <li>✅ Barcha SQLite funksiyalari</li>
+        <li>✅ Script fayllar bilan ishlash</li>
+        <li>✅ Import/Export qilish</li>
+      </ul>
+
+      <h2>CLI cheklovlari</h2>
+      <ul>
+        <li>❌ GUI yo'q</li>
+        <li>❌ Visual query builder yo'q</li>
+        <li>❌ Syntax highlighting yo'q</li>
+        <li>❌ Auto-completion cheklangan</li>
+      </ul>
+
+      <div class="next-lesson">
+        <a href="../5-dars/">Keyingi dars: Ma'lumotlar bazasi yaratish va boshqarish →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

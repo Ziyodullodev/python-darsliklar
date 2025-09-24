@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Backup va eksport - .dump, .import</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>💾 Backup va eksport - .dump, .import</h1>
+
+    <div class="lesson-content">
+      <h2>Backup nima?</h2>
+      <p>Backup - bu ma'lumotlarni xavfsiz saqlash va keyinchalik tiklash uchun nusxalash jarayoni. SQLite da backup va eksport uchun turli usullar mavjud.</p>
+
+      <h2>1. .dump buyrugi</h2>
+      <div class="code-block">
+        <pre><code># Ma'lumotlar bazasini SQL formatida eksport qilish
+sqlite3 mydatabase.db .dump > backup.sql
+
+# Faqat struktura (schema)
+sqlite3 mydatabase.db .schema > schema.sql
+
+# Faqat ma'lumotlar (data)
+sqlite3 mydatabase.db "SELECT * FROM users;" > users_data.csv
+
+# Barcha jadvallarni alohida fayllarga eksport qilish
+sqlite3 mydatabase.db "SELECT * FROM users;" > users.csv
+sqlite3 mydatabase.db "SELECT * FROM products;" > products.csv</code></pre>
+      </div>
+
+      <h2>2. .import buyrugi</h2>
+      <div class="code-block">
+        <pre><code># SQL fayldan import qilish
+sqlite3 new_database.db < backup.sql
+
+# CSV fayldan import qilish
+sqlite3 mydatabase.db
+.mode csv
+.import users.csv users
+.import products.csv products
+
+# Ma'lumotlarni yangilash
+sqlite3 mydatabase.db
+.mode csv
+.headers on
+.import users_updated.csv users</code></pre>
+      </div>
+
+      <h2>3. Amaliy misollar</h2>
+      <div class="code-block">
+        <pre><code># Kutubxona tizimi backup
+sqlite3 library.db
+
+# Sozlamalar
+.headers on
+.mode table
+
+# Jadvallar yaratish
+CREATE TABLE IF NOT EXISTS authors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    birth_year INTEGER,
+    nationality TEXT
+);
+
+CREATE TABLE IF NOT EXISTS books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author_id INTEGER,
+    isbn TEXT UNIQUE,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    FOREIGN KEY (author_id) REFERENCES authors(id)
+);
+
+# Ma'lumotlar qo'shish
+INSERT INTO authors (name, birth_year, nationality) VALUES 
+('Alisher Navoiy', 1441, 'O''zbek'),
+('Abdulla Avloniy', 1878, 'O''zbek'),
+('Chingiz Aytmatov', 1928, 'Qirg''iz');
+
+INSERT INTO books (title, author_id, isbn, publication_year, pages, price) VALUES 
+('Xamsa', 1, '978-1234567890', 1495, 500, 25.50),
+('Turkiy guliston', 1, '978-1234567891', 1499, 300, 20.00),
+('O''zbek tili grammatikasi', 2, '978-1234567892', 1920, 200, 15.75);
+
+# Backup yaratish
+.quit
+
+# SQL formatida backup
+sqlite3 library.db .dump > library_backup.sql
+
+# CSV formatida backup
+sqlite3 library.db "SELECT * FROM authors;" > authors.csv
+sqlite3 library.db "SELECT * FROM books;" > books.csv</code></pre>
+      </div>
+
+      <h2>4. Murakkab backup</h2>
+      <div class="code-block">
+        <pre><code># E-commerce tizimi backup
+sqlite3 ecommerce.db
+
+# Sozlamalar
+.headers on
+.mode table
+
+# Jadvallar yaratish
+CREATE TABLE IF NOT EXISTS customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    phone TEXT,
+    registration_date DATE DEFAULT CURRENT_DATE
+);
+
+CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    price REAL NOT NULL,
+    stock_quantity INTEGER DEFAULT 0,
+    category TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER,
+    order_date DATE DEFAULT CURRENT_DATE,
+    total_amount REAL,
+    status TEXT DEFAULT 'pending',
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER,
+    product_id INTEGER,
+    quantity INTEGER,
+    price REAL,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+# Ma'lumotlar qo'shish
+INSERT INTO customers (name, email, phone) VALUES 
+('Ali Valiyev', 'ali@example.com', '+998901234567'),
+('Malika Karimova', 'malika@example.com', '+998901234568'),
+('Bobur Toshmatov', 'bobur@example.com', '+998901234569');
+
+INSERT INTO products (name, price, stock_quantity, category) VALUES 
+('Laptop', 1000.00, 10, 'Electronics'),
+('Phone', 500.00, 25, 'Electronics'),
+('Book', 20.00, 100, 'Education'),
+('T-shirt', 30.00, 50, 'Clothing');
+
+INSERT INTO orders (customer_id, total_amount, status) VALUES 
+(1, 150.00, 'completed'),
+(2, 200.00, 'completed'),
+(1, 100.00, 'pending'),
+(3, 300.00, 'completed');
+
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES 
+(1, 1, 1, 150.00),
+(2, 2, 1, 200.00),
+(3, 3, 2, 50.00),
+(4, 1, 1, 300.00);
+
+# Backup yaratish
+.quit
+
+# To'liq backup
+sqlite3 ecommerce.db .dump > ecommerce_backup.sql
+
+# Alohida jadvallar backup
+sqlite3 ecommerce.db "SELECT * FROM customers;" > customers.csv
+sqlite3 ecommerce.db "SELECT * FROM products;" > products.csv
+sqlite3 ecommerce.db "SELECT * FROM orders;" > orders.csv
+sqlite3 ecommerce.db "SELECT * FROM order_items;" > order_items.csv</code></pre>
+      </div>
+
+      <h2>5. Backup script yaratish</h2>
+      <div class="code-block">
+        <pre><code>#!/bin/bash
+# backup.sh - SQLite backup script
+
+# O'zgaruvchilar
+DB_NAME="library.db"
+BACKUP_DIR="backups"
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_FILE="${BACKUP_DIR}/library_backup_${DATE}.sql"
+
+# Backup papkasini yaratish
+mkdir -p $BACKUP_DIR
+
+# Backup yaratish
+echo "Backup yaratilmoqda: $BACKUP_FILE"
+sqlite3 $DB_NAME .dump > $BACKUP_FILE
+
+# Backup hajmini tekshirish
+BACKUP_SIZE=$(du -h $BACKUP_FILE | cut -f1)
+echo "Backup yaratildi: $BACKUP_FILE ($BACKUP_SIZE)"
+
+# Eski backuplarni o'chirish (7 kundan eski)
+find $BACKUP_DIR -name "library_backup_*.sql" -mtime +7 -delete
+
+echo "Backup tugallandi!"
+
+# Python backup script
+import sqlite3
+import os
+from datetime import datetime
+
+def backup_database(db_path, backup_dir="backups"):
+    """Ma'lumotlar bazasini backup qilish"""
+    
+    # Backup papkasini yaratish
+    os.makedirs(backup_dir, exist_ok=True)
+    
+    # Backup fayl nomi
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup_file = os.path.join(backup_dir, f"backup_{timestamp}.sql")
+    
+    # Backup yaratish
+    with sqlite3.connect(db_path) as conn:
+        with open(backup_file, 'w') as f:
+            for line in conn.iterdump():
+                f.write(line + '\n')
+    
+    print(f"Backup yaratildi: {backup_file}")
+    return backup_file
+
+# Foydalanish
+if __name__ == "__main__":
+    backup_database("library.db")</code></pre>
+      </div>
+
+      <h2>6. Restore (Tiklash)</h2>
+      <div class="code-block">
+        <pre><code># SQL fayldan restore qilish
+sqlite3 new_database.db < library_backup.sql
+
+# CSV fayllardan restore qilish
+sqlite3 restored_database.db
+
+# Jadvallar yaratish
+CREATE TABLE authors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    birth_year INTEGER,
+    nationality TEXT
+);
+
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author_id INTEGER,
+    isbn TEXT UNIQUE,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    FOREIGN KEY (author_id) REFERENCES authors(id)
+);
+
+# CSV fayllardan import
+.mode csv
+.import authors.csv authors
+.import books.csv books
+
+# Ma'lumotlarni tekshirish
+SELECT COUNT(*) FROM authors;
+SELECT COUNT(*) FROM books;</code></pre>
+      </div>
+
+      <h2>7. Murakkab backup misollar</h2>
+      <div class="code-block">
+        <pre><code># Blog tizimi backup
+sqlite3 blog.db
+
+# Sozlamalar
+.headers on
+.mode table
+
+# Jadvallar yaratish
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    is_active BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    content TEXT,
+    author_id INTEGER,
+    is_published BOOLEAN DEFAULT 0,
+    view_count INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (author_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE IF NOT EXISTS post_categories (
+    post_id INTEGER,
+    category_id INTEGER,
+    PRIMARY KEY (post_id, category_id),
+    FOREIGN KEY (post_id) REFERENCES posts(id),
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+# Ma'lumotlar qo'shish
+INSERT INTO users (username, email, password_hash) VALUES 
+('admin', 'admin@example.com', 'hashed_password_1'),
+('author1', 'author1@example.com', 'hashed_password_2'),
+('author2', 'author2@example.com', 'hashed_password_3');
+
+INSERT INTO categories (name, description) VALUES 
+('Programming', 'Dasturlash haqida'),
+('Technology', 'Texnologiya yangiliklari'),
+('Education', 'Ta''lim va o''qish');
+
+INSERT INTO posts (title, content, author_id, is_published, view_count) VALUES 
+('Python dasturlash', 'Python dasturlash tili haqida...', 1, 1, 150),
+('JavaScript asoslari', 'JavaScript dasturlash tili...', 2, 1, 200),
+('O''zbekiston tarixi', 'O''zbekiston tarixi haqida...', 3, 1, 100);
+
+INSERT INTO post_categories (post_id, category_id) VALUES 
+(1, 1),  -- Python dasturlash - Programming
+(2, 1),  -- JavaScript asoslari - Programming
+(3, 3);  -- O'zbekiston tarixi - Education
+
+# Backup yaratish
+.quit
+
+# To'liq backup
+sqlite3 blog.db .dump > blog_backup.sql
+
+# Alohida jadvallar backup
+sqlite3 blog.db "SELECT * FROM users;" > users.csv
+sqlite3 blog.db "SELECT * FROM posts;" > posts.csv
+sqlite3 blog.db "SELECT * FROM categories;" > categories.csv
+sqlite3 blog.db "SELECT * FROM post_categories;" > post_categories.csv</code></pre>
+      </div>
+
+      <h2>8. Backup monitoring</h2>
+      <div class="code-block">
+        <pre><code># Backup monitoring script
+#!/bin/bash
+
+# O'zgaruvchilar
+DB_NAME="library.db"
+BACKUP_DIR="backups"
+LOG_FILE="backup.log"
+
+# Log funksiyasi
+log_message() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> $LOG_FILE
+}
+
+# Backup yaratish
+create_backup() {
+    local timestamp=$(date +%Y%m%d_%H%M%S)
+    local backup_file="${BACKUP_DIR}/backup_${timestamp}.sql"
+    
+    log_message "Backup boshlanmoqda: $backup_file"
+    
+    # Backup yaratish
+    sqlite3 $DB_NAME .dump > $backup_file
+    
+    # Backup hajmini tekshirish
+    local backup_size=$(du -h $backup_file | cut -f1)
+    log_message "Backup tugallandi: $backup_file ($backup_size)"
+    
+    # Eski backuplarni o'chirish
+    find $BACKUP_DIR -name "backup_*.sql" -mtime +7 -delete
+    log_message "Eski backuplar o'chirildi"
+}
+
+# Backup tekshirish
+check_backup() {
+    local latest_backup=$(ls -t $BACKUP_DIR/backup_*.sql 2>/dev/null | head -n1)
+    
+    if [ -z "$latest_backup" ]; then
+        log_message "XATO: Backup fayl topilmadi"
+        return 1
+    fi
+    
+    local backup_age=$(($(date +%s) - $(stat -c %Y $latest_backup)))
+    local backup_age_hours=$((backup_age / 3600))
+    
+    if [ $backup_age_hours -gt 24 ]; then
+        log_message "OGOHLANTIRISH: Backup $backup_age_hours soat eski"
+    else
+        log_message "Backup yangi: $backup_age_hours soat"
+    fi
+}
+
+# Asosiy funksiya
+main() {
+    log_message "Backup jarayoni boshlanmoqda"
+    
+    # Backup yaratish
+    create_backup
+    
+    # Backup tekshirish
+    check_backup
+    
+    log_message "Backup jarayoni tugallandi"
+}
+
+# Script ishga tushirish
+main</code></pre>
+      </div>
+
+      <h2>9. Cloud backup</h2>
+      <div class="code-block">
+        <pre><code># Cloud backup script (AWS S3 misoli)
+#!/bin/bash
+
+# O'zgaruvchilar
+DB_NAME="library.db"
+BACKUP_DIR="backups"
+S3_BUCKET="my-backup-bucket"
+AWS_PROFILE="default"
+
+# Backup yaratish
+create_cloud_backup() {
+    local timestamp=$(date +%Y%m%d_%H%M%S)
+    local backup_file="${BACKUP_DIR}/backup_${timestamp}.sql"
+    
+    # Local backup yaratish
+    sqlite3 $DB_NAME .dump > $backup_file
+    
+    # S3 ga yuklash
+    aws s3 cp $backup_file s3://$S3_BUCKET/backups/ --profile $AWS_PROFILE
+    
+    # Local backupni o'chirish
+    rm $backup_file
+    
+    echo "Backup S3 ga yuklandi: s3://$S3_BUCKET/backups/backup_${timestamp}.sql"
+}
+
+# S3 dan restore qilish
+restore_from_s3() {
+    local backup_file=$1
+    local local_file="restored_backup.sql"
+    
+    # S3 dan yuklab olish
+    aws s3 cp s3://$S3_BUCKET/backups/$backup_file $local_file --profile $AWS_PROFILE
+    
+    # Restore qilish
+    sqlite3 restored_database.db < $local_file
+    
+    # Faylni o'chirish
+    rm $local_file
+    
+    echo "Backup restore qilindi: $backup_file"
+}
+
+# Foydalanish
+# create_cloud_backup
+# restore_from_s3 "backup_20231201_120000.sql"</code></pre>
+      </div>
+
+      <h2>10. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>Muntazam backup:</strong> Har kuni backup yaratish</li>
+        <li>✅ <strong>Backup tekshirish:</strong> Backup fayllarini tekshirish</li>
+        <li>✅ <strong>Eski backuplarni o'chirish:</strong> Joy tejash uchun</li>
+        <li>✅ <strong>Cloud backup:</strong> Xavfsiz saqlash uchun</li>
+        <li>✅ <strong>Backup monitoring:</strong> Backup jarayonini kuzatish</li>
+        <li>✅ <strong>Restore test:</strong> Backup tiklashni sinash</li>
+      </ul>
+
+      <h2>11. Real-world misollar</h2>
+      <div class="code-block">
+        <pre><code># Production backup script
+#!/bin/bash
+
+# O'zgaruvchilar
+DB_NAME="production.db"
+BACKUP_DIR="/var/backups/sqlite"
+LOG_FILE="/var/log/backup.log"
+RETENTION_DAYS=30
+
+# Log funksiyasi
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a $LOG_FILE
+}
+
+# Backup yaratish
+create_backup() {
+    local timestamp=$(date +%Y%m%d_%H%M%S)
+    local backup_file="${BACKUP_DIR}/backup_${timestamp}.sql"
+    
+    log "Backup boshlanmoqda: $backup_file"
+    
+    # Backup yaratish
+    sqlite3 $DB_NAME .dump > $backup_file
+    
+    # Backup hajmini tekshirish
+    local backup_size=$(du -h $backup_file | cut -f1)
+    log "Backup tugallandi: $backup_file ($backup_size)"
+    
+    # Backup faylini siqish
+    gzip $backup_file
+    log "Backup siqildi: ${backup_file}.gz"
+    
+    # Eski backuplarni o'chirish
+    find $BACKUP_DIR -name "backup_*.sql.gz" -mtime +$RETENTION_DAYS -delete
+    log "Eski backuplar o'chirildi ($RETENTION_DAYS kundan eski)"
+}
+
+# Backup tekshirish
+verify_backup() {
+    local latest_backup=$(ls -t $BACKUP_DIR/backup_*.sql.gz 2>/dev/null | head -n1)
+    
+    if [ -z "$latest_backup" ]; then
+        log "XATO: Backup fayl topilmadi"
+        return 1
+    fi
+    
+    # Backup faylini tekshirish
+    if gunzip -t $latest_backup 2>/dev/null; then
+        log "Backup fayli to'g'ri: $latest_backup"
+    else
+        log "XATO: Backup fayli buzilgan: $latest_backup"
+        return 1
+    fi
+}
+
+# Asosiy funksiya
+main() {
+    log "Backup jarayoni boshlanmoqda"
+    
+    # Backup yaratish
+    create_backup
+    
+    # Backup tekshirish
+    verify_backup
+    
+    log "Backup jarayoni tugallandi"
+}
+
+# Script ishga tushirish
+main</code></pre>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../../6-bolim/1-dars/">Keyingi bo'lim: Optimization & Advanced →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

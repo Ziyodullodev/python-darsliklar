@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Ma'lumotlar bazasi yaratish va boshqarish</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>🗃️ Ma'lumotlar bazasi yaratish va boshqarish</h1>
+
+    <div class="lesson-content">
+      <h2>Ma'lumotlar bazasi yaratish</h2>
+
+      <h3>1. Yangi ma'lumotlar bazasi</h3>
+      <div class="code-block">
+        <pre><code># Yangi ma'lumotlar bazasi yaratish
+sqlite3 mydatabase.db
+
+# Ma'lumotlar bazasi mavjudligini tekshirish
+ls -la mydatabase.db</code></pre>
+      </div>
+
+      <h3>2. Xotira bazasi (In-Memory)</h3>
+      <div class="code-block">
+        <pre><code># Vaqtincha ma'lumotlar bazasi
+sqlite3 :memory:
+
+# Yoki
+sqlite3</code></pre>
+      </div>
+
+      <h2>Ma'lumotlar bazasi boshqaruvi</h2>
+
+      <h3>Ma'lumotlar bazasini ochish</h3>
+      <div class="code-block">
+        <pre><code># CLI da ochish
+.open mydatabase.db
+
+# Yangi fayl yaratish
+.open new_database.db
+
+# Mavjud faylni ochish
+.open existing_database.db</code></pre>
+      </div>
+
+      <h3>Ma'lumotlar bazasi haqida ma'lumot</h3>
+      <div class="code-block">
+        <pre><code># Ulangan ma'lumotlar bazalari
+.databases
+
+# Ma'lumotlar bazasi hajmi
+SELECT page_count * page_size as size FROM pragma_page_count(), pragma_page_size();</code></pre>
+      </div>
+
+      <h2>Jadval yaratish</h2>
+
+      <h3>Oddiy jadval</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    age INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+      </div>
+
+      <h3>Murakkab jadval</h3>
+      <div class="code-block">
+        <pre><code>CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    price REAL NOT NULL CHECK (price > 0),
+    category_id INTEGER,
+    stock_quantity INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);</code></pre>
+      </div>
+
+      <h2>Jadval boshqaruvi</h2>
+
+      <h3>Jadval strukturasi</h3>
+      <div class="code-block">
+        <pre><code># Jadval strukturasi
+.schema users
+
+# Barcha jadvallar strukturasi
+.schema
+
+# Indekslarni ham ko'rish
+.schema --indices</code></pre>
+      </div>
+
+      <h3>Jadvalni o'zgartirish</h3>
+      <div class="code-block">
+        <pre><code># Ustun qo'shish
+ALTER TABLE users ADD COLUMN phone TEXT;
+
+# Jadval nomini o'zgartirish
+ALTER TABLE users RENAME TO customers;
+
+# Ustunni o'chirish (SQLite da cheklangan)
+-- ALTER TABLE users DROP COLUMN phone; -- Ishlamaydi</code></pre>
+      </div>
+
+      <h3>Jadvalni o'chirish</h3>
+      <div class="code-block">
+        <pre><code># Jadvalni o'chirish
+DROP TABLE users;
+
+# Agar mavjud bo'lsa o'chirish
+DROP TABLE IF EXISTS users;</code></pre>
+      </div>
+
+      <h2>Indekslar</h2>
+
+      <h3>Indeks yaratish</h3>
+      <div class="code-block">
+        <pre><code># Oddiy indeks
+CREATE INDEX idx_users_email ON users(email);
+
+# Unique indeks
+CREATE UNIQUE INDEX idx_users_phone ON users(phone);
+
+# Murakkab indeks
+CREATE INDEX idx_users_name_age ON users(name, age);</code></pre>
+      </div>
+
+      <h3>Indekslarni boshqarish</h3>
+      <div class="code-block">
+        <pre><code># Indekslarni ko'rish
+.indices users
+
+# Indeksni o'chirish
+DROP INDEX idx_users_email;</code></pre>
+      </div>
+
+      <h2>Ma'lumotlar bazasi sozlamalari</h2>
+
+      <h3>PRAGMA buyruqlari</h3>
+      <div class="code-block">
+        <pre><code># Foreign key cheklovlarini yoqish
+PRAGMA foreign_keys = ON;
+
+# Ma'lumotlar bazasi versiyasini ko'rish
+PRAGMA user_version;
+
+# Ma'lumotlar bazasi sahifasi hajmi
+PRAGMA page_size;
+
+# Ma'lumotlar bazasi sahifalari soni
+PRAGMA page_count;</code></pre>
+      </div>
+
+      <h2>Amaliy loyiha</h2>
+      <div class="code-block">
+        <pre><code># Ma'lumotlar bazasini yaratish
+sqlite3 library.db
+
+# Jadvallar yaratish
+CREATE TABLE authors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    birth_year INTEGER,
+    nationality TEXT
+);
+
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author_id INTEGER,
+    isbn TEXT UNIQUE,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    FOREIGN KEY (author_id) REFERENCES authors(id)
+);
+
+CREATE TABLE categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    description TEXT
+);
+
+CREATE TABLE book_categories (
+    book_id INTEGER,
+    category_id INTEGER,
+    PRIMARY KEY (book_id, category_id),
+    FOREIGN KEY (book_id) REFERENCES books(id),
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+# Indekslar yaratish
+CREATE INDEX idx_books_title ON books(title);
+CREATE INDEX idx_books_author ON books(author_id);
+CREATE INDEX idx_authors_name ON authors(name);
+
+# Ma'lumotlar qo'shish
+INSERT INTO authors (name, birth_year, nationality) VALUES 
+('Alisher Navoiy', 1441, 'O''zbek'),
+('Abdulla Avloniy', 1878, 'O''zbek'),
+('Chingiz Aytmatov', 1928, 'Qirg''iz');
+
+INSERT INTO categories (name, description) VALUES 
+('Adabiyot', 'Badiiy adabiyot'),
+('Tarix', 'Tarixiy asarlar'),
+('Falsafa', 'Falsafiy asarlar');
+
+INSERT INTO books (title, author_id, isbn, publication_year, pages, price) VALUES 
+('Xamsa', 1, '978-1234567890', 1495, 500, 25.50),
+('Turkiy guliston', 1, '978-1234567891', 1499, 300, 20.00),
+('O''zbek tili grammatikasi', 2, '978-1234567892', 1920, 200, 15.75);
+
+# Jadvallarni ko'rish
+.tables
+
+# Strukturalarni ko'rish
+.schema
+
+# Ma'lumotlarni ko'rish
+SELECT * FROM authors;
+SELECT * FROM books;
+SELECT * FROM categories;</code></pre>
+      </div>
+
+      <h2>Fayl boshqaruvi</h2>
+
+      <h3>Ma'lumotlar bazasini nusxalash</h3>
+      <div class="code-block">
+        <pre><code># Faylni nusxalash
+cp mydatabase.db mydatabase_backup.db
+
+# SQL formatida eksport qilish
+.output backup.sql
+.dump
+.output stdout</code></pre>
+      </div>
+
+      <h3>Ma'lumotlar bazasini import qilish</h3>
+      <div class="code-block">
+        <pre><code># SQL fayldan import
+.read backup.sql
+
+# Yangi ma'lumotlar bazasiga import
+sqlite3 new_database.db < backup.sql</code></pre>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../6-dars/">Keyingi dars: SQLite vs MySQL vs PostgreSQL taqqoslash →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

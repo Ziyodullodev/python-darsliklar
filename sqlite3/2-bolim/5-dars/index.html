@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>UPDATE - Ma'lumotlarni yangilash</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../home-style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>✏️ UPDATE - Ma'lumotlarni yangilash</h1>
+
+    <div class="lesson-content">
+      <h2>UPDATE sintaksisi</h2>
+      <div class="code-block">
+        <pre><code>UPDATE table_name
+SET column1 = value1, column2 = value2, ...
+WHERE condition;</code></pre>
+      </div>
+
+      <h2>1. Bitta ustunni yangilash</h2>
+      <div class="code-block">
+        <pre><code>-- Belgili foydalanuvchining yoshini yangilash
+UPDATE users SET age = 26 WHERE id = 1;
+
+-- Belgili foydalanuvchining emailini yangilash
+UPDATE users SET email = 'new_email@example.com' WHERE name = 'Ali Valiyev';</code></pre>
+      </div>
+
+      <h2>2. Bir nechta ustunni yangilash</h2>
+      <div class="code-block">
+        <pre><code>-- Bir nechta ustunni bir vaqtda yangilash
+UPDATE users 
+SET age = 27, email = 'updated@example.com', phone = '+998901234567'
+WHERE id = 1;
+
+-- Belgili shart bo'yicha yangilash
+UPDATE users 
+SET age = age + 1, updated_at = CURRENT_TIMESTAMP
+WHERE age < 30;</code></pre>
+      </div>
+
+      <h2>3. Barcha qatorlarni yangilash</h2>
+      <div class="code-block">
+        <pre><code>-- Barcha foydalanuvchilarning statusini yangilash
+UPDATE users SET status = 'active';
+
+-- Barcha mahsulotlarning narxini oshirish
+UPDATE products SET price = price * 1.1;  -- 10% oshirish</code></pre>
+      </div>
+
+      <h2>4. Murakkab shartlar bilan yangilash</h2>
+      <div class="code-block">
+        <pre><code>-- 25 yoshdan kichik foydalanuvchilarni yangilash
+UPDATE users 
+SET status = 'young_user', category = 'junior'
+WHERE age < 25;
+
+-- Belgili kategoriyadagi mahsulotlarni yangilash
+UPDATE products 
+SET price = price * 0.9, discount = 10
+WHERE category = 'Electronics' AND price > 100;
+
+-- Murakkab shartlar
+UPDATE users 
+SET last_login = CURRENT_TIMESTAMP, login_count = login_count + 1
+WHERE (age > 18 AND age < 65) OR (status = 'premium');</code></pre>
+      </div>
+
+      <h2>5. NULL qiymatlar bilan ishlash</h2>
+      <div class="code-block">
+        <pre><code>-- NULL qiymatni o'rnatish
+UPDATE users SET phone = NULL WHERE id = 1;
+
+-- NULL qiymatni almashtirish
+UPDATE users SET phone = '+998901234567' WHERE phone IS NULL;
+
+-- NULL bo'lmagan qiymatlarni yangilash
+UPDATE users SET phone = 'Unknown' WHERE phone IS NOT NULL AND phone = '';</code></pre>
+      </div>
+
+      <h2>6. Amaliy misollar</h2>
+
+      <h3>Kutubxona tizimi</h3>
+      <div class="code-block">
+        <pre><code>-- Jadvallar
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    publication_year INTEGER,
+    pages INTEGER,
+    price REAL,
+    category TEXT,
+    is_available BOOLEAN DEFAULT 1,
+    last_updated DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ma'lumotlar
+INSERT INTO books (title, author, publication_year, pages, price, category) VALUES 
+('Python Programming', 'John Doe', 2020, 300, 45.99, 'Programming'),
+('JavaScript Guide', 'Jane Smith', 2019, 250, 35.50, 'Programming'),
+('History of Uzbekistan', 'Ahmad Karimov', 2018, 400, 25.00, 'History'),
+('O''zbek tili', 'Malika Toshmatova', 2021, 200, 15.75, 'Language');
+
+-- Yangilash misollari
+-- Belgili kitobning narxini yangilash
+UPDATE books SET price = 50.00 WHERE title = 'Python Programming';
+
+-- 2020 yildan keyin nashr etilgan kitoblarning narxini oshirish
+UPDATE books 
+SET price = price * 1.15, last_updated = CURRENT_TIMESTAMP
+WHERE publication_year > 2020;
+
+-- 'Programming' kategoriyasi kitoblarini yangilash
+UPDATE books 
+SET price = price * 0.9, category = 'Computer Science'
+WHERE category = 'Programming';
+
+-- 200 sahifadan ko'p kitoblarni mavjud emas deb belgilash
+UPDATE books 
+SET is_available = 0, last_updated = CURRENT_TIMESTAMP
+WHERE pages > 200;</code></pre>
+      </div>
+
+      <h2>7. Boshqa jadvaldan ma'lumot olish</h2>
+      <div class="code-block">
+        <pre><code>-- Boshqa jadvaldan ma'lumot olish
+UPDATE books 
+SET price = (
+    SELECT avg_price 
+    FROM category_prices 
+    WHERE category_prices.category = books.category
+)
+WHERE books.category IN (SELECT category FROM category_prices);
+
+-- Murakkab yangilash
+UPDATE users 
+SET last_order_date = (
+    SELECT MAX(order_date) 
+    FROM orders 
+    WHERE orders.user_id = users.id
+)
+WHERE users.id IN (SELECT user_id FROM orders);</code></pre>
+      </div>
+
+      <h2>8. Transaction bilan ishlash</h2>
+      <div class="code-block">
+        <pre><code>-- Transaction boshlash
+BEGIN TRANSACTION;
+
+-- Bir nechta yangilash operatsiyalari
+UPDATE users SET status = 'inactive' WHERE last_login < '2023-01-01';
+UPDATE products SET is_available = 0 WHERE category = 'Discontinued';
+UPDATE orders SET status = 'cancelled' WHERE order_date < '2023-01-01';
+
+-- Barcha operatsiyalar muvaffaqiyatli bo'lsa
+COMMIT;
+
+-- Yoki barcha operatsiyalarni bekor qilish
+-- ROLLBACK;</code></pre>
+      </div>
+
+      <h2>9. Yangilash natijalarini tekshirish</h2>
+      <div class="code-block">
+        <pre><code>-- Yangilangan qatorlar sonini ko'rish
+UPDATE users SET status = 'active' WHERE age > 18;
+-- SQLite da yangilangan qatorlar soni ko'rsatiladi
+
+-- Yangilashdan oldin tekshirish
+SELECT COUNT(*) FROM users WHERE age > 18;  -- Qancha qator yangilanadi
+
+-- Yangilashdan keyin tekshirish
+SELECT * FROM users WHERE status = 'active';  -- Yangilangan ma'lumotlar</code></pre>
+      </div>
+
+      <h2>10. Xatolar va ularni hal qilish</h2>
+
+      <h3>Keng tarqalgan xatolar</h3>
+      <div class="code-block">
+        <pre><code>-- Xato: WHERE shartini unutish
+UPDATE users SET status = 'inactive';
+-- Bu BARCHA qatorlarni yangilaydi!
+
+-- Xato: NOT NULL constraint
+UPDATE users SET name = NULL WHERE id = 1;
+-- Xato: NOT NULL constraint failed: users.name
+
+-- Xato: UNIQUE constraint
+UPDATE users SET email = 'existing@example.com' WHERE id = 2;
+-- Xato: UNIQUE constraint failed: users.email
+
+-- Xato: CHECK constraint
+UPDATE products SET price = -10 WHERE id = 1;
+-- Xato: CHECK constraint failed: products</code></pre>
+      </div>
+
+      <h3>Xatolarni oldini olish</h3>
+      <div class="code-block">
+        <pre><code>-- Yangilashdan oldin tekshirish
+SELECT * FROM users WHERE id = 1;  -- Mavjudligini tekshirish
+
+-- WHERE shartini har doim qo'shing
+UPDATE users SET status = 'active' WHERE id = 1;  -- Xavfsiz
+
+-- Constraint-larni tekshirish
+UPDATE users SET email = 'new@example.com' 
+WHERE id = 1 AND 'new@example.com' NOT IN (SELECT email FROM users WHERE id != 1);</code></pre>
+      </div>
+
+      <h2>11. Performance optimizatsiya</h2>
+      <div class="code-block">
+        <pre><code>-- Indekslardan foydalanish
+CREATE INDEX idx_users_age ON users(age);
+CREATE INDEX idx_products_category ON products(category);
+
+-- Tez ishlaydigan yangilash
+UPDATE users SET status = 'active' WHERE age > 25;  -- Indeks ishlatiladi
+
+-- Sekin ishlaydigan yangilash
+UPDATE users SET status = 'active' WHERE name LIKE '%Ali%';  -- Indeks ishlatilmaydi</code></pre>
+      </div>
+
+      <h2>12. Eng yaxshi amaliyotlar</h2>
+      <ul>
+        <li>✅ <strong>WHERE shartini har doim qo'shing:</strong> Barcha qatorlarni yangilashdan saqlanish</li>
+        <li>✅ <strong>Yangilashdan oldin tekshirish:</strong> SELECT bilan tekshirib ko'ring</li>
+        <li>✅ <strong>Transaction ishlatish:</strong> Murakkab operatsiyalar uchun</li>
+        <li>✅ <strong>Constraint-larni tekshirish:</strong> Xatolarni oldini olish</li>
+        <li>✅ <strong>Indekslardan foydalanish:</strong> Tez yangilash uchun</li>
+        <li>✅ <strong>Backup olish:</strong> Muhim ma'lumotlarni saqlash</li>
+      </ul>
+
+      <h2>13. Amaliy loyiha</h2>
+      <div class="code-block">
+        <pre><code>-- E-commerce tizimi
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    price REAL NOT NULL,
+    category TEXT,
+    stock_quantity INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT 1,
+    discount_percent REAL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id INTEGER,
+    quantity INTEGER,
+    total_price REAL,
+    order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status TEXT DEFAULT 'pending',
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+-- Ma'lumotlar
+INSERT INTO products (name, price, category, stock_quantity) VALUES 
+('Laptop', 1000.00, 'Electronics', 10),
+('Phone', 500.00, 'Electronics', 25),
+('Book', 20.00, 'Education', 100),
+('T-shirt', 30.00, 'Clothing', 50);
+
+-- Yangilash operatsiyalari
+-- 1. Barcha elektronika mahsulotlarining narxini 10% oshirish
+UPDATE products 
+SET price = price * 1.1, updated_at = CURRENT_TIMESTAMP
+WHERE category = 'Electronics';
+
+-- 2. 50 dan ko'p zaxira bor mahsulotlarga 5% chegirma
+UPDATE products 
+SET discount_percent = 5, updated_at = CURRENT_TIMESTAMP
+WHERE stock_quantity > 50;
+
+-- 3. 100 dan arzon mahsulotlarni faol emas deb belgilash
+UPDATE products 
+SET is_active = 0, updated_at = CURRENT_TIMESTAMP
+WHERE price < 100;
+
+-- 4. Buyurtma statusini yangilash
+UPDATE orders 
+SET status = 'completed', total_price = (
+    SELECT p.price * o.quantity 
+    FROM products p 
+    WHERE p.id = o.product_id
+)
+WHERE status = 'pending' AND order_date < '2023-01-01';
+
+-- Natijalarni tekshirish
+SELECT * FROM products WHERE category = 'Electronics';
+SELECT * FROM products WHERE discount_percent > 0;
+SELECT * FROM products WHERE is_active = 0;
+SELECT * FROM orders WHERE status = 'completed';</code></pre>
+      </div>
+
+      <div class="next-lesson">
+        <a href="../6-dars/">Keyingi dars: DELETE - Ma'lumotlarni o'chirish →</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
