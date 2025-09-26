@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQLite3 - To'liq darsligi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 20px 0;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #34495e;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+
+        h3 {
+            color: #2980b9;
+            margin: 20px 0 15px 0;
+            font-size: 1.3em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            position: relative;
+            border-left: 4px solid #3498db;
+        }
+
+        .code-block::before {
+            content: "SQL";
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #3498db;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+
+        .highlight {
+            background: linear-gradient(45deg, #f39c12, #e74c3c);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #0984e3;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e17055;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #55a3ff, #003d82);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #003d82;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.9);
+            padding: 15px 25px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #e3f2fd;
+            transition: all 0.3s ease;
+        }
+
+        .example-output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .intro-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .intro-slide h1 {
+            color: white;
+            -webkit-text-fill-color: white;
+            font-size: 3.5em;
+            margin-bottom: 20px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .feature-card h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .emoji {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/sqlite3/">Bosh sahifa</a>
+        
+        <!-- Slide 1: Kirish -->
+        <div class="slide active intro-slide">
+            <div class="slide-counter">1 / 15</div>
+            <h1>SQLite3 - To'liq darsligi</h1>
+            <p style="font-size: 1.3em; margin: 30px 0;">Boshlang'ich darajadan professional darajagacha</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="emoji">🗄️</span>
+                    <h3>Oson o'rnatish</h3>
+                    <p>Server talab qilmaydi</p>
+                </div>
+                <div class="feature-card">
+                    <span class="emoji">⚡</span>
+                    <h3>Tez ishlaydi</h3>
+                    <p>Kichik va samarali</p>
+                </div>
+                <div class="feature-card">
+                    <span class="emoji">📱</span>
+                    <h3>Ko'p platformali</h3>
+                    <p>Windows, Mac, Linux</p>
+                </div>
+                <div class="feature-card">
+                    <span class="emoji">🔒</span>
+                    <h3>Xavfsiz</h3>
+                    <p>ACID xususiyatlari</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: O'rnatish -->
+        <div class="slide">
+            <div class="slide-counter">2 / 15</div>
+            <h2>🔧 SQLite3 ni o'rnatish</h2>
+            
+            <h3>Windows</h3>
+            <div class="code-block">
+1. https://sqlite.org/download.html dan yuklab oling
+2. sqlite3.exe ni PATH ga qo'shing
+3. Terminalda tekshiring: sqlite3 --version
+            </div>
+
+            <h3>macOS</h3>
+            <div class="code-block">
+# Homebrew orqali
+brew install sqlite3
+
+# MacPorts orqali  
+sudo port install sqlite3
+            </div>
+
+            <h3>Ubuntu/Debian</h3>
+            <div class="code-block">
+sudo apt update
+sudo apt install sqlite3 libsqlite3-dev
+            </div>
+
+            <div class="info-box">
+                <strong>💡 Maslahat:</strong> Ko'pchilik tizmlarda SQLite3 allaqachon o'rnatilgan bo'ladi. Tekshirish uchun: <code>sqlite3 --version</code>
+            </div>
+        </div>
+
+        <!-- Slide 3: Asosiy buyruqlar -->
+        <div class="slide">
+            <div class="slide-counter">3 / 15</div>
+            <h2>⚡ Asosiy buyruqlar</h2>
+
+            <h3>SQLite3 ga kirish</h3>
+            <div class="code-block">
+-- Yangi baza yaratish yoki mavjudini ochish
+sqlite3 mening_bazam.db
+
+-- Xotira bazasi (test uchun)
+sqlite3 :memory:
+            </div>
+
+            <h3>Asosiy meta-buyruqlar</h3>
+            <table>
+                <tr><th>Buyruq</th><th>Tavsif</th><th>Misol</th></tr>
+                <tr><td>.tables</td><td>Barcha jadvallar</td><td>.tables</td></tr>
+                <tr><td>.schema</td><td>Jadval strukturasi</td><td>.schema users</td></tr>
+                <tr><td>.databases</td><td>Ulangan bazalar</td><td>.databases</td></tr>
+                <tr><td>.quit</td><td>Chiqish</td><td>.quit</td></tr>
+                <tr><td>.help</td><td>Yordam</td><td>.help</td></tr>
+                <tr><td>.mode</td><td>Chiqish formatini o'zgartirish</td><td>.mode column</td></tr>
+                <tr><td>.headers on</td><td>Sarlavhalarni ko'rsatish</td><td>.headers on</td></tr>
+            </table>
+
+            <div class="success-box">
+                <strong>🎯 Amaliyot:</strong> Terminalda <code>sqlite3 test.db</code> buyrug'ini ishga tushirib, <code>.help</code> buyrug'ini sinab ko'ring.
+            </div>
+        </div>
+
+        <!-- Slide 4: Ma'lumot turlari -->
+        <div class="slide">
+            <div class="slide-counter">4 / 15</div>
+            <h2>📊 SQLite3 da ma'lumot turlari</h2>
+
+            <div class="info-box">
+                <strong>Muhim:</strong> SQLite3 dinamik tip tizimiga ega - ustun turi faqat tavsiya, har qator har xil turdagi ma'lumot saqlashi mumkin.
+            </div>
+
+            <h3>Asosiy turlar</h3>
+            <table>
+                <tr><th>Tur</th><th>Tavsif</th><th>Misollar</th></tr>
+                <tr><td><span class="highlight">INTEGER</span></td><td>Butun sonlar</td><td>1, -5, 1000</td></tr>
+                <tr><td><span class="highlight">REAL</span></td><td>Haqiqiy sonlar</td><td>3.14, -2.5, 1.0</td></tr>
+                <tr><td><span class="highlight">TEXT</span></td><td>Matn</td><td>'Salom', "Dunyo"</td></tr>
+                <tr><td><span class="highlight">BLOB</span></td><td>Binary ma'lumot</td><td>Rasm, fayl</td></tr>
+                <tr><td><span class="highlight">NULL</span></td><td>Bo'sh qiymat</td><td>NULL</td></tr>
+            </table>
+
+            <h3>Keng tarqalgan sinonimlar</h3>
+            <div class="code-block">
+-- Bu turlar ham INTEGER sifatida saqlanadi
+TINYINT, SMALLINT, MEDIUMINT, BIGINT, INT, INT2, INT8
+
+-- Bu turlar ham TEXT sifatida saqlanadi  
+VARCHAR(255), CHAR(10), TEXT, CLOB
+
+-- Bu turlar ham REAL sifatida saqlanadi
+DOUBLE, FLOAT, DECIMAL(10,2), NUMERIC
+
+-- Boolean qiymatlar INTEGER sifatida saqlanadi
+BOOLEAN  -- 0 = false, 1 = true
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Diqqat:</strong> SQLite3 da VARCHAR(100) degan chegara yo'q - TEXT sifatida saqlanadi va istalgancha uzun bo'lishi mumkin.
+            </div>
+        </div>
+
+        <!-- Slide 5: Sana va vaqt -->
+        <div class="slide">
+            <div class="slide-counter">5 / 15</div>
+            <h2>📅 Sana va vaqt bilan ishlash</h2>
+
+            <div class="info-box">
+                <strong>Muhim:</strong> SQLite3 da DATETIME turi yo'q! Sana-vaqt TEXT, REAL yoki INTEGER sifatida saqlanadi.
+            </div>
+
+            <h3>Sana formatlar</h3>
+            <div class="code-block">
+-- TEXT format (ISO 8601)
+'2024-12-25'
+'2024-12-25 15:30:00'
+'2024-12-25T15:30:00.000Z'
+
+-- INTEGER format (Unix timestamp)
+1703516400  -- 2023-12-25 12:00:00 UTC
+
+-- REAL format (Julian day)
+2460310.5   -- 2024-12-25 12:00:00
+            </div>
+
+            <h3>Sana-vaqt funksiyalari</h3>
+            <div class="code-block">
+-- Hozirgi sana-vaqt
+SELECT datetime('now');              -- 2024-12-25 10:30:45
+SELECT date('now');                  -- 2024-12-25  
+SELECT time('now');                  -- 10:30:45
+
+-- Sana-vaqt bilan amallar
+SELECT datetime('now', '+1 day');     -- Ertaga
+SELECT datetime('now', '-1 month');   -- Bir oy avval
+SELECT datetime('now', '+3 hours');   -- 3 soat keyin
+SELECT datetime('now', 'start of year'); -- Yil boshi
+
+-- Formatni o'zgartirish
+SELECT strftime('%d/%m/%Y', 'now');   -- 25/12/2024
+SELECT strftime('%Y yil %m oy', 'now'); -- 2024 yil 12 oy
+            </div>
+
+            <h3>Amaliy misollar</h3>
+            <div class="code-block">
+CREATE TABLE voqealar (
+    id INTEGER PRIMARY KEY,
+    nom TEXT,
+    sana TEXT DEFAULT (datetime('now')),
+    yaratilgan INTEGER DEFAULT (strftime('%s', 'now'))
+);
+
+-- Ma'lumot qo'shish
+INSERT INTO voqealar (nom, sana) VALUES 
+('Yig'ilish', '2024-12-25 14:00:00'),
+('Prezentatsiya', datetime('now', '+2 days'));
+
+-- Oxirgi 7 kun ichidagi voqealar
+SELECT * FROM voqealar 
+WHERE date(sana) >= date('now', '-7 days');
+            </div>
+        </div>
+
+        <!-- Slide 6: Jadval yaratish -->
+        <div class="slide">
+            <div class="slide-counter">6 / 15</div>
+            <h2>🏗️ Jadval yaratish</h2>
+
+            <h3>Oddiy jadval</h3>
+            <div class="code-block">
+CREATE TABLE talabalar (
+    id INTEGER PRIMARY KEY,
+    ism TEXT NOT NULL,
+    familiya TEXT NOT NULL,
+    yosh INTEGER,
+    fakultet TEXT,
+    kurs INTEGER,
+    baho REAL
+);
+            </div>
+
+            <h3>Qo'shimcha shartlar bilan</h3>
+            <div class="code-block">
+CREATE TABLE mahsulotlar (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nomi TEXT UNIQUE NOT NULL,
+    kategoriya TEXT DEFAULT 'Umumiy',
+    narx REAL CHECK(narx > 0),
+    soni INTEGER DEFAULT 0,
+    yaratilgan TEXT DEFAULT (datetime('now')),
+    yangilangan TEXT DEFAULT (datetime('now'))
+);
+            </div>
+
+            <h3>Chet el kalitlari (Foreign Keys)</h3>
+            <div class="code-block">
+-- Fakultetlar jadvali
+CREATE TABLE fakultetlar (
+    id INTEGER PRIMARY KEY,
+    nomi TEXT UNIQUE NOT NULL,
+    dekan TEXT
+);
+
+-- Talabalar jadvali fakultet bilan bog'langan
+CREATE TABLE talabalar_yangi (
+    id INTEGER PRIMARY KEY,
+    ism TEXT NOT NULL,
+    fakultet_id INTEGER,
+    kurs INTEGER,
+    FOREIGN KEY (fakultet_id) REFERENCES fakultetlar(id)
+);
+
+-- Foreign key larni yoqish
+PRAGMA foreign_keys = ON;
+            </div>
+
+            <div class="success-box">
+                <strong>💡 Maslahat:</strong> AUTOINCREMENT faqat kerak bo'lganda ishlating - oddiy INTEGER PRIMARY KEY ham avtomatik o'sadi.
+            </div>
+        </div>
+
+        <!-- Slide 7: CRUD amallar -->
+        <div class="slide">
+            <div class="slide-counter">7 / 15</div>
+            <h2>📝 CRUD amallar</h2>
+
+            <h3>CREATE - Ma'lumot qo'shish (INSERT)</h3>
+            <div class="code-block">
+-- Bitta qator qo'shish
+INSERT INTO talabalar (ism, familiya, yosh, fakultet, kurs, baho) 
+VALUES ('Ali', 'Valiyev', 20, 'IT', 2, 4.5);
+
+-- Bir nechta qator
+INSERT INTO talabalar VALUES 
+(1, 'Oybek', 'Karimov', 21, 'IT', 3, 4.2),
+(2, 'Nilufar', 'Toshmatova', 19, 'Iqtisod', 1, 4.8),
+(3, 'Sardor', 'Rahimov', 22, 'Tibbiyot', 4, 3.9),
+(4, 'Malika', 'Norova', 20, 'IT', 2, 4.6);
+
+-- Faqat kerakli ustunlar
+INSERT INTO talabalar (ism, familiya, fakultet) 
+VALUES ('Jasur', 'Komilov', 'Fizika');
+            </div>
+
+            <h3>READ - Ma'lumot o'qish (SELECT)</h3>
+            <div class="code-block">
+-- Barcha ma'lumotlar
+SELECT * FROM talabalar;
+
+-- Muayyan ustunlar
+SELECT ism, familiya, baho FROM talabalar;
+
+-- Shartli tanlov
+SELECT * FROM talabalar WHERE fakultet = 'IT';
+SELECT ism, baho FROM talabalar WHERE baho >= 4.0;
+
+-- Hisoblangan ustunlar
+SELECT ism, familiya, (baho * 20) AS foiz FROM talabalar;
+            </div>
+
+            <div class="example-output">
+Natija:
+id | ism     | familiya   | yosh | fakultet | kurs | baho
+---|---------|------------|------|----------|------|-----
+1  | Oybek   | Karimov    | 21   | IT       | 3    | 4.2
+2  | Nilufar | Toshmatova | 19   | Iqtisod  | 1    | 4.8
+            </div>
+        </div>
+
+        <!-- Slide 8: UPDATE va DELETE -->
+        <div class="slide">
+            <div class="slide-counter">8 / 15</div>
+            <h2>✏️ UPDATE va DELETE</h2>
+
+            <h3>UPDATE - Ma'lumotni yangilash</h3>
+            <div class="code-block">
+-- Bitta talabaning bahosini yangilash
+UPDATE talabalar SET baho = 4.7 WHERE id = 1;
+
+-- Bir nechta ustunni yangilash  
+UPDATE talabalar 
+SET kurs = kurs + 1, yangilangan = datetime('now')
+WHERE fakultet = 'IT';
+
+-- Shartli yangilash
+UPDATE talabalar 
+SET baho = baho + 0.1 
+WHERE baho < 4.0 AND kurs >= 3;
+
+-- Barcha qatorlarni yangilash (ehtiyot bo'ling!)
+UPDATE talabalar SET yangilangan = datetime('now');
+            </div>
+
+            <h3>DELETE - Ma'lumotni o'chirish</h3>
+            <div class="code-block">
+-- Muayyan talabani o'chirish
+DELETE FROM talabalar WHERE id = 5;
+
+-- Shartli o'chirish
+DELETE FROM talabalar WHERE baho < 3.0;
+DELETE FROM talabalar WHERE fakultet = 'Fizika' AND kurs = 1;
+
+-- Barcha ma'lumotlarni o'chirish (ehtiyot bo'ling!)
+DELETE FROM talabalar;
+
+-- Jadval tuzilmasini saqlab, ma'lumotlarni o'chirish
+DELETE FROM talabalar WHERE 1=1;
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Muhim:</strong> DELETE va UPDATE amallarini bajarishdan oleh WHERE shartini tekshiring! Aks holda barcha ma'lumotlar o'zgartirilishi mumkin.
+            </div>
+
+            <div class="info-box">
+                <strong>💡 Xavfsizlik:</strong> Muhim amallardan oldin BACKUP oling yoki transaction ishlatingl
+            </div>
+        </div>
+
+        <!-- Slide 9: WHERE va Filterlash -->
+        <div class="slide">
+            <div class="slide-counter">9 / 15</div>
+            <h2>🔍 WHERE va Filterlash</h2>
+
+            <h3>Taqqoslash operatorlari</h3>
+            <div class="code-block">
+-- Tenglik/tengsizlik
+SELECT * FROM talabalar WHERE yosh = 20;
+SELECT * FROM talabalar WHERE baho != 4.0;
+SELECT * FROM talabalar WHERE kurs <> 1;
+
+-- Katta/kichik
+SELECT * FROM talabalar WHERE baho > 4.5;
+SELECT * FROM talabalar WHERE yosh >= 21;
+SELECT * FROM talabalar WHERE kurs < 3;
+
+-- Oraliq (BETWEEN)
+SELECT * FROM talabalar WHERE yosh BETWEEN 19 AND 21;
+SELECT * FROM talabalar WHERE baho BETWEEN 4.0 AND 4.5;
+
+-- Ro'yxatda bor-yo'qligini tekshirish
+SELECT * FROM talabalar WHERE fakultet IN ('IT', 'Iqtisod');
+SELECT * FROM talabalar WHERE kurs NOT IN (1, 2);
+            </div>
+
+            <h3>LIKE operatori (pattern matching)</h3>
+            <div class="code-block">
+-- % - istalgancha belgi
+SELECT * FROM talabalar WHERE ism LIKE 'A%';      -- A bilan boshlanadi
+SELECT * FROM talabalar WHERE ism LIKE '%ov';     -- ov bilan tugaydi  
+SELECT * FROM talabalar WHERE ism LIKE '%li%';    -- li o'rtasida bor
+
+-- _ - bitta belgi
+SELECT * FROM talabalar WHERE ism LIKE 'A_i';     -- A?i (3 ta belgi)
+SELECT * FROM talabalar WHERE ism LIKE '_a%';     -- ikkinchi harfi 'a'
+
+-- GLOB operatori (* va ? ishlatadi)
+SELECT * FROM talabalar WHERE ism GLOB 'A*';      -- A bilan boshlanadi
+SELECT * FROM talabalar WHERE ism GLOB '???';     -- aynan 3 ta belgi
+            </div>
+
+            <h3>NULL qiymatlar</h3>
+            <div class="code-block">
+-- NULL qiymatlarni topish
+SELECT * FROM talabalar WHERE baho IS NULL;
+SELECT * FROM talabalar WHERE telefon IS NULL;
+
+-- NULL bo'lmagan qiymatlar
+SELECT * FROM talabalar WHERE baho IS NOT NULL;
+
+-- NULL qiymatlarni almаshtirish
+SELECT ism, COALESCE(baho, 0) AS baho FROM talabalar;
+SELECT ism, IFNULL(telefon, 'Noma\'lum') AS telefon FROM talabalar;
+            </div>
+        </div>
+
+        <!-- Slide 10: Mantiqiy operatorlar -->
+        <div class="slide">
+            <div class="slide-counter">10 / 15</div>
+            <h2>🧠 Mantiqiy operatorlar va murakkab so'rovlar</h2>
+
+            <h3>AND, OR, NOT operatorlari</h3>
+            <div class="code-block">
+-- AND - barcha shartlar bajarilishi kerak
+SELECT * FROM talabalar 
+WHERE fakultet = 'IT' AND kurs >= 2 AND baho > 4.0;
+
+-- OR - kamida bitta shart bajarilishi kerak  
+SELECT * FROM talabalar 
+WHERE fakultet = 'IT' OR fakultet = 'Iqtisod';
+
+-- NOT - shartni inkor qilish
+SELECT * FROM talabalar 
+WHERE NOT (fakultet = 'IT' OR kurs = 1);
+
+-- Murakkab shartlar (qavs ishlatish)
+SELECT * FROM talabalar 
+WHERE (fakultet = 'IT' OR fakultet = 'Fizika') 
+  AND (baho >= 4.0 AND kurs >= 2);
+            </div>
+
+            <h3>CASE operatori</h3>
+            <div class="code-block">
+-- Shartli qiymat qaytarish
+SELECT ism, familiya, baho,
+    CASE 
+        WHEN baho >= 4.5 THEN 'A\'lo'
+        WHEN baho >= 4.0 THEN 'Yaxshi' 
+        WHEN baho >= 3.5 THEN 'Qoniqarli'
+        ELSE 'Qoniqarsiz'
+    END AS daraja
+FROM talabalar;
+
+-- Qisqa CASE
+SELECT ism, 
+    CASE fakultet 
+        WHEN 'IT' THEN 'Informatika'
+        WHEN 'Iqtisod' THEN 'Iqtisodiyot'
+        ELSE fakultet 
+    END AS to_liq_nom
+FROM talabalar;
+            </div>
+
+            <h3>EXISTS va subquery</h3>
+            <div class="code-block">
+-- Subquery mavjudligini tekshirish
+SELECT * FROM talabalar t1
+WHERE EXISTS (
+    SELECT 1 FROM talabalar t2 
+    WHERE t2.fakultet = t1.fakultet 
+    AND t2.id != t1.id 
+    AND t2.baho > t1.baho
+);
+
+-- IN bilan subquery
+SELECT * FROM talabalar 
+WHERE fakultet IN (
+    SELECT fakultet FROM talabalar 
+    GROUP BY fakultet 
+    HAVING COUNT(*) > 2
+);
+            </div>
+        </div>
+
+        <!-- Slide 11: ORDER BY, LIMIT, DISTINCT -->
+        <div class="slide">
+            <div class="slide-counter">11 / 15</div>
+            <h2>📊 Tartiblash va cheklash</h2>
+
+            <h3>ORDER BY - tartiblash</h3>
+            <div class="code-block">
+-- O'sish tartibida (ASC - default)
+SELECT * FROM talabalar ORDER BY baho;
+SELECT * FROM talabalar ORDER BY baho ASC;
+
+-- Kamayish tartibida
+SELECT * FROM talabalar ORDER BY baho DESC;
+
+-- Bir nechta ustun bo'yicha
+SELECT * FROM talabalar 
+ORDER BY fakultet ASC, baho DESC, ism ASC;
+
+-- RANDOM() bilan tasodifiy tartiblash
+SELECT * FROM talabalar ORDER BY RANDOM() LIMIT 3;
+
+-- NULL qiymatlarning joylashuvi
+SELECT * FROM talabalar ORDER BY baho NULLS LAST;
+            </div>
+
+            <h3>LIMIT va OFFSET - cheklash</h3>
+            <div class="code-block">
+-- Faqat birinchi 5 ta
+SELECT * FROM talabalar ORDER BY baho DESC LIMIT 5;
+
+-- 3-qatordan boshlab 5 ta (pagination)
+SELECT * FROM talabalar ORDER BY id LIMIT 5 OFFSET 2;
+
+-- Qisqa yozuv (LIMIT offset, count)
+SELECT * FROM talabalar ORDER BY id LIMIT 2, 5;
+
+-- Eng yaxshi 3 ta talaba
+SELECT * FROM talabalar ORDER BY baho DESC LIMIT 3;
+
+-- 2-sahifa (har sahifada 10 ta)
+SELECT * FROM talabalar ORDER BY id LIMIT 10 OFFSET 10;
+            </div>
+
+            <h3>DISTINCT - takrorlanmaslar</h3>
+            <div class="code-block">
+-- Noyob fakultetlar
+SELECT DISTINCT fakultet FROM talabalar;
+
+-- Noyob fakultet va kurs kombinatsiyalari
+SELECT DISTINCT fakultet, kurs FROM talabalar ORDER BY fakultet;
+
+-- COUNT bilan birgalikda
+SELECT COUNT(DISTINCT fakultet) AS fakultet_soni FROM talabalar;
+
+-- GROUP BY bilan farqi
+SELECT DISTINCT fakultet, COUNT(*) AS soni 
+FROM talabalar GROUP BY fakultet;
+            </div>
+
+            <div class="example-output">
+Natija (eng yaxshi 3 ta talaba):
+ism     | familiya   | fakultet | baho
+--------|------------|----------|-----
+Nilufar | Toshmatova | Iqtisod  | 4.8
+Malika  | Norova     | IT       | 4.6
+Ali     | Valiyev    | IT       | 4.5
+            </div>
+        </div>
+
+        <!-- Slide 12: Agregat funksiyalar -->
+        <div class="slide">
+            <div class="slide-counter">12 / 15</div>
+            <h2>🔢 Agregat funksiyalar</h2>
+
+            <h3>Asosiy agregat funksiyalar</h3>
+            <div class="code-block">
+-- Soni
+SELECT COUNT(*) AS jami_talabalar FROM talabalar;
+SELECT COUNT(baho) AS baholangan_talabalar FROM talabalar;
+SELECT COUNT(DISTINCT fakultet) AS fakultet_soni FROM talabalar;
+
+-- Yig'indi  
+SELECT SUM(yosh) AS jami_yosh FROM talabalar;
+SELECT SUM(baho) AS jami_baho FROM talabalar WHERE fakultet = 'IT';
+
+-- O'rtacha
+SELECT AVG(baho) AS ortacha_baho FROM talabalar;
+SELECT ROUND(AVG(yosh), 2) AS ortacha_yosh FROM talabalar;
+
+-- Eng katta/kichik
+SELECT MAX(baho) AS eng_yaxshi_baho FROM talabalar;
+SELECT MIN(yosh) AS eng_yosh_talaba FROM talabalar;
+
+-- Bir nechta funksiya
+SELECT 
+    COUNT(*) AS soni,
+    AVG(baho) AS ortacha,
+    MAX(baho) AS eng_yaxshi,
+    MIN(baho) AS eng_yomon
+FROM talabalar;
+            </div>
+
+            <h3>GROUP BY - guruh bo'yicha</h3>
+            <div class="code-block">
+-- Fakultet bo'yicha statistika
+SELECT 
+    fakultet,
+    COUNT(*) AS talaba_soni,
+    ROUND(AVG(baho), 2) AS ortacha_baho,
+    MAX(baho) AS eng_yaxshi_baho
+FROM talabalar 
+GROUP BY fakultet;
+
+-- Kurs bo'yicha
+SELECT 
+    kurs,
+    COUNT(*) AS soni,
+    ROUND(AVG(yosh), 1) AS ortacha_yosh
+FROM talabalar 
+GROUP BY kurs
+ORDER BY kurs;
+
+-- Fakultet va kurs bo'yicha
+SELECT 
+    fakultet, 
+    kurs,
+    COUNT(*) AS soni,
+    AVG(baho) AS ortacha_baho
+FROM talabalar 
+GROUP BY fakultet, kurs
+HAVING COUNT(*) > 1;  -- faqat 1 dan ortiq talaba bo'lgan guruhlar
+            </div>
+
+            <h3>HAVING - guruh shartlari</h3>
+            <div class="code-block">
+-- O'rtacha baho 4.0 dan yuqori bo'lgan fakultetlar
+SELECT fakultet, AVG(baho) AS ortacha_baho
+FROM talabalar 
+GROUP BY fakultet
+HAVING AVG(baho) > 4.0;
+
+-- 2 dan ortiq talaba bo'lgan fakultetlar
+SELECT fakultet, COUNT(*) AS talaba_soni
+FROM talabalar 
+GROUP BY fakultet
+HAVING COUNT(*) > 2
+ORDER BY talaba_soni DESC;
+
+-- WHERE va HAVING birgalikda
+SELECT fakultet, AVG(baho) AS ortacha_baho
+FROM talabalar 
+WHERE kurs >= 2           -- faqat 2+ kurs talabalari
+GROUP BY fakultet
+HAVING AVG(baho) > 4.0    -- o'rtacha baho 4.0+
+ORDER BY ortacha_baho DESC;
+            </div>
+        </div>
+
+        <!-- Slide 13: JOIN amallar -->
+        <div class="slide">
+            <div class="slide-counter">13 / 15</div>
+            <h2>🔗 JOIN - jadvallarni birlashtirish</h2>
+
+            <div class="info-box">
+                Avval test ma'lumotlari yaratamiz:
+            </div>
+
+            <div class="code-block">
+-- Fakultetlar jadvali
+CREATE TABLE fakultetlar (
+    id INTEGER PRIMARY KEY,
+    nomi TEXT NOT NULL,
+    dekan TEXT,
+    tashkil_etilgan INTEGER
+);
+
+INSERT INTO fakultetlar VALUES
+(1, 'Informatika', 'Prof. Karimov', 1998),
+(2, 'Iqtisodiyot', 'Prof. Toshmatova', 1995),
+(3, 'Tibbiyot', 'Prof. Rahimov', 1990),
+(4, 'Fizika', 'Prof. Norova', 2000);
+
+-- Talabalar jadvalini yangilaymiz
+CREATE TABLE talabalar_yangi (
+    id INTEGER PRIMARY KEY,
+    ism TEXT NOT NULL,
+    familiya TEXT NOT NULL,
+    fakultet_id INTEGER,
+    kurs INTEGER,
+    baho REAL,
+    FOREIGN KEY (fakultet_id) REFERENCES fakultetlar(id)
+);
+
+INSERT INTO talabalar_yangi VALUES
+(1, 'Ali', 'Valiyev', 1, 2, 4.5),
+(2, 'Nilufar', 'Toshmatova', 2, 3, 4.8),
+(3, 'Sardor', 'Rahimov', 1, 4, 4.2),
+(4, 'Malika', 'Norova', 3, 1, 3.9),
+(5, 'Jasur', 'Komilov', NULL, 2, 4.0);  -- fakultetsiz talaba
+            </div>
+
+            <h3>INNER JOIN</h3>
+            <div class="code-block">
+-- Faqat fakulteti mavjud bo'lgan talabalar
+SELECT 
+    t.ism,
+    t.familiya,
+    f.nomi AS fakultet,
+    t.kurs,
+    t.baho
+FROM talabalar_yangi t
+INNER JOIN fakultetlar f ON t.fakultet_id = f.id;
+
+-- Qisqa yozuv (alias)
+SELECT t.ism, t.familiya, f.nomi AS fakultet
+FROM talabalar_yangi t
+JOIN fakultetlar f ON t.fakultet_id = f.id
+WHERE t.baho >= 4.0;
+            </div>
+
+            <h3>LEFT JOIN</h3>
+            <div class="code-block">
+-- Barcha talabalar, fakulteti bo'lmasa ham
+SELECT 
+    t.ism,
+    t.familiya,
+    COALESCE(f.nomi, 'Fakultetsiz') AS fakultet,
+    t.baho
+FROM talabalar_yangi t
+LEFT JOIN fakultetlar f ON t.fakultet_id = f.id;
+            </div>
+
+            <h3>RIGHT JOIN va FULL JOIN</h3>
+            <div class="code-block">
+-- SQLite3 da RIGHT JOIN yo'q, lekin LEFT JOIN bilan qilish mumkin
+-- Barcha fakultetlar, talabasi bo'lmasa ham  
+SELECT 
+    f.nomi AS fakultet,
+    f.dekan,
+    COUNT(t.id) AS talaba_soni
+FROM fakultetlar f
+LEFT JOIN talabalar_yangi t ON f.id = t.fakultet_id
+GROUP BY f.id, f.nomi, f.dekan;
+
+-- FULL JOIN ham yo'q, lekin UNION bilan
+SELECT t.ism, f.nomi FROM talabalar_yangi t LEFT JOIN fakultetlar f ON t.fakultet_id = f.id
+UNION
+SELECT t.ism, f.nomi FROM talabalar_yangi t RIGHT JOIN fakultetlar f ON t.fakultet_id = f.id;
+            </div>
+        </div>
+
+        <!-- Slide 14: Funksiyalar -->
+        <div class="slide">
+            <div class="slide-counter">14 / 15</div>
+            <h2>⚡ Foydali funksiyalar</h2>
+
+            <h3>Matn funksiyalari</h3>
+            <div class="code-block">
+-- Uzunlik
+SELECT ism, LENGTH(ism) AS uzunlik FROM talabalar;
+
+-- Katta/kichik harflar
+SELECT UPPER(ism) AS katta_harf FROM talabalar;
+SELECT LOWER(fakultet) AS kichik_harf FROM talabalar;
+
+-- Qirqish (substring)  
+SELECT SUBSTR(ism, 1, 3) AS qisqa_ism FROM talabalar;
+SELECT ism, SUBSTR(ism, -2) AS oxirgi_2_harf FROM talabalar;
+
+-- Birlashtirish
+SELECT ism || ' ' || familiya AS to_liq_ism FROM talabalar;
+SELECT CONCAT(ism, ' - ', fakultet) AS malumot FROM talabalar;  -- ba'zi versiyalarda
+
+-- Almashtirish
+SELECT REPLACE(fakultet, 'IT', 'Informatika') AS yangi_nom FROM talabalar;
+
+-- Bo'sh joylarni olib tashlash
+SELECT TRIM('  ' || ism || '  ') AS tozalangan FROM talabalar;
+            </div>
+
+            <h3>Raqam funksiyalari</h3>
+            <div class="code-block">
+-- Yaxlitlash
+SELECT baho, ROUND(baho) AS yaxlitlangan FROM talabalar;
+SELECT baho, ROUND(baho, 1) AS bir_kasr FROM talabalar;
+
+-- Yuqoriga/pastga yaxlitlash  
+SELECT baho, CEIL(baho) AS yuqori FROM talabalar;   -- ba'zi versiyalarda
+SELECT baho, FLOOR(baho) AS past FROM talabalar;
+
+-- Absolyut qiymat
+SELECT ABS(baho - 4.0) AS farq FROM talabalar;
+
+-- Min/Max (2 qiymat orasidan)
+SELECT baho, MIN(baho, 4.0) AS cheklangan FROM talabalar;
+            </div>
+
+            <h3>Sana-vaqt funksiyalari (batafsil)</h3>
+            <div class="code-block">
+-- Formatlar
+SELECT strftime('%d.%m.%Y', 'now') AS bugun;           -- 25.12.2024
+SELECT strftime('%A, %d %B %Y', 'now') AS to_liq_sana;  -- Monday, 25 December 2024
+SELECT strftime('%H:%M', 'now') AS vaqt;               -- 14:30
+
+-- Hisoblashlar
+SELECT 
+    ism,
+    tug_sana,
+    ROUND((julianday('now') - julianday(tug_sana)) / 365.25) AS yosh_hisobli
+FROM talabalar 
+WHERE tug_sana IS NOT NULL;
+
+-- Sana qo'shish/ayirish
+SELECT datetime('2024-12-25', '+1 year', '+3 months', '-5 days');
+
+-- Hafta kunlari
+SELECT 
+    strftime('%w', 'now') AS hafta_raqam,  -- 0=Sunday, 1=Monday
+    CASE strftime('%w', 'now')
+        WHEN '0' THEN 'Yakshanba'
+        WHEN '1' THEN 'Dushanba'  
+        WHEN '2' THEN 'Seshanba'
+        WHEN '3' THEN 'Chorshanba'
+        WHEN '4' THEN 'Payshanba'
+        WHEN '5' THEN 'Juma'
+        WHEN '6' THEN 'Shanba'
+    END AS hafta_kuni;
+            </div>
+        </div>
+
+        <!-- Slide 15: Amaliy loyiha -->
+        <div class="slide">
+            <div class="slide-counter">15 / 15</div>
+            <h2>🎯 Amaliy loyiha: Universitet tizimi</h2>
+
+            <h3>To'liq tizim yaratamiz</h3>
+            <div class="code-block">
+-- 1. Jadvallar yaratish
+CREATE TABLE fakultetlar (
+    id INTEGER PRIMARY KEY,
+    nomi TEXT UNIQUE NOT NULL,
+    dekan TEXT,
+    telefon TEXT,
+    tashkil_etilgan INTEGER,
+    yaratilgan TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE talabalar (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ism TEXT NOT NULL,
+    familiya TEXT NOT NULL,
+    tug_sana TEXT,
+    jinsi TEXT CHECK(jinsi IN ('Erkak', 'Ayol')),
+    telefon TEXT,
+    email TEXT UNIQUE,
+    fakultet_id INTEGER,
+    kurs INTEGER CHECK(kurs BETWEEN 1 AND 5),
+    baho REAL CHECK(baho BETWEEN 0 AND 5),
+    manzil TEXT,
+    qabul_yili INTEGER,
+    yaratilgan TEXT DEFAULT (datetime('now')),
+    yangilangan TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (fakultet_id) REFERENCES fakultetlar(id)
+);
+
+CREATE TABLE fanlar (
+    id INTEGER PRIMARY KEY,
+    nomi TEXT NOT NULL,
+    kod TEXT UNIQUE,
+    kredit_soat INTEGER,
+    fakultet_id INTEGER,
+    FOREIGN KEY (fakultet_id) REFERENCES fakultetlar(id)
+);
+
+CREATE TABLE baholar (
+    id INTEGER PRIMARY KEY,
+    talaba_id INTEGER,
+    fan_id INTEGER,
+    baho REAL CHECK(baho BETWEEN 0 AND 5),
+    sana TEXT DEFAULT (date('now')),
+    FOREIGN KEY (talaba_id) REFERENCES talabalar(id),
+    FOREIGN KEY (fan_id) REFERENCES fanlar(id)
+);
+            </div>
+
+            <h3>Ma'lumotlar kiritish</h3>
+            <div class="code-block">
+-- Fakultetlar
+INSERT INTO fakultetlar (nomi, dekan, telefon, tashkil_etilgan) VALUES
+('Informatika va Texnologiya', 'Prof. A.Karimov', '+998901234567', 1995),
+('Iqtisodiyot', 'Prof. N.Toshmatova', '+998901234568', 1992),
+('Tibbiyot', 'Prof. S.Rahimov', '+998901234569', 1988);
+
+-- Talabalar  
+INSERT INTO talabalar (ism, familiya, tug_sana, jinsi, telefon, email, fakultet_id, kurs, qabul_yili) VALUES
+('Ali', 'Valiyev', '2003-05-15', 'Erkak', '+998911111111', 'ali@mail.uz', 1, 2, 2022),
+('Nilufar', 'Toshmatova', '2004-03-22', 'Ayol', '+998922222222', 'nilufar@mail.uz', 2, 1, 2023),
+('Sardor', 'Rahimov', '2001-11-08', 'Erkak', '+998933333333', 'sardor@mail.uz', 1, 4, 2020),
+('Malika', 'Norova', '2002-07-12', 'Ayol', '+998944444444', 'malika@mail.uz', 3, 3, 2021);
+
+-- Fanlar
+INSERT INTO fanlar (nomi, kod, kredit_soat, fakultet_id) VALUES
+('Dasturlash asoslari', 'IT101', 4, 1),
+('Ma\'lumotlar bazasi', 'IT201', 3, 1),
+('Mikroiqtisod', 'EC101', 3, 2),
+('Anatomiya', 'MD101', 5, 3);
+            </div>
+
+            <h3>Murakkab so'rovlar</h3>
+            <div class="code-block">
+-- Har fakultetdagi talabalar statistikasi
+SELECT 
+    f.nomi AS fakultet,
+    f.dekan,
+    COUNT(t.id) AS talaba_soni,
+    ROUND(AVG(CAST((strftime('%Y', 'now') - strftime('%Y', t.tug_sana)) AS INTEGER)), 1) AS ortacha_yosh,
+    MIN(t.qabul_yili) AS eng_eski_talaba,
+    MAX(t.qabul_yili) AS eng_yangi_talaba
+FROM fakultetlar f
+LEFT JOIN talabalar t ON f.id = t.fakultet_id
+GROUP BY f.id, f.nomi, f.dekan
+ORDER BY talaba_soni DESC;
+
+-- Yosh bo'yicha talabalar taqsimoti
+SELECT 
+    CASE 
+        WHEN CAST((strftime('%Y', 'now') - strftime('%Y', tug_sana)) AS INTEGER) <= 20 THEN '18-20 yosh'
+        WHEN CAST((strftime('%Y', 'now') - strftime('%Y', tug_sana)) AS INTEGER) <= 23 THEN '21-23 yosh'
+        ELSE '24+ yosh'
+    END AS yosh_guruhi,
+    COUNT(*) AS soni,
+    ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM talabalar), 1) AS foiz
+FROM talabalar
+GROUP BY yosh_guruhi
+ORDER BY soni DESC;
+
+-- Eng faol fakultet (eng ko'p talabaga ega)
+SELECT 
+    f.nomi,
+    COUNT(t.id) AS talaba_soni,
+    COUNT(fan.id) AS fan_soni
+FROM fakultetlar f
+LEFT JOIN talabalar t ON f.id = t.fakultet_id
+LEFT JOIN fanlar fan ON f.id = fan.fakultet_id
+GROUP BY f.id, f.nomi
+ORDER BY talaba_soni DESC
+LIMIT 1;
+            </div>
+
+            <div class="success-box">
+                <strong>🎉 Tabriklaymiz!</strong> Siz SQLite3 ning asosiy va ilg'or xususiyatlarini o'rgandingiz. Endi o'z loyihalaringizda foydalanishingiz mumkin!
+            </div>
+
+            <div class="info-box">
+                <strong>📚 Keyingi qadamlar:</strong>
+                <ul>
+                    <li>Indekslar yaratish (CREATE INDEX)</li>
+                    <li>View lar (CREATE VIEW)</li>
+                    <li>Triggerlar (CREATE TRIGGER)</li>
+                    <li>Python/PHP bilan integratsiya</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅ Oldingi</button>
+        <span id="slideInfo">1 / 15</span>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Keyingi ➡</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            
+            if (n >= totalSlides) currentSlide = 0;
+            if (n < 0) currentSlide = totalSlides - 1;
+            
+            slides[currentSlide].classList.add('active');
+            
+            // Navigation buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+            
+            // Slide info
+            document.getElementById('slideInfo').textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') {
+                currentSlide = 0;
+                showSlide(currentSlide);
+            }
+            if (e.key === 'End') {
+                currentSlide = totalSlides - 1;
+                showSlide(currentSlide);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+
+        // Auto-resize code blocks for better mobile experience
+        function adjustCodeBlocks() {
+            const codeBlocks = document.querySelectorAll('.code-block');
+            codeBlocks.forEach(block => {
+                if (window.innerWidth < 768) {
+                    block.style.fontSize = '12px';
+                } else {
+                    block.style.fontSize = '14px';
+                }
+            });
+        }
+
+        window.addEventListener('resize', adjustCodeBlocks);
+        adjustCodeBlocks();
+    </script>
+</body>
+</html>
