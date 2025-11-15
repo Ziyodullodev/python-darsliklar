@@ -150,7 +150,7 @@ async function sendToTelegram(wrongAnswers) {
     sendingStatus.className = 'sending-status';
     
     const botToken = '7262881456:AAEFFuaMBvra4TycRTvkiL_8VhuliSDRKuY';
-    const chatId = '848796050';
+    const chatId = '-1003454429778';
     
     const percentage = Math.round((score / questions.length) * 100);
     let message = `📊 PYTHON SET'LAR TEST NATIJASI\n\n`;
