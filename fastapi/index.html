@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastAPI To'liq Darslik</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            background: white;
+            width: 90%;
+            max-width: 1000px;
+            height: 85vh;
+            border-radius: 20px;
+            padding: 60px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: none;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #764ba2;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin: 25px 0 15px 0;
+        }
+
+        p, li {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            margin-left: 30px;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        button {
+            background: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-number {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #667eea;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .success {
+            background: #d4edda;
+            padding: 15px;
+            border-left: 4px solid #28a745;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .intro-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active intro-slide">
+            <h1>🚀 FastAPI</h1>
+            <p class="subtitle">Zamonaviy Web API'lar uchun To'liq Darslik</p>
+            <p style="margin-top: 40px; font-size: 1.2em;">Python bilan yuqori samarali API'larni yaratish bo'yicha qo'llanma</p>
+        </div>
+
+        <!-- Slide 2: What is FastAPI? -->
+        <div class="slide">
+            <h2>FastAPI nima?</h2>
+            <p>FastAPI - bu Python 3.7+ uchun standart Python type hint'lariga asoslangan, zamonaviy, tez (yuqori samarali) web framework bo'lib, API'larni yaratish uchun mo'ljallangan.</p>
+            
+            <h3>Asosiy Xususiyatlar:</h3>
+            <ul>
+                <li><strong>Tez:</strong> Juda yuqori samaradorlik, NodeJS va Go bilan teng</li>
+                <li><strong>Tez kodlash:</strong> Ishlab chiqish tezligini 200-300% ga oshirish</li>
+                <li><strong>Kam xatolar:</strong> Inson qilgan xatolarni 40% ga kamaytirish</li>
+                <li><strong>Intuitiv:</strong> Avtomatik to'ldirish bilan ajoyib editor qo'llab-quvvatlash</li>
+                <li><strong>Oson:</strong> Foydalanish va o'rganish oson bo'lishi uchun yaratilgan</li>
+                <li><strong>Qisqa:</strong> Kod takrorlashini minimallashtirish</li>
+                <li><strong>Mustahkam:</strong> Avtomatik hujjatlar bilan ishlab chiqarishga tayyor kod</li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Installation -->
+        <div class="slide">
+            <h2>O'rnatish va Sozlash</h2>
+            
+            <h3>1. FastAPI va Uvicorn'ni o'rnating:</h3>
+            <pre>pip install fastapi uvicorn[standard]</pre>
+            
+            <h3>2. Birinchi ilovangizni yarating (main.py):</h3>
+            <pre>from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello World"}</pre>
+            
+            <h3>3. Serverni ishga tushiring:</h3>
+            <pre>uvicorn main:app --reload</pre>
+            
+            <div class="success">
+                <strong>✓ Muvaffaqiyat!</strong> API'ingiz endi http://127.0.0.1:8000 manzilida ishlamoqda
+            </div>
+        </div>
+
+        <!-- Slide 4: Path Parameters -->
+        <div class="slide">
+            <h2>Path Parametrlari</h2>
+            <p>Path parametrlari URL yo'lidan qiymatlarni olish imkonini beradi.</p>
+            
+            <h3>Asosiy Misol:</h3>
+            <pre>@app.get("/items/{item_id}")
+def read_item(item_id: int):
+    return {"item_id": item_id}</pre>
+            
+            <h3>Bir Nechta Parametrlar bilan:</h3>
+            <pre>@app.get("/users/{user_id}/posts/{post_id}")
+def read_user_post(user_id: int, post_id: int):
+    return {
+        "user_id": user_id,
+        "post_id": post_id
+    }</pre>
+            
+            <div class="highlight">
+                <strong>💡 Maslahat:</strong> FastAPI path parametrlarini type hint'lar asosida avtomatik tekshiradi va o'zgartiradi!
+            </div>
+        </div>
+
+        <!-- Slide 5: Query Parameters -->
+        <div class="slide">
+            <h2>Query Parametrlari</h2>
+            <p>Query parametrlari URL'dagi <code>?</code> belgisidan keyin paydo bo'ladigan kalit-qiymat juftliklaridir.</p>
+            
+            <h3>Misol:</h3>
+            <pre>@app.get("/items/")
+def read_items(skip: int = 0, limit: int = 10):
+    return {
+        "skip": skip,
+        "limit": limit
+    }</pre>
+            
+            <p><strong>URL:</strong> <code>http://localhost:8000/items/?skip=0&limit=20</code></p>
+            
+            <h3>Ixtiyoriy Parametrlar:</h3>
+            <pre>from typing import Optional
+
+@app.get("/items/{item_id}")
+def read_item(item_id: int, q: Optional[str] = None):
+    if q:
+        return {"item_id": item_id, "q": q}
+    return {"item_id": item_id}</pre>
+        </div>
+
+        <!-- Slide 6: Request Body -->
+        <div class="slide">
+            <h2>Pydantic bilan Request Body</h2>
+            <p>Avtomatik tekshiruv bilan request body sxemalarini belgilash uchun Pydantic modellaridan foydalaning.</p>
+            
+            <h3>Modelni belgilang:</h3>
+            <pre>from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    description: str = None
+    price: float
+    tax: float = None</pre>
+            
+            <h3>Endpoint'da ishlatish:</h3>
+            <pre>@app.post("/items/")
+def create_item(item: Item):
+    return {
+        "name": item.name,
+        "price": item.price
+    }</pre>
+            
+            <div class="success">
+                <strong>✓ Avtomatik Tekshiruv:</strong> FastAPI barcha kiruvchi ma'lumotlarni avtomatik tekshiradi!
+            </div>
+        </div>
+
+        <!-- Slide 7: Response Models -->
+        <div class="slide">
+            <h2>Response Modellari</h2>
+            <p>API javoblarining strukturasini belgilang va avtomatik hujjatlar yarating.</p>
+            
+            <h3>Misol:</h3>
+            <pre>class ItemResponse(BaseModel):
+    id: int
+    name: str
+    price: float
+
+@app.post("/items/", response_model=ItemResponse)
+def create_item(item: Item):
+    # Imagine this saves to database
+    return {
+        "id": 1,
+        "name": item.name,
+        "price": item.price
+    }</pre>
+            
+            <h3>Afzalliklar:</h3>
+            <ul>
+                <li>Avtomatik ma'lumot filtrlash (faqat belgilangan maydonlarni qaytarish)</li>
+                <li>Javoblar uchun ma'lumot tekshiruvi</li>
+                <li>Avtomatik hujjatlashtirish</li>
+                <li>Type tekshiruvi va editor qo'llab-quvvatlash</li>
+            </ul>
+        </div>
+
+        <!-- Slide 8: Status Codes -->
+        <div class="slide">
+            <h2>HTTP Status Kodlari</h2>
+            <p>Turli vaziyatlar uchun mos status kodlarini qaytaring.</p>
+            
+            <h3>Asosiy Foydalanish:</h3>
+            <pre>from fastapi import status
+
+@app.post("/items/", status_code=status.HTTP_201_CREATED)
+def create_item(item: Item):
+    return item</pre>
+            
+            <h3>Keng Tarqalgan Status Kodlar:</h3>
+            <pre>status.HTTP_200_OK           # Muvaffaqiyat
+status.HTTP_201_CREATED      # Resurs yaratildi
+status.HTTP_204_NO_CONTENT   # Muvaffaqiyat, kontent yo'q
+status.HTTP_400_BAD_REQUEST  # Noto'g'ri so'rov
+status.HTTP_401_UNAUTHORIZED # Autentifikatsiya qilinmagan
+status.HTTP_403_FORBIDDEN    # Ruxsat berilmagan
+status.HTTP_404_NOT_FOUND    # Resurs topilmadi
+status.HTTP_500_INTERNAL_SERVER_ERROR</pre>
+        </div>
+
+        <!-- Slide 9: Error Handling -->
+        <div class="slide">
+            <h2>Xatolarni Boshqarish</h2>
+            <p>HTTPException bilan xatolarni chiroyli boshqaring.</p>
+            
+            <h3>Misol:</h3>
+            <pre>from fastapi import HTTPException
+
+items = {"1": "Item One"}
+
+@app.get("/items/{item_id}")
+def read_item(item_id: str):
+    if item_id not in items:
+        raise HTTPException(
+            status_code=404,
+            detail="Item not found"
+        )
+    return {"item": items[item_id]}</pre>
+            
+            <h3>Maxsus Exception Handler:</h3>
+            <pre>from fastapi.responses import JSONResponse
+
+@app.exception_handler(ValueError)
+async def value_error_handler(request, exc):
+    return JSONResponse(
+        status_code=400,
+        content={"message": str(exc)}
+    )</pre>
+        </div>
+
+        <!-- Slide 10: Dependencies -->
+        <div class="slide">
+            <h2>Dependency Injection</h2>
+            <p>Bir nechta endpoint'lar bo'ylab umumiy mantiqni qayta ishlating.</p>
+            
+            <h3>Oddiy Dependency:</h3>
+            <pre>from fastapi import Depends
+
+def get_query_param(q: str = None):
+    return q
+
+@app.get("/items/")
+def read_items(query: str = Depends(get_query_param)):
+    return {"query": query}</pre>
+            
+            <h3>Ma'lumotlar Bazasi Dependency Misoli:</h3>
+            <pre>def get_db():
+    db = Database()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.get("/users/")
+def read_users(db = Depends(get_db)):
+    return db.get_all_users()</pre>
+        </div>
+
+        <!-- Slide 11: Middleware -->
+        <div class="slide">
+            <h2>Middleware</h2>
+            <p>Har bir so'rovdan oldin yoki keyin ishlaydigan maxsus mantiq qo'shing.</p>
+            
+            <h3>CORS Middleware:</h3>
+            <pre>from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)</pre>
+            
+            <h3>Maxsus Middleware:</h3>
+            <pre>import time
+
+@app.middleware("http")
+async def add_process_time(request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(process_time)
+    return response</pre>
+        </div>
+
+        <!-- Slide 12: Background Tasks -->
+        <div class="slide">
+            <h2>Background Vazifalar</h2>
+            <p>Javob qaytarilgandan keyin vazifalarni fon rejimida bajarish.</p>
+            
+            <h3>Misol:</h3>
+            <pre>from fastapi import BackgroundTasks
+
+def send_email(email: str, message: str):
+    # Simulate sending email
+    print(f"Sending email to {email}: {message}")
+
+@app.post("/send-notification/")
+def send_notification(
+    email: str,
+    background_tasks: BackgroundTasks
+):
+    background_tasks.add_task(
+        send_email,
+        email,
+        "Thanks for subscribing!"
+    )
+    return {"message": "Notification sent"}</pre>
+            
+            <div class="highlight">
+                <strong>💡 Foydalanish:</strong> Email yuborish, log yozish yoki javobni bloklamaydigan ma'lumotlarni qayta ishlash uchun ideal.
+            </div>
+        </div>
+
+        <!-- Slide 13: File Uploads -->
+        <div class="slide">
+            <h2>Fayl Yuklash</h2>
+            <p>FastAPI bilan fayl yuklashni oson boshqaring.</p>
+            
+            <h3>Bitta Fayl Yuklash:</h3>
+            <pre>from fastapi import File, UploadFile
+
+@app.post("/upload/")
+async def upload_file(file: UploadFile = File(...)):
+    contents = await file.read()
+    return {
+        "filename": file.filename,
+        "size": len(contents)
+    }</pre>
+            
+            <h3>Bir Nechta Fayllar:</h3>
+            <pre>from typing import List
+
+@app.post("/uploadfiles/")
+async def upload_files(files: List[UploadFile] = File(...)):
+    return {
+        "filenames": [file.filename for file in files]
+    }</pre>
+        </div>
+
+        <!-- Slide 14: Authentication -->
+        <div class="slide">
+            <h2>Autentifikatsiya</h2>
+            <p>API'ingizda xavfsiz autentifikatsiyani amalga oshiring.</p>
+            
+            <h3>Parol bilan OAuth2:</h3>
+            <pre>from fastapi.security import OAuth2PasswordBearer
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+@app.get("/users/me")
+def read_users_me(token: str = Depends(oauth2_scheme)):
+    return {"token": token}</pre>
+            
+            <h3>JWT Token Misoli:</h3>
+            <pre>from datetime import datetime, timedelta
+import jwt
+
+SECRET_KEY = "your-secret-key"
+
+def create_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=30)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm="HS256")</pre>
+        </div>
+
+        <!-- Slide 15: Automatic Documentation -->
+        <div class="slide">
+            <h2>Avtomatik API Hujjatlari</h2>
+            <p>FastAPI avtomatik ravishda interaktiv API hujjatlarini yaratadi.</p>
+            
+            <h3>Mavjud Hujjatlar:</h3>
+            <ul>
+                <li><strong>Swagger UI:</strong> <code>http://127.0.0.1:8000/docs</code></li>
+                <li><strong>ReDoc:</strong> <code>http://127.0.0.1:8000/redoc</code></li>
+                <li><strong>OpenAPI Schema:</strong> <code>http://127.0.0.1:8000/openapi.json</code></li>
+            </ul>
+            
+            <h3>Metadata Qo'shish:</h3>
+            <pre>app = FastAPI(
+    title="My API",
+    description="A comprehensive API",
+    version="1.0.0",
+    docs_url="/documentation",
+    redoc_url="/redocumentation"
+)</pre>
+            
+            <div class="success">
+                <strong>✓ Interaktiv Testlash:</strong> Endpoint'laringizni to'g'ridan-to'g'ri hujjatlar sahifasidan test qiling!
+            </div>
+        </div>
+
+        <!-- Slide 16: Best Practices -->
+        <div class="slide">
+            <h2>Eng Yaxshi Amaliyotlar</h2>
+            
+            <h3>1. Type Hint'lardan foydalaning:</h3>
+            <pre>def process_item(item_id: int, name: str) -> dict:
+    return {"id": item_id, "name": name}</pre>
+            
+            <h3>2. Router'lar bilan tashkil qiling:</h3>
+            <pre>from fastapi import APIRouter
+
+router = APIRouter(prefix="/items", tags=["items"])
+
+@router.get("/")
+def read_items():
+    return []
+
+app.include_router(router)</pre>
+            
+            <h3>3. Environment O'zgaruvchilaridan foydalaning:</h3>
+            <pre>from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    database_url: str
+    secret_key: str
+    
+    class Config:
+        env_file = ".env"</pre>
+        </div>
+
+        <!-- Slide 17: Database Integration -->
+        <div class="slide">
+            <h2>Ma'lumotlar Bazasi Integratsiyasi (SQLAlchemy)</h2>
+            
+            <h3>Ma'lumotlar Bazasini Sozlash:</h3>
+            <pre>from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SessionLocal = sessionmaker(bind=engine)</pre>
+            
+            <h3>Ma'lumotlar Bazasi Dependency:</h3>
+            <pre>def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.get("/users/")
+def read_users(db: Session = Depends(get_db)):
+    return db.query(User).all()</pre>
+        </div>
+
+        <!-- Slide 18: Testing -->
+        <div class="slide">
+            <h2>API'ingizni Test Qilish</h2>
+            
+            <h3>Test Client'ni Sozlash:</h3>
+            <pre>from fastapi.testclient import TestClient
+
+client = TestClient(app)
+
+def test_read_root():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == {"message": "Hello World"}
+
+def test_create_item():
+    response = client.post(
+        "/items/",
+        json={"name": "Test", "price": 10.5}
+    )
+    assert response.status_code == 200
+    assert response.json()["name"] == "Test"</pre>
+            
+            <div class="highlight">
+                <strong>💡 Maslahat:</strong> Testlaringizni ishga tushirish uchun pytest'dan foydalaning: <code>pip install pytest</code>
+            </div>
+        </div>
+
+        <!-- Slide 19: Deployment -->
+        <div class="slide">
+            <h2>Deploy Qilish</h2>
+            
+            <h3>Production Server (Gunicorn + Uvicorn):</h3>
+            <pre>pip install gunicorn
+
+gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker</pre>
+            
+            <h3>Docker Deployment:</h3>
+            <pre>FROM python:3.9
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]</pre>
+            
+            <h3>Environment O'zgaruvchilar:</h3>
+            <pre># .env file
+DATABASE_URL=postgresql://user:pass@localhost/db
+SECRET_KEY=your-secret-key-here
+DEBUG=False</pre>
+        </div>
+
+        <!-- Slide 20: Summary -->
+        <div class="slide">
+            <h2>Xulosa</h2>
+            
+            <h3>Qanday Mavzularni Ko'rib Chiqdik:</h3>
+            <ul>
+                <li>✓ FastAPI asoslari va o'rnatish</li>
+                <li>✓ Path va query parametrlar</li>
+                <li>✓ Pydantic bilan request/response modellar</li>
+                <li>✓ Xatolarni boshqarish va status kodlar</li>
+                <li>✓ Dependency injection</li>
+                <li>✓ Middleware va background vazifalar</li>
+                <li>✓ Fayl yuklash</li>
+                <li>✓ Autentifikatsiya</li>
+                <li>✓ Avtomatik hujjatlashtirish</li>
+                <li>✓ Ma'lumotlar bazasi integratsiyasi va testlash</li>
+                <li>✓ Deploy strategiyalari</li>
+            </ul>
+            
+            <div class="success" style="margin-top: 30px;">
+                <strong>🎉 Tabriklaymiz!</strong> Endi sizda FastAPI bilan ishlab chiqarishga tayyor API'larni yaratish bilimi bor!
+            </div>
+        </div>
+
+        <!-- Slide 21: Resources -->
+        <div class="slide">
+            <h2>Qo'shimcha Resurslar</h2>
+            
+            <h3>Rasmiy Hujjatlar:</h3>
+            <ul>
+                <li>FastAPI Docs: https://fastapi.tiangolo.com</li>
+                <li>Pydantic Docs: https://docs.pydantic.dev</li>
+                <li>Uvicorn Docs: https://www.uvicorn.org</li>
+            </ul>
+            
+            <h3>Amaliy Loyihalar:</h3>
+            <ul>
+                <li>Ma'lumotlar bazasi bilan TODO API yarating</li>
+                <li>Autentifikatsiya bilan blog API yarating</li>
+                <li>Fayl saqlash xizmatini ishlab chiqing</li>
+                <li>Real-time chat API yarating</li>
+                <li>E-commerce API yarating</li>
+            </ul>
+            
+            <div class="highlight">
+                <strong>💡 Keyingi Qadamlar:</strong> O'z API loyihangizni yarata boshlang va kerak bo'lganda ushbu taqdimotga qaytib keling!
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-number">
+        <span id="current-slide">1</span> / <span id="total-slides">21</span>
+    </div>
+
+    <div class="controls">
+        <button id="prev-btn">← Oldingi</button>
+        <button id="next-btn">Keyingi →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const currentSlideNum = document.getElementById('current-slide');
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            currentSlideNum.textContent = currentSlide + 1;
+
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentSlide > 0) showSlide(currentSlide - 1);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlide < totalSlides - 1) showSlide(currentSlide + 1);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            } else if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            }
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
